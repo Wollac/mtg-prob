@@ -1,4 +1,4 @@
-package core;
+package probability.core;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +32,11 @@ abstract class AbstractLand implements Land {
 			return true;
 
 		return _colors.contains(color);
+	}
+
+	@Override
+	public String toString() {
+		return getName();
 	}
 
 }

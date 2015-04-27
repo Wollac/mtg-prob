@@ -1,17 +1,19 @@
-package probability;
+package probability.main;
 
-import java.util.Collection;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-import core.Card;
-import core.Color;
-import core.Deck;
-import core.Land;
-import core.BasicLand;
-import core.NonBasicLand;
-import core.Spell;
-import core.TapLand;
+import probability.core.BasicLand;
+import probability.core.Card;
+import probability.core.Color;
+import probability.core.Deck;
+import probability.core.Land;
+import probability.core.NonBasicLand;
+import probability.core.TapLand;
+import probability.csv.SpellCSVParser;
 
 public class Main {
 
@@ -42,22 +44,32 @@ public class Main {
 
 		deck.add(new TapLand("Bird", Color.allColors()), 4);
 
-		// deck.add(new Spell("Bird of Paradies", "G"), 4);
-
-		 deck.add(new Spell("Putird Leech", "BG"), 4);
-		 deck.add(new Spell("Bitterblossom", "1B"), 4);
-		 deck.add(new Spell("Umezawa's Jitte", "2"), 2);
-
-//		 deck.add(new Spell("Master of the Wild Hunt", "2GG"), 3);
-//		 deck.add(new Spell("Garruk Wildspeaker", "2GG"), 3);
-//		 deck.add(new Spell("Creakwood Liege", "4"), 4);
-
-		// deck.add(new Spell("Spiritmonger", "3BG"), 2);
+		addSpells(deck);
 
 		deck.fillWithDummies(60);
+		
+		System.out.println(deck);
+		
 
 		System.out.println(count(deck, 2) / 5000.0);
 
+	}
+
+	private static void addSpells(Deck deck) {
+
+		try {
+			SpellCSVParser parse = new SpellCSVParser(new FileReader(
+					"spells.csv"));
+
+			deck.addAll(parse.readAll());
+		} catch (FileNotFoundException e) {
+
+			System.err.println(e.getMessage());
+
+		} catch (IOException e) {
+			
+			System.err.println(e.getMessage());
+		}
 	}
 
 	private static int count(Deck deck, int turn) {

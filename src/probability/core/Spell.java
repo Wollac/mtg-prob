@@ -1,16 +1,15 @@
-package core;
-
+package probability.core;
 
 public class Spell implements Card {
 
 	private final String _name;
 	private final ManaCost _cost;
 
-	public Spell(String name, String costString) {
+	public Spell(String name, ManaCost cost) {
 		_name = name;
-		_cost = new ManaCost(costString);
+		_cost = cost;
 	}
-	
+
 	public String getName() {
 		return _name;
 	}
@@ -22,10 +21,10 @@ public class Spell implements Card {
 	public int getCMC() {
 		return _cost.getCMC();
 	}
-	
+
 	@Override
 	public String toString() {
-		return _name + ":" + _cost; 
+		return _name + ":" + _cost;
 	}
 
 }

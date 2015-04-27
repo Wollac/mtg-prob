@@ -1,4 +1,4 @@
-package probability;
+package probability.main;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,11 +8,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import core.Card;
-import core.Color;
-import core.ManaCost;
-import core.Land;
-import core.Spell;
+import probability.core.Card;
+import probability.core.Color;
+import probability.core.Land;
+import probability.core.ManaCost;
+import probability.core.Spell;
 
 public class PlayableChecker {
 

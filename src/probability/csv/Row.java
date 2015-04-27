@@ -1,0 +1,9 @@
+package probability.csv;
+
+public interface Row {
+
+	public <T> T getAttributeValue(Attribute<T> attribute, T defaultValue);
+
+	public <T> T getAttributeVale(Attribute<T> attribute);
+
+}

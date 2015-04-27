@@ -1,4 +1,4 @@
-package core;
+package probability.core;
 
 public class NonBasicLand extends AbstractLand implements Land {
 
