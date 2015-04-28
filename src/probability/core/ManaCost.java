@@ -90,11 +90,15 @@ public class ManaCost {
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		for (Color c : Color.values()) {
 			if (c == Color.Colorless) {
-				sb.append(getCount(Color.Colorless));
+				int colorless = getCount(Color.Colorless);
+
+				if (colorless > 0) {
+					sb.append(colorless);
+				}
 			} else {
 				for (int i = 0; i < getCount(c); i++) {
 					sb.append(c.getLetterCode());
@@ -104,5 +108,28 @@ public class ManaCost {
 		}
 
 		return sb.toString();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof ManaCost)) {
+			return false;
+		}
+
+		final ManaCost other = (ManaCost) obj;
+
+		return _countMap.equals(other._countMap);
+	}
+
+	@Override
+	public int hashCode() {
+		return _countMap.hashCode();
 	}
 }

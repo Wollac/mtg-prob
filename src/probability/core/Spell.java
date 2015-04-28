@@ -1,5 +1,7 @@
 package probability.core;
 
+import java.util.Objects;
+
 public class Spell implements Card {
 
 	private final String _name;
@@ -25,6 +27,30 @@ public class Spell implements Card {
 	@Override
 	public String toString() {
 		return _name + ":" + _cost;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(_name, _cost);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Spell)) {
+			return false;
+		}
+
+		final Spell other = (Spell) obj;
+
+		return Objects.equals(_name, other._name)
+				&& Objects.equals(_cost, other._cost);
 	}
 
 }

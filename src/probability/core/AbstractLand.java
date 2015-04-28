@@ -11,18 +11,18 @@ abstract class AbstractLand implements Land {
 
 	final private Set<Color> _colors;
 
-	public AbstractLand(String name, Color... colors) {
+	protected AbstractLand(String name, Color... colors) {
 		_name = name;
 		_colors = new HashSet<Color>(Arrays.asList(colors));
 	}
 
 	@Override
-	public String getName() {
+	final public String getName() {
 		return _name;
 	}
 
 	@Override
-	public Set<Color> colors() {
+	final public Set<Color> colors() {
 		return Collections.unmodifiableSet(_colors);
 	}
 
