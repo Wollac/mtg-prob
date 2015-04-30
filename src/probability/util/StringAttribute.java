@@ -1,4 +1,4 @@
-package probability.csv;
+package probability.util;
 
 public class StringAttribute extends Attribute<String> {
 

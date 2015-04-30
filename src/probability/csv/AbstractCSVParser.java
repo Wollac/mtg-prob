@@ -12,6 +12,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import probability.util.Attribute;
+import probability.util.AttributeHolder;
+
 import com.opencsv.CSVReader;
 
 public abstract class AbstractCSVParser<T> {

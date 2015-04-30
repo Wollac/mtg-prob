@@ -1,7 +1,9 @@
-package probability.csv;
+package probability.util;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import probability.csv.Row;
 
 public class AttributeHolder implements Row {
 

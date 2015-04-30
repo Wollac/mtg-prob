@@ -1,4 +1,4 @@
-package probability.csv;
+package probability.util;
 
 import probability.core.ManaCost;
 
