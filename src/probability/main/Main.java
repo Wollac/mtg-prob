@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
+import probability.config.Config;
 import probability.core.BasicLand;
 import probability.core.Card;
 import probability.core.Color;
@@ -32,6 +33,16 @@ public class Main {
 
 	public static void main(String[] args) {
 
+		Config config = new Config();
+
+		try {
+			config.load(new FileReader("mtg.config"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			
+			return;
+		}
+
 		Deck deck = new Deck();
 
 		deck.add(BAYOU, 3);
@@ -46,10 +57,9 @@ public class Main {
 
 		addSpells(deck);
 
-		deck.fillWithDummies(60);
-		
+		deck.fillWithDummies(config.GetNumberOfCards());
+
 		System.out.println(deck);
-		
 
 		System.out.println(count(deck, 2) / 5000.0);
 
@@ -62,13 +72,10 @@ public class Main {
 					"spells.csv"));
 
 			deck.addAll(parse.readAll());
-		} catch (FileNotFoundException e) {
-
-			System.err.println(e.getMessage());
-
 		} catch (IOException e) {
-			
+
 			System.err.println(e.getMessage());
+
 		}
 	}
 

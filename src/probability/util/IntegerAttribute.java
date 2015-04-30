@@ -27,8 +27,6 @@ public class IntegerAttribute extends Attribute<Integer> {
 			throw new IllegalArgumentException(valueString
 					+ " is not a valid integer");
 		}
-		
-		checkValid(result);
 
 		return result;
 	}

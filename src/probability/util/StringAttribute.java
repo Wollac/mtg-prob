@@ -19,11 +19,7 @@ public class StringAttribute extends Attribute<String> {
 
 	@Override
 	public String parseValue(String valueString) {
-		String value = new String(valueString);
-
-		checkValid(value);
-
-		return value;
+		return new String(valueString);
 	}
 
 }
