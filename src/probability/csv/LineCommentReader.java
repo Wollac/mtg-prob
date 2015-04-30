@@ -5,16 +5,16 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-public class MyReader extends StringReader {
+public class LineCommentReader extends StringReader {
 
 	private static final String[] DEFAULT_COMMENT = { "#", "//" };
 
-	public MyReader(Reader in, String... comments) throws IOException {
+	public LineCommentReader(Reader in, String... comments) throws IOException {
 
 		super(initString(in, comments));
 	}
 
-	public MyReader(Reader in) throws IOException {
+	public LineCommentReader(Reader in) throws IOException {
 
 		this(in, DEFAULT_COMMENT);
 	}
