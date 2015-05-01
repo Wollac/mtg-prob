@@ -6,12 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-
 import probability.util.Attribute;
 import probability.util.Attribute.AttributeParseException;
 import probability.util.AttributeHolder;
@@ -22,18 +19,26 @@ public abstract class AbstractCSVParser<T> {
 
 	private final CSVReader _reader;
 
-	private final Set<Attribute<?>> _attributes;
+	private final Map<Attribute<?>, Boolean> _attributes;
 
 	private Map<Attribute<?>, Integer> _attribute2colnum;
 
 	public AbstractCSVParser(Reader reader) throws IOException {
 		_reader = new CSVReader(new LineCommentReader(reader));
 
-		_attributes = new HashSet<>();
+		_attributes = new HashMap<>();
 	}
 
-	protected void addAttribute(Attribute<?> attribute) {
-		_attributes.add(attribute);
+	protected void addAttribute(Attribute<?> attribute, boolean mandatory) {
+		_attributes.put(attribute, mandatory);
+	}
+
+	protected void addOptionalAttribute(Attribute<?> attribute) {
+		addAttribute(attribute, false);
+	}
+
+	protected void addMandatoryAttribute(Attribute<?> attribute) {
+		addAttribute(attribute, true);
 	}
 
 	public List<T> readAll() throws IOException, CvsParseException {
@@ -77,19 +82,29 @@ public abstract class AbstractCSVParser<T> {
 		return attributeHolder;
 	}
 
-	private void readHeader() throws IOException {
+	private void readHeader() throws IOException, CvsParseException {
 
 		_attribute2colnum = new HashMap<>();
 
 		List<String> line = Arrays.asList(_reader.readNext());
 
-		for (Attribute<?> attribute : _attributes) {
+		for (Attribute<?> attribute : _attributes.keySet()) {
+
 			int index = line.indexOf(attribute.getName());
 
 			if (index >= 0) {
 				_attribute2colnum.put(attribute, index);
+			} else if (isMandatory(attribute)) {
+
+				throw new CvsParseException("error parsing csv file",
+						new Throwable("Mandatory column " + attribute.getName()
+								+ " not found"));
 			}
 		}
+	}
+
+	private boolean isMandatory(Attribute<?> attribute) {
+		return _attributes.get(attribute);
 	}
 
 	public static class CvsParseException extends Exception {

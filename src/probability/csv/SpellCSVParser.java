@@ -16,9 +16,9 @@ public class SpellCSVParser extends AbstractCSVParser<Spell> {
 
 		super(reader);
 
-		addAttribute(ATTR.NUM);
-		addAttribute(ATTR.NAME);
-		addAttribute(ATTR.MANA_COST);
+		addOptionalAttribute(ATTR.NUM);
+		addMandatoryAttribute(ATTR.NAME);
+		addMandatoryAttribute(ATTR.MANA_COST);
 	}
 
 	@Override
@@ -40,13 +40,12 @@ public class SpellCSVParser extends AbstractCSVParser<Spell> {
 
 	private static interface ATTR {
 
-		static final IntegerAttribute NUM = new IntegerAttribute("num",
-				1, i -> (i > 0));
+		static final IntegerAttribute NUM = new IntegerAttribute("num", 1,
+				i -> (i > 0));
 
 		static final StringAttribute NAME = new StringAttribute("name");
 
-		static final ManaCostAttribute MANA_COST = new ManaCostAttribute(
-				"cost");
+		static final ManaCostAttribute MANA_COST = new ManaCostAttribute("cost");
 	}
 
 }
