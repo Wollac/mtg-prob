@@ -1,14 +1,8 @@
 package probability.core;
 
-import java.util.Collection;
-
 public class BasicLand extends AbstractLand {
 
-	public BasicLand(String name, Collection<Color> colors) {
-		super(name, colors);
-	}
-	
-	public BasicLand(String name, Color... colors) {
+	public BasicLand(String name, Colors colors) {
 		super(name, colors);
 	}
 

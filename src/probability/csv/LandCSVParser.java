@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
-
 import probability.core.BasicLand;
-import probability.core.Color;
+import probability.core.Colors;
 import probability.core.Land;
 import probability.core.NonBasicLand;
 import probability.core.TapLand;
-import probability.util.ColorStringAttribute;
+import probability.util.ColorsAttribute;
 import probability.util.EnumAttribute;
 import probability.util.IntegerAttribute;
 import probability.util.StringAttribute;
@@ -47,7 +45,7 @@ public class LandCSVParser extends AbstractCSVParser<Land> {
 	}
 
 	private static Land createLand(LandTypes type, String name,
-			Set<Color> colors) {
+			Colors colors) {
 
 		switch (type) {
 		case Basic:
@@ -75,8 +73,7 @@ public class LandCSVParser extends AbstractCSVParser<Land> {
 		static final EnumAttribute<LandTypes> TYPE = new EnumAttribute<>(
 				"type", LandTypes.class, LandTypes.Basic);
 
-		static final ColorStringAttribute COLORS = new ColorStringAttribute(
-				"colors", s -> (!s.isEmpty()));
+		static final ColorsAttribute COLORS = new ColorsAttribute("colors");
 
 	}
 
