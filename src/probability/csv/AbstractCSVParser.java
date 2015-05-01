@@ -17,7 +17,7 @@ import probability.util.AttributeHolder;
 
 import com.opencsv.CSVReader;
 
-public abstract class AbstractCSVParser<T> {
+abstract class AbstractCSVParser<T> {
 
 	private final CSVReader _reader;
 

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-public class LineCommentReader extends StringReader {
+class LineCommentReader extends StringReader {
 
 	private static final String[] DEFAULT_COMMENT = { "#", "//" };
 
