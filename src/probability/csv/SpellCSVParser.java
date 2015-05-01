@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import probability.attr.ImmutableAttributeHolder;
 import probability.attr.IntegerAttribute;
 import probability.attr.ManaCostAttribute;
 import probability.attr.StringAttribute;
@@ -22,7 +23,7 @@ public class SpellCSVParser extends AbstractCSVParser<Spell> {
 	}
 
 	@Override
-	protected Collection<Spell> createInstance(Row row) {
+	protected Collection<Spell> createInstance(ImmutableAttributeHolder row) {
 
 		int num = row.getAttributeVale(ATTR.NUM);
 

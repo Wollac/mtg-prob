@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import probability.attr.Attribute;
 import probability.attr.AttributeHolder;
 import probability.attr.Attribute.AttributeParseException;
+import probability.attr.ImmutableAttributeHolder;
 
 import com.opencsv.CSVReader;
 
@@ -54,7 +55,7 @@ public abstract class AbstractCSVParser<T> {
 
 		String[] nextLine;
 		while ((nextLine = _reader.readNext()) != null) {
-			Row row = parseLine(nextLine);
+			ImmutableAttributeHolder row = parseLine(nextLine);
 
 			instances.addAll(createInstance(row));
 		}
@@ -62,9 +63,10 @@ public abstract class AbstractCSVParser<T> {
 		return instances;
 	}
 
-	protected abstract Collection<T> createInstance(Row row);
+	protected abstract Collection<T> createInstance(ImmutableAttributeHolder row);
 
-	private Row parseLine(String[] nextLine) throws CvsParseException {
+	private ImmutableAttributeHolder parseLine(String[] nextLine)
+			throws CvsParseException {
 
 		AttributeHolder attributeHolder = new AttributeHolder();
 

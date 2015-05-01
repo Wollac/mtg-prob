@@ -35,7 +35,7 @@ public class PlayableChecker {
 		for (Spell spell : playableSpells) {
 			ManaCost cost = spell.getCost();
 
-			if (isPlayableRecursion(cost, lands)) {
+			if (isPlayableRecursion(cost, lands, 0)) {
 				return true;
 			}
 		}
@@ -60,7 +60,7 @@ public class PlayableChecker {
 	}
 
 	private boolean isPlayableRecursion(ManaCost remainingCost,
-			Collection<Land> remainingLands) {
+			Collection<Land> remainingLands, int turn) {
 
 		if (remainingCost.getCMC() == 0) {
 			return true;
@@ -78,7 +78,7 @@ public class PlayableChecker {
 
 				ManaCost reducedCosts = reduceCost(color, remainingCost);
 
-				if (isPlayableRecursion(reducedCosts, lands)) {
+				if (isPlayableRecursion(reducedCosts, lands, turn + 1)) {
 					return true;
 				}
 			}

@@ -7,6 +7,7 @@ import java.util.Collection;
 
 import probability.attr.ColorsAttribute;
 import probability.attr.EnumAttribute;
+import probability.attr.ImmutableAttributeHolder;
 import probability.attr.IntegerAttribute;
 import probability.attr.StringAttribute;
 import probability.core.Colors;
@@ -28,7 +29,7 @@ public class LandCSVParser extends AbstractCSVParser<Land> {
 	}
 
 	@Override
-	protected Collection<Land> createInstance(Row row) {
+	protected Collection<Land> createInstance(ImmutableAttributeHolder row) {
 
 		int num = row.getAttributeVale(ATTR.NUM);
 

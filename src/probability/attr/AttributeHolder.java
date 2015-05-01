@@ -4,9 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import probability.attr.Attribute.AttributeParseException;
-import probability.csv.Row;
 
-public class AttributeHolder implements Row {
+public class AttributeHolder implements ImmutableAttributeHolder {
 
 	private final Map<Attribute<?>, Object> _map;
 
