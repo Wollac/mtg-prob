@@ -10,7 +10,16 @@ public class ManaCostAttribute extends Attribute<ManaCost> {
 
 	@Override
 	public ManaCost parseValue(String valueString) {
-		return new ManaCost(valueString);
+		ManaCost result;
+
+		try {
+			result = new ManaCost(valueString);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException(valueString + " is not a valid"
+					+ " mana cost for attribute " + getName());
+		}
+
+		return result;
 	}
 
 }

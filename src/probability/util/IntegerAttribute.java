@@ -24,8 +24,8 @@ public class IntegerAttribute extends Attribute<Integer> {
 		try {
 			result = Integer.valueOf(valueString);
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException(valueString
-					+ " is not a valid integer");
+			throw new IllegalArgumentException(valueString + " is not a valid"
+					+ " integer for attribute " + getName());
 		}
 
 		return result;

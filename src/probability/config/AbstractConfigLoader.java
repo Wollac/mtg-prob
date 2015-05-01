@@ -17,7 +17,7 @@ abstract class AbstractConfigLoader {
 	private final AttributeHolder _attributeHolder;
 
 	public AbstractConfigLoader(Attribute<?>... attributes) {
-		
+
 		_attributes = new HashSet<>(Arrays.asList(attributes));
 		_attributeHolder = new AttributeHolder();
 
@@ -31,9 +31,15 @@ abstract class AbstractConfigLoader {
 		Properties properties = new Properties();
 		properties.load(reader);
 
+		Set<String> propertyNames = properties.stringPropertyNames();
+
 		for (Attribute<?> attribute : _attributes) {
-			_attributeHolder.setParsedAttributeValue(attribute,
-					properties.getProperty(attribute.getName()));
+			String attributeName = attribute.getName();
+
+			if (propertyNames.contains(attributeName)) {
+				_attributeHolder.setParsedAttributeValue(attribute,
+						properties.getProperty(attributeName));
+			}
 		}
 	}
 

@@ -11,7 +11,7 @@ public class ManaCost {
 		_countMap = new HashMap<>();
 	}
 
-	public ManaCost(String costString) {
+	public ManaCost(String costString) throws IllegalArgumentException {
 		_countMap = new HashMap<>();
 
 		for (char c : costString.toCharArray()) {
