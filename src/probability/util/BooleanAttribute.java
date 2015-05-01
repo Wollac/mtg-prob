@@ -18,7 +18,8 @@ public class BooleanAttribute extends Attribute<Boolean> {
 	}
 
 	@Override
-	public Boolean parseValue(String valueString) {
+	public Boolean parseValue(String valueString)
+			throws AttributeParseException {
 
 		if (valueString.equalsIgnoreCase("true")) {
 			return Boolean.TRUE;
@@ -27,8 +28,8 @@ public class BooleanAttribute extends Attribute<Boolean> {
 			return Boolean.FALSE;
 		}
 
-		throw new IllegalArgumentException(valueString + " is not a valid"
-				+ " boolean for attribute " + getName());
+		throw new AttributeParseException(valueString
+				+ " is not a valid string", this);
 	}
 
 }

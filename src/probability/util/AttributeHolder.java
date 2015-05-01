@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import probability.csv.Row;
+import probability.util.Attribute.AttributeParseException;
 
 public class AttributeHolder implements Row {
 
@@ -19,12 +20,19 @@ public class AttributeHolder implements Row {
 		_map.put(key, value);
 	}
 
-	public <T> void setParsedAttributeValue(Attribute<T> key, String valueString) {
-		T value = key.parseValue(valueString);
+	public <T> void setParsedAttributeValue(Attribute<T> attribute,
+			String valueString) throws AttributeParseException {
 
-		key.checkValid(value);
+		T value = attribute.parseValue(valueString);
 
-		_map.put(key, value);
+		if (!attribute.isValid(value)) {
+			throw new AttributeParseException(value + " is not a valid value",
+					attribute);
+		}
+
+		attribute.checkValid(value);
+
+		_map.put(attribute, value);
 	}
 
 	public <T> T getAttributeValue(Attribute<T> key, T def) {

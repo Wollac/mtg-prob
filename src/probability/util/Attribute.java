@@ -52,11 +52,22 @@ public abstract class Attribute<T> {
 		}
 	}
 
-	public abstract T parseValue(String valueString);
+	public abstract T parseValue(String valueString)
+			throws AttributeParseException;
 
 	@Override
 	public String toString() {
 		return getName();
+	}
+
+	public static class AttributeParseException extends Exception {
+
+		private static final long serialVersionUID = -4346695331705535091L;
+
+		public AttributeParseException(String s, Attribute<?> attribute) {
+			super("attribute " + attribute.getName() + ": " + s);
+		}
+
 	}
 
 }

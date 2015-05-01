@@ -18,14 +18,16 @@ public class IntegerAttribute extends Attribute<Integer> {
 	}
 
 	@Override
-	public Integer parseValue(String valueString) {
+	public Integer parseValue(String valueString)
+			throws AttributeParseException {
+
 		Integer result;
 
 		try {
 			result = Integer.valueOf(valueString);
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException(valueString + " is not a valid"
-					+ " integer for attribute " + getName());
+			throw new AttributeParseException(valueString
+					+ " is not a valid string", this);
 		}
 
 		return result;
