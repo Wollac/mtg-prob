@@ -34,10 +34,10 @@ public class ConfigLoader extends AbstractConfigLoader implements Config {
 				"cards", 60, i -> (i > 0));
 
 		final static IntegerAttribute INITIAL_HAND_SIZE = new IntegerAttribute(
-				"handsize", 7, i -> (i > 0));
+				"initial hand size", 7, i -> (i > 0));
 
 		final static BooleanAttribute DRAW_ON_TURN = new BooleanAttribute(
-				"draw", false);
+				"draw on turn", false);
 
 	}
 

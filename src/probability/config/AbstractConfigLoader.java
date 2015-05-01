@@ -1,16 +1,22 @@
 package probability.config;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+
 import probability.util.Attribute;
+import probability.util.Attribute.AttributeParseException;
 import probability.util.AttributeHolder;
 
-abstract class AbstractConfigLoader {
+public abstract class AbstractConfigLoader {
 
 	private final Set<Attribute<?>> _attributes;
 
@@ -27,24 +33,57 @@ abstract class AbstractConfigLoader {
 		_attributes.add(attribute);
 	}
 
-	public final void load(Reader reader) throws IOException {
-		Properties properties = new Properties();
-		properties.load(reader);
+	public final void load(File configFile) throws IOException,
+			ConfigParseException {
 
-		Set<String> propertyNames = properties.stringPropertyNames();
+		try {
+			JSONObject obj = new JSONObject(Files.toString(configFile,
+					Charsets.UTF_8));
 
-		for (Attribute<?> attribute : _attributes) {
-			String attributeName = attribute.getName();
+			Set<String> propertyNames = obj.keySet();
 
-			if (propertyNames.contains(attributeName)) {
-				_attributeHolder.setParsedAttributeValue(attribute,
-						properties.getProperty(attributeName));
+			for (Attribute<?> attribute : _attributes) {
+				String attributeName = attribute.getName();
+
+				if (propertyNames.contains(attributeName)) {
+					// let our attributes do the parsing and not JSON
+					String objString = obj.get(attributeName).toString();
+					_attributeHolder.setParsedAttributeValue(attribute,
+							objString);
+				}
 			}
+		} catch (JSONException | AttributeParseException e) {
+			throw new ConfigParseException("error parsing file "
+					+ configFile.getName(), e);
+		}
+	}
+
+	public final void write(File configFile) {
+		try {
+			JSONObject obj = new JSONObject();
+
+			for (Attribute<?> attribute : _attributes) {
+				obj.put(attribute.getName(), attribute.getDefaultValue());
+			}
+
+			Files.write(obj.toString(2), configFile, Charsets.UTF_8);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
 	public <T> T getProperty(Attribute<T> attribute) {
 		return _attributeHolder.getAttributeVale(attribute);
+	}
+
+	public static class ConfigParseException extends Exception {
+
+		private static final long serialVersionUID = 1L;
+
+		public ConfigParseException(String str, Throwable cause) {
+			super(str, cause);
+		}
+
 	}
 
 }

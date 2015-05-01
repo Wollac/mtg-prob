@@ -1,5 +1,6 @@
 package probability.main;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collections;
@@ -7,6 +8,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import probability.config.AbstractConfigLoader.ConfigParseException;
 import probability.config.Config;
 import probability.config.ConfigLoader;
 import probability.core.BasicLand;
@@ -18,6 +20,7 @@ import probability.core.Land;
 import probability.core.NonBasicLand;
 import probability.core.Spell;
 import probability.core.TapLand;
+import probability.csv.AbstractCSVParser.CvsParseException;
 import probability.csv.SpellCSVParser;
 
 public class Main {
@@ -38,11 +41,16 @@ public class Main {
 	public static void main(String[] args) {
 
 		ConfigLoader config = new ConfigLoader();
-		try {
-			config.load(new FileReader("mtg.config"));
-		} catch (IOException e) {
-			e.printStackTrace();
 
+		// config.write(new File("mtg.config"));
+
+		try {
+			config.load(new File("mtg.config"));
+		} catch (IOException e) {
+			System.err.println("Could not read config file: " + e.getMessage());
+			return;
+		} catch (ConfigParseException e) {
+			System.err.println("Error parsing config file: " + e.getCause());
 			return;
 		}
 
@@ -105,9 +113,9 @@ public class Main {
 
 			deck.addAll(parse.readAll());
 		} catch (IOException e) {
-
-			System.err.println(e.getMessage());
-
+			System.err.println("Could not read csv file: " + e.getMessage());
+		} catch (CvsParseException e) {
+			System.err.println("Error parsing csv file: " + e.getCause());
 		}
 	}
 

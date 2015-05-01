@@ -13,11 +13,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import probability.util.Attribute;
+import probability.util.Attribute.AttributeParseException;
 import probability.util.AttributeHolder;
 
 import com.opencsv.CSVReader;
 
-abstract class AbstractCSVParser<T> {
+public abstract class AbstractCSVParser<T> {
 
 	private final CSVReader _reader;
 
@@ -27,7 +28,7 @@ abstract class AbstractCSVParser<T> {
 
 	public AbstractCSVParser(Reader reader) throws IOException {
 		_reader = new CSVReader(new LineCommentReader(reader));
-		
+
 		_attributes = new HashSet<>();
 	}
 
@@ -35,7 +36,7 @@ abstract class AbstractCSVParser<T> {
 		_attributes.add(attribute);
 	}
 
-	public List<T> readAll() throws IOException {
+	public List<T> readAll() throws IOException, CvsParseException {
 
 		if (_attributes.isEmpty()) {
 			throw new IllegalStateException("At least one attribute is needed.");
@@ -57,14 +58,18 @@ abstract class AbstractCSVParser<T> {
 
 	protected abstract Collection<T> createInstance(Row row);
 
-	private Row parseLine(String[] nextLine) {
+	private Row parseLine(String[] nextLine) throws CvsParseException {
 
 		AttributeHolder attributeHolder = new AttributeHolder();
 
-		for (Entry<Attribute<?>, Integer> element : _attribute2colnum
-				.entrySet()) {
-			attributeHolder.setParsedAttributeValue(element.getKey(),
-					nextLine[element.getValue()]);
+		try {
+			for (Entry<Attribute<?>, Integer> element : _attribute2colnum
+					.entrySet()) {
+				attributeHolder.setParsedAttributeValue(element.getKey(),
+						nextLine[element.getValue()]);
+			}
+		} catch (AttributeParseException e) {
+			throw new CvsParseException("error parsing csv file", e);
 		}
 
 		return attributeHolder;
@@ -83,6 +88,16 @@ abstract class AbstractCSVParser<T> {
 				_attribute2colnum.put(attribute, index);
 			}
 		}
+	}
+
+	public static class CvsParseException extends Exception {
+
+		private static final long serialVersionUID = 1L;
+
+		public CvsParseException(String str, Throwable cause) {
+			super(str, cause);
+		}
+
 	}
 
 }
