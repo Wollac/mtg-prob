@@ -47,7 +47,8 @@ public abstract class Attribute<T> {
 	public final void checkValid(T value) throws IllegalArgumentException {
 
 		if (!isValid(value)) {
-			throw new IllegalArgumentException(value + " has an invalid value.");
+			throw new IllegalArgumentException(value + " is an invalid value"
+					+ " for attribute " + getName());
 		}
 	}
 
