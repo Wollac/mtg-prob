@@ -18,8 +18,6 @@ public abstract class Attribute<T> {
 		_defaultValue = defaultValue;
 		_type = type;
 		_validator = validator;
-
-		checkValid(defaultValue);
 	}
 
 	public Attribute(String name, Class<T> type, T defaultValue) {
@@ -62,7 +60,7 @@ public abstract class Attribute<T> {
 
 	public static class AttributeParseException extends Exception {
 
-		private static final long serialVersionUID = -4346695331705535091L;
+		private static final long serialVersionUID = 1L;
 
 		public AttributeParseException(String s, Attribute<?> attribute) {
 			super("attribute " + attribute.getName() + ": " + s);
