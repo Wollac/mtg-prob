@@ -2,7 +2,6 @@ package probability.main;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -17,9 +16,11 @@ import probability.core.Spell;
 public class PlayableChecker {
 
 	private List<Card> _cards;
+	private int _startingHand;
 
-	public PlayableChecker(List<Card> hand) {
+	public PlayableChecker(List<Card> hand, int startingHand) {
 		_cards = new ArrayList<Card>(hand);
+		_startingHand = startingHand;
 	}
 
 	public boolean isPlayable(int turn) {
@@ -30,7 +31,7 @@ public class PlayableChecker {
 			return true;
 		}
 
-		List<Land> lands = Collections.unmodifiableList(filterLands(_cards));
+		Collection<Land> lands = retainPlayableLands(_cards, turn);
 
 		for (Iterator<Spell> iterator = spells.iterator(); iterator.hasNext();) {
 			Spell spell = iterator.next();
@@ -41,16 +42,10 @@ public class PlayableChecker {
 		}
 
 		for (Spell spell : spells) {
-			ManaCost spellColors = spell.getCost();
+			ManaCost cost = spell.getCost();
 
-			if (spell.getCMC() == turn) {
-				if (isPlayable(spellColors, lands)) {
-					return true;
-				}
-			} else {
-				if (isTappedPlayable(spellColors, lands)) {
-					return true;
-				}
+			if (isPlayableRecursion(cost, lands)) {
+				return true;
 			}
 		}
 
@@ -69,56 +64,26 @@ public class PlayableChecker {
 		return result;
 	}
 
-	private List<Land> filterLands(List<Card> cards) {
-		List<Land> result = new ArrayList<>();
+	private boolean isPlayableRecursion(ManaCost remainingCost,
+			Collection<Land> remainingLands) {
 
-		for (Card card : cards) {
-			if (card instanceof Land) {
-				result.add((Land) card);
-			}
-		}
-
-		return result;
-	}
-
-	private boolean isPlayable(ManaCost spellColors, Collection<Land> lands) {
-		for (Color color : spellColors.getColors()) {
-			ManaCost reducedCosts = reduceCost(color, spellColors);
-
-			for (Land land : lands) {
-				if (land.canProduce(color) && !land.comesIntoPlayTapped()) {
-
-					Collection<Land> availableLands = new ArrayList<Land>(lands);
-					availableLands.remove(land);
-
-					if (isTappedPlayable(reducedCosts, availableLands))
-						return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	private boolean isTappedPlayable(ManaCost spellColors,
-			Collection<Land> lands) {
-
-		if (spellColors.getCMC() == 0)
+		if (remainingCost.getCMC() == 0) {
 			return true;
+		}
 
-		for (Land land : lands) {
-			Collection<Land> availableLands = new ArrayList<Land>(lands);
-			availableLands.remove(land);
+		for (Land land : remainingLands) {
+
+			Collection<Land> lands = filterToArrayList(remainingLands, land);
 
 			for (Color color : land.colors()) {
-				if (spellColors.getCount(Color.Colorless) < 1
-						&& spellColors.getCount(color) < 1) {
+
+				if (!remainingCost.containsColor(color)) {
 					continue;
 				}
 
-				ManaCost reducedCosts = reduceCost(color, spellColors);
+				ManaCost reducedCosts = reduceCost(color, remainingCost);
 
-				if (isTappedPlayable(reducedCosts, availableLands)) {
+				if (isPlayableRecursion(reducedCosts, lands)) {
 					return true;
 				}
 			}
@@ -127,7 +92,48 @@ public class PlayableChecker {
 		return false;
 	}
 
-	private ManaCost reduceCost(Color color, ManaCost spellColors) {
+	/**
+	 * Return a new ArrayList containing all lands but the first occurrence of
+	 * the given land.
+	 */
+	private static Collection<Land> filterToArrayList(Collection<Land> lands,
+			Land land) {
+
+		Collection<Land> availableLands = new ArrayList<Land>(lands);
+		availableLands.remove(land);
+
+		return availableLands;
+	}
+
+	private Collection<Land> retainPlayableLands(List<Card> cards, int turn) {
+
+		Collection<Land> result = new ArrayList<Land>();
+
+		int num = 1;
+		for (Card card : cards) {
+			if (card instanceof Land) {
+				Land land = (Land) card;
+
+				int cardTurn = getAvailableTurn(num);
+
+				if (cardTurn < turn
+						|| (cardTurn == turn && !land.comesIntoPlayTapped())) {
+
+					result.add(land);
+				}
+			}
+
+			num++;
+		}
+
+		return result;
+	}
+
+	private int getAvailableTurn(int num) {
+		return Math.max(num - _startingHand - 1, 1);
+	}
+
+	private static ManaCost reduceCost(Color color, ManaCost spellColors) {
 		ManaCost reducedCosts = new ManaCost(spellColors);
 
 		if (reducedCosts.getCount(color) >= 1) {

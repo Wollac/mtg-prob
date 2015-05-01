@@ -34,6 +34,10 @@ public class ManaCost {
 		_countMap = new HashMap<>(o._countMap);
 	}
 
+	public boolean containsColor(Color color) {
+		return getCount(color) > 0 || getCount(Color.Colorless) > 0;
+	}
+
 	public void increaseCount(Color color, int inc) {
 		if (inc == 0) {
 			return;
