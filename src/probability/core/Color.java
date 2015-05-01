@@ -27,6 +27,10 @@ public enum Color {
 	}
 
 	public static Color getColor(char c) {
+		if (!_codeToColor.containsKey(c)) {
+			throw new IllegalArgumentException(c + " is not a valid color code");
+		}
+		
 		return _codeToColor.get(c);
 	}
 
