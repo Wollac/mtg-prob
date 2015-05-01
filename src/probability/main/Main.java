@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 import probability.config.AbstractConfigLoader.ConfigParseException;
@@ -21,9 +20,9 @@ import probability.csv.SpellCSVParser;
 
 public class Main {
 
-	public static void main(String[] args) {
+	private static final ConfigLoader config = new ConfigLoader();
 
-		ConfigLoader config = new ConfigLoader();
+	public static void main(String[] args) {
 
 		// config.write(new File("mtg.config"));
 
@@ -48,8 +47,10 @@ public class Main {
 
 		for (int turn = minCmc; turn <= maxCmc + 3; turn++) {
 
-			System.out.println("Turn " + turn + ": " + count(deck, turn)
-					/ 10000.0);
+			int playable = countPlayable(deck, turn);
+			double factor = (double) playable / config.sampleSize();
+
+			System.out.println("Turn " + turn + ": " + factor * 100.0 + "%");
 		}
 
 	}
@@ -81,11 +82,11 @@ public class Main {
 	}
 
 	private static void addLands(Deck deck) {
-		
+
 		try {
 			LandCSVParser parser = new LandCSVParser(
 					new FileReader("lands.csv"));
-			
+
 			deck.addAll(parser.readAll());
 		} catch (IOException e) {
 			System.err.println("Could not read csv file: " + e.getMessage());
@@ -108,10 +109,10 @@ public class Main {
 		}
 	}
 
-	private static int count(Deck deck, int turn) {
+	private static int countPlayable(Deck deck, int turn) {
 		int good = 0;
 
-		for (int i = 0; i < 1000000; i++) {
+		for (int i = 0; i < config.sampleSize(); i++) {
 			deck.shuffle();
 
 			Hand hand = deck.draw(turn);
@@ -122,17 +123,7 @@ public class Main {
 				good++;
 			}
 		}
+
 		return good;
-	}
-
-	public static int randomInteger(int min, int max) {
-
-		Random rand = new Random();
-
-		// nextInt excludes the top value so we have to add 1 to include the top
-		// value
-		int randomNum = rand.nextInt((max - min) + 1) + min;
-
-		return randomNum;
 	}
 }
