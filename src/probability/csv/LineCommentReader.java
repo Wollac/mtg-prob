@@ -48,7 +48,7 @@ class LineCommentReader extends StringReader {
 	private static boolean startsWithComment(String line, String[] comments) {
 
 		for (String comment : comments) {
-			if (line.endsWith(comment)) {
+			if (line.startsWith(comment)) {
 				return true;
 			}
 		}

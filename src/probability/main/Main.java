@@ -11,32 +11,15 @@ import java.util.Set;
 import probability.config.AbstractConfigLoader.ConfigParseException;
 import probability.config.Config;
 import probability.config.ConfigLoader;
-import probability.core.BasicLand;
 import probability.core.Card;
-import probability.core.Color;
 import probability.core.Deck;
 import probability.core.Hand;
-import probability.core.Land;
-import probability.core.NonBasicLand;
 import probability.core.Spell;
-import probability.core.TapLand;
 import probability.csv.AbstractCSVParser.CvsParseException;
+import probability.csv.LandCSVParser;
 import probability.csv.SpellCSVParser;
 
 public class Main {
-
-	private static final Land BAYOU = new BasicLand("Bayou", Color.Black,
-			Color.Green);
-
-	private static final Land WOODLAND = new TapLand("Woodland Cemetery",
-			Color.Black, Color.Green);
-
-	private static final Land TWILIGHT = new NonBasicLand("Twilight Mire",
-			Color.Black, Color.Green);
-
-	private static final Land SWAMP = new BasicLand("Swamp", Color.Black);
-
-	private static final Land FORREST = new BasicLand("Forrest", Color.Green);
 
 	public static void main(String[] args) {
 
@@ -88,21 +71,27 @@ public class Main {
 	private static Deck buildDeck(Config config) {
 		Deck deck = new Deck(config);
 
-		deck.add(BAYOU, 2);
-
-		deck.add(TWILIGHT, 2);
-		deck.add(WOODLAND, 4);
-
-		deck.add(SWAMP, 5);
-		deck.add(FORREST, 9);
-
-		deck.add(new TapLand("Bird", Color.allColors()), 4);
+		addLands(deck);
 
 		addSpells(deck);
 
 		deck.fillWithDummies();
 
 		return deck;
+	}
+
+	private static void addLands(Deck deck) {
+		
+		try {
+			LandCSVParser parser = new LandCSVParser(
+					new FileReader("lands.csv"));
+			
+			deck.addAll(parser.readAll());
+		} catch (IOException e) {
+			System.err.println("Could not read csv file: " + e.getMessage());
+		} catch (CvsParseException e) {
+			System.err.println("Error parsing csv file: " + e.getCause());
+		}
 	}
 
 	private static void addSpells(Deck deck) {

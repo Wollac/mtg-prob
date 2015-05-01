@@ -65,8 +65,10 @@ public abstract class AbstractCSVParser<T> {
 		try {
 			for (Entry<Attribute<?>, Integer> element : _attribute2colnum
 					.entrySet()) {
+				String valueString = nextLine[element.getValue()].trim();
+
 				attributeHolder.setParsedAttributeValue(element.getKey(),
-						nextLine[element.getValue()]);
+						valueString);
 			}
 		} catch (AttributeParseException e) {
 			throw new CvsParseException("error parsing csv file", e);
