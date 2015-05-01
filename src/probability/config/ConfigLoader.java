@@ -1,7 +1,7 @@
 package probability.config;
 
-import probability.util.BooleanAttribute;
-import probability.util.IntegerAttribute;
+import probability.attr.BooleanAttribute;
+import probability.attr.IntegerAttribute;
 
 public class ConfigLoader extends AbstractConfigLoader implements Config {
 

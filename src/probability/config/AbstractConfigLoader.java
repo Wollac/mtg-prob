@@ -12,9 +12,9 @@ import org.json.JSONObject;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
-import probability.util.Attribute;
-import probability.util.Attribute.AttributeParseException;
-import probability.util.AttributeHolder;
+import probability.attr.Attribute;
+import probability.attr.AttributeHolder;
+import probability.attr.Attribute.AttributeParseException;
 
 public abstract class AbstractConfigLoader {
 

@@ -5,10 +5,10 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import probability.attr.IntegerAttribute;
+import probability.attr.ManaCostAttribute;
+import probability.attr.StringAttribute;
 import probability.core.Spell;
-import probability.util.IntegerAttribute;
-import probability.util.ManaCostAttribute;
-import probability.util.StringAttribute;
 
 public class SpellCSVParser extends AbstractCSVParser<Spell> {
 

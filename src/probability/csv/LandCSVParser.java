@@ -4,15 +4,16 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import probability.attr.ColorsAttribute;
+import probability.attr.EnumAttribute;
+import probability.attr.IntegerAttribute;
+import probability.attr.StringAttribute;
 import probability.core.BasicLand;
 import probability.core.Colors;
 import probability.core.Land;
 import probability.core.NonBasicLand;
 import probability.core.TapLand;
-import probability.util.ColorsAttribute;
-import probability.util.EnumAttribute;
-import probability.util.IntegerAttribute;
-import probability.util.StringAttribute;
 
 public class LandCSVParser extends AbstractCSVParser<Land> {
 

@@ -1,4 +1,4 @@
-package probability.util;
+package probability.attr;
 
 import java.util.function.Predicate;
 

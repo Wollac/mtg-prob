@@ -1,6 +1,6 @@
 package probability.csv;
 
-import probability.util.Attribute;
+import probability.attr.Attribute;
 
 public interface Row {
 

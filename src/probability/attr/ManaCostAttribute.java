@@ -1,4 +1,4 @@
-package probability.util;
+package probability.attr;
 
 import probability.core.ManaCost;
 

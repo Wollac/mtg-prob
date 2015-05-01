@@ -9,9 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import probability.util.Attribute;
-import probability.util.Attribute.AttributeParseException;
-import probability.util.AttributeHolder;
+
+import probability.attr.Attribute;
+import probability.attr.AttributeHolder;
+import probability.attr.Attribute.AttributeParseException;
 
 import com.opencsv.CSVReader;
 

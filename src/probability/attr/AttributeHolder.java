@@ -1,10 +1,10 @@
-package probability.util;
+package probability.attr;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import probability.attr.Attribute.AttributeParseException;
 import probability.csv.Row;
-import probability.util.Attribute.AttributeParseException;
 
 public class AttributeHolder implements Row {
 
