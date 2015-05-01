@@ -3,6 +3,8 @@ package probability.core;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import probability.core.land.Land;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 

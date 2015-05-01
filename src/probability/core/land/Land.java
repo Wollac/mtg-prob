@@ -1,6 +1,9 @@
-package probability.core;
+package probability.core.land;
 
 import java.util.Set;
+
+import probability.core.Card;
+import probability.core.Color;
 
 public interface Land extends Card {
 

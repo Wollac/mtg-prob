@@ -8,9 +8,9 @@ import java.util.Set;
 
 import probability.core.Color;
 import probability.core.Hand;
-import probability.core.Land;
 import probability.core.ManaCost;
 import probability.core.Spell;
+import probability.core.land.Land;
 
 public class PlayableChecker {
 

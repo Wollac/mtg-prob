@@ -1,8 +1,11 @@
-package probability.core;
+package probability.core.land;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import probability.core.Color;
+import probability.core.Colors;
 
 abstract class AbstractLand implements Land {
 

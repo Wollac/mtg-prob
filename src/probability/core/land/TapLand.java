@@ -1,4 +1,7 @@
-package probability.core;
+package probability.core.land;
+
+import probability.core.Color;
+import probability.core.Colors;
 
 public class TapLand extends AbstractLand implements Land {
 

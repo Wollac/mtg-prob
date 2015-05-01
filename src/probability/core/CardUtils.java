@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
+import probability.core.land.Land;
+
 public final class CardUtils {
 	private CardUtils() {
 	}

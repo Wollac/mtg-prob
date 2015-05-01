@@ -9,11 +9,11 @@ import probability.attr.ColorsAttribute;
 import probability.attr.EnumAttribute;
 import probability.attr.IntegerAttribute;
 import probability.attr.StringAttribute;
-import probability.core.BasicLand;
 import probability.core.Colors;
-import probability.core.Land;
-import probability.core.NonBasicLand;
-import probability.core.TapLand;
+import probability.core.land.BasicLand;
+import probability.core.land.Land;
+import probability.core.land.NonBasicLand;
+import probability.core.land.TapLand;
 
 public class LandCSVParser extends AbstractCSVParser<Land> {
 
