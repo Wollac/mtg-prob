@@ -39,7 +39,7 @@ public class Deck {
 
 	public void fillWithDummies(int total) {
 		for (int i = _cards.size(); i < total; i++) {
-			_cards.add(DUMMY_CARD);
+			_cards.add(CardUtils.getDummyCard());
 		}
 	}
 
@@ -68,18 +68,5 @@ public class Deck {
 
 		return sb.toString();
 	}
-
-	private static final Card DUMMY_CARD = new Card() {
-
-		@Override
-		public String getName() {
-			return "Dummy";
-		}
-
-		@Override
-		public String toString() {
-			return getName();
-		}
-	};
 
 }
