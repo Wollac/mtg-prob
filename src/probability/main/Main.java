@@ -4,15 +4,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
 import probability.config.Config;
+import probability.config.ConfigLoader;
 import probability.core.BasicLand;
 import probability.core.Card;
 import probability.core.Color;
 import probability.core.Deck;
+import probability.core.Hand;
 import probability.core.Land;
 import probability.core.NonBasicLand;
 import probability.core.Spell;
@@ -36,8 +37,7 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		Config config = new Config();
-
+		ConfigLoader config = new ConfigLoader();
 		try {
 			config.load(new FileReader("mtg.config"));
 		} catch (IOException e) {
@@ -46,7 +46,8 @@ public class Main {
 			return;
 		}
 
-		Deck deck = buildDeck(config.GetNumberOfCards());
+		Deck deck = buildDeck(config);
+
 		System.out.println(deck);
 
 		Set<Integer> cmcs = getCmcs(deck);
@@ -76,8 +77,8 @@ public class Main {
 		return result;
 	}
 
-	private static Deck buildDeck(int numberOfCards) {
-		Deck deck = new Deck();
+	private static Deck buildDeck(Config config) {
+		Deck deck = new Deck(config);
 
 		deck.add(BAYOU, 2);
 
@@ -91,7 +92,7 @@ public class Main {
 
 		addSpells(deck);
 
-		deck.fillWithDummies(numberOfCards);
+		deck.fillWithDummies();
 
 		return deck;
 	}
@@ -116,9 +117,9 @@ public class Main {
 		for (int i = 0; i < 1000000; i++) {
 			deck.shuffle();
 
-			List<Card> hand = deck.draw(6 + turn);
+			Hand hand = deck.draw(turn);
 
-			PlayableChecker checker = new PlayableChecker(hand, 6);
+			PlayableChecker checker = new PlayableChecker(hand);
 
 			if (checker.isPlayable(turn)) {
 				good++;

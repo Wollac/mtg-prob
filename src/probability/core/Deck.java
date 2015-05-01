@@ -9,11 +9,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import probability.config.Config;
+
 public class Deck {
+
+	private final Config _config;
 
 	ArrayList<Card> _cards;
 
-	public Deck() {
+	public Deck(Config config) {
+		_config = config;
 		_cards = new ArrayList<>();
 	}
 
@@ -37,8 +42,14 @@ public class Deck {
 		return Collections.unmodifiableList(_cards);
 	}
 
-	public void fillWithDummies(int total) {
-		for (int i = _cards.size(); i < total; i++) {
+	public void fillWithDummies() {
+		if (_cards.size() > _config.numberOfCards()) {
+			throw new IllegalStateException(
+					"The predefined deck consists of more than "
+							+ _config.numberOfCards() + " cards");
+		}
+
+		for (int i = _cards.size(); i < _config.numberOfCards(); i++) {
 			_cards.add(CardUtils.getDummyCard());
 		}
 	}
@@ -47,8 +58,23 @@ public class Deck {
 		java.util.Collections.shuffle(_cards);
 	}
 
-	public List<Card> draw(int n) {
-		return Collections.unmodifiableList(_cards.subList(0, n));
+	public Hand draw(int turn) {
+
+		int handSize = _config.initialHandSize();
+
+		if (_config.drawOnTurn()) {
+			handSize++;
+		}
+
+		Collection<Card> startingHand = Collections.unmodifiableList(_cards
+				.subList(0, handSize));
+
+		int totalSize = handSize + turn - 1;
+
+		Collection<Card> drawnCards = Collections.unmodifiableList(_cards
+				.subList(handSize, totalSize));
+
+		return new Hand(startingHand, drawnCards);
 	}
 
 	@Override
