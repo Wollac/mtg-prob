@@ -12,6 +12,8 @@ import probability.attr.IntegerAttribute;
 import probability.attr.StringAttribute;
 import probability.core.Colors;
 import probability.core.land.BasicLand;
+import probability.core.land.CheckLand;
+import probability.core.land.FastLand;
 import probability.core.land.Land;
 import probability.core.land.NonBasicLand;
 import probability.core.land.TapLand;
@@ -56,13 +58,17 @@ public class LandCSVParser extends AbstractCSVParser<Land> {
 			return new NonBasicLand(name, colors);
 		case Tap:
 			return new TapLand(name, colors);
+		case Check:
+			return new CheckLand(name, colors);
+		case Fast:
+			return new FastLand(name, colors);
 		}
 
 		return null;
 	}
 
 	private static enum LandTypes {
-		Basic, NonBasic, Tap;
+		Basic, NonBasic, Tap, Check, Fast;
 	}
 
 	private static interface ATTR {

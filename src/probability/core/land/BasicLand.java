@@ -1,5 +1,6 @@
 package probability.core.land;
 
+import probability.core.Board;
 import probability.core.Color;
 import probability.core.Colors;
 
@@ -10,7 +11,7 @@ public class BasicLand extends AbstractLand {
 	}
 
 	@Override
-	public boolean comesIntoPlayTapped() {
+	public boolean comesIntoPlayTapped(Board board) {
 		return false;
 	}
 

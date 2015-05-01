@@ -1,11 +1,11 @@
 package probability.main;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import probability.core.Board;
 import probability.core.Color;
 import probability.core.Hand;
 import probability.core.ManaCost;
@@ -22,7 +22,7 @@ public class PlayableChecker {
 
 	public boolean isPlayable(int turn) {
 
-		Collection<Land> lands = getPlayableLands(turn);
+		Collection<Land> lands = _hand.getLandsUntilTurn(turn);
 
 		Collection<Spell> spells = _hand.getSpellsUntilTurn(turn);
 
@@ -33,9 +33,11 @@ public class PlayableChecker {
 		Set<Spell> playableSpells = getPlayableSpells(spells, turn, lands);
 
 		for (Spell spell : playableSpells) {
-			ManaCost cost = spell.getCost();
 
-			if (isPlayableRecursion(cost, lands, 0)) {
+			PlayableRecursion recursion = new PlayableRecursion(spell, _hand,
+					turn);
+
+			if (recursion.check()) {
 				return true;
 			}
 		}
@@ -59,73 +61,106 @@ public class PlayableChecker {
 		return result;
 	}
 
-	private boolean isPlayableRecursion(ManaCost remainingCost,
-			Collection<Land> remainingLands, int turn) {
+	private static class PlayableRecursion {
 
-		if (remainingCost.getCMC() == 0) {
-			return true;
+		private final Spell _spell;
+
+		private final Hand _hand;
+
+		private final int _maxTurn;
+
+		public PlayableRecursion(Spell spell, Hand hand, int maxTurn) {
+			_spell = spell;
+			_hand = hand;
+			_maxTurn = maxTurn;
 		}
 
-		for (Land land : remainingLands) {
+		public boolean check() {
+			Board board = new Board();
 
-			Collection<Land> lands = filterToArrayList(remainingLands, land);
+			ManaCost cost = _spell.getCost();
 
-			for (Color color : land.colors()) {
+			return recursion(board, null, cost, 1);
+		}
 
-				if (!remainingCost.containsColor(color)) {
-					continue;
-				}
+		private boolean recursion(Board board, Color tappedColor,
+				ManaCost remainingCost, int turn) {
 
-				ManaCost reducedCosts = reduceCost(color, remainingCost);
+			if (turn > _maxTurn) {
+				return false;
+			}
 
-				if (isPlayableRecursion(reducedCosts, lands, turn + 1)) {
+			if (tappedColor != null) {
+				remainingCost = reduceCost(tappedColor, remainingCost);
+
+				if (remainingCost.getCMC() == 0) {
 					return true;
 				}
 			}
-		}
 
-		return false;
-	}
+			Set<Land> availableLandTypes = getAvailableLandTypes(board, turn);
 
-	/**
-	 * Return a new ArrayList containing all lands but the first occurrence of
-	 * the given land.
-	 */
-	private static Collection<Land> filterToArrayList(Collection<Land> lands,
-			Land land) {
+			for (Land land : availableLandTypes) {
 
-		Collection<Land> availableLands = new ArrayList<Land>(lands);
-		availableLands.remove(land);
+				final boolean tapped = land.comesIntoPlayTapped(board);
 
-		return availableLands;
-	}
+				board.playLand(land);
 
-	private Collection<Land> getPlayableLands(int turn) {
+				for (Color color : land.colors()) {
+					if (!remainingCost.containsColor(color)) {
+						continue;
+					}
 
-		Collection<Land> result = _hand.getLandsUntilTurn(turn - 1);
+					if (tapped) {
+						tappedColor = color;
 
-		Collection<Land> landsLastTurn = _hand.getLandsInTurn(turn);
+						if (recursion(board, tappedColor, remainingCost,
+								turn + 1)) {
+							return true;
+						}
+					} else {
+						remainingCost = reduceCost(color, remainingCost);
 
-		for (Land land : landsLastTurn) {
-			if (!land.comesIntoPlayTapped()) {
-				result.add(land);
+						if (remainingCost.getCMC() == 0) {
+							return true;
+						}
+
+						if (recursion(board, null, remainingCost, turn + 1)) {
+							return true;
+						}
+					}
+
+				}
+
+				board.popLand();
 			}
+
+			return recursion(board, null, remainingCost, turn + 1);
 		}
 
-		return result;
-	}
+		private Set<Land> getAvailableLandTypes(Board board, int turn) {
 
-	private static ManaCost reduceCost(Color color, ManaCost spellColors) {
-		ManaCost reducedCosts = new ManaCost(spellColors);
+			Collection<Land> lands = _hand.getLandsUntilTurn(turn);
 
-		if (reducedCosts.getCount(color) >= 1) {
-			reducedCosts.decreaseCount(color);
+			for (Land land : board.getPlayedLands()) {
+				lands.remove(land);
+			}
 
-		} else if (reducedCosts.getCount(Color.Colorless) >= 1) {
-			reducedCosts.decreaseCount(Color.Colorless);
+			return new HashSet<Land>(lands);
 		}
 
-		return reducedCosts;
+		private static ManaCost reduceCost(Color color, ManaCost spellColors) {
+			ManaCost reducedCosts = new ManaCost(spellColors);
+
+			if (reducedCosts.getCount(color) >= 1) {
+				reducedCosts.decreaseCount(color);
+
+			} else if (reducedCosts.getCount(Color.Colorless) >= 1) {
+				reducedCosts.decreaseCount(Color.Colorless);
+			}
+
+			return reducedCosts;
+		}
 	}
 
 }
