@@ -2,70 +2,53 @@ package probability.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import probability.core.land.Land;
+import java.util.Collections;
+import java.util.List;
 
 public class Hand {
 
-	private ArrayList<Collection<Card>> _cardsUntilTurn;
+	private final int _startingHandSize;
 
-	private int _lastTurn;
+	private final List<Card> _cards;
 
 	Hand(Collection<Card> startingHand, Collection<Card> draws) {
 
-		_cardsUntilTurn = new ArrayList<>(draws.size() + 1);
+		_startingHandSize = startingHand.size();
 
-		_cardsUntilTurn.add(startingHand);
+		_cards = new ArrayList<Card>(startingHand.size() + draws.size());
+		_cards.addAll(startingHand);
+		_cards.addAll(draws);
+	}
 
-		Collection<Card> last = startingHand;
-		for (Card card : draws) {
-			Collection<Card> cards = new ArrayList<>(last.size() + 1);
-			cards.addAll(last);
-			cards.add(card);
+	public Collection<Card> getStartingHand() {
+		return Collections.unmodifiableCollection(_cards.subList(0,
+				_startingHandSize));
+	}
 
-			_cardsUntilTurn.add(cards);
-			last = cards;
+	public Collection<Card> getDraws() {
+		return Collections.unmodifiableCollection(_cards.subList(
+				_startingHandSize, _cards.size()));
+	}
+
+	public Collection<Card> getCardsInTurn(int turn) {
+		if (turn == 1) {
+			return getStartingHand();
 		}
 
-		_lastTurn = _cardsUntilTurn.size();
+		return Collections.singleton(_cards.get(_startingHandSize + turn - 2));
 	}
 
-	public Collection<Card> getCards() {
-		return getCardsUntilTurn(_lastTurn);
-	}
-
-	public int size() {
-		return getCards().size();
-	}
-
-	public Collection<Land> getLands() {
-		return CardUtils.retainAllLandsToArrayList(getCards());
-	}
-
-	public Collection<Spell> getSpells() {
-		return CardUtils.retainAllSpellsToArrayList(getCards());
-	}
-
-	/** Return all cards that are available up to the given turn */
 	public Collection<Card> getCardsUntilTurn(int turn) {
-		return _cardsUntilTurn.get(turn - 1);
+		return Collections.unmodifiableCollection(_cards.subList(0,
+				_startingHandSize + turn - 1));
+	}
+	
+	public int size() {
+		return _cards.size();
 	}
 
-	public Collection<Land> getLandsUntilTurn(int turn) {
-		Collection<Card> cards = getCardsUntilTurn(turn);
-
-		return CardUtils.retainAllLandsToArrayList(cards);
-	}
-
-	public Collection<Spell> getSpellsUntilTurn(int turn) {
-		Collection<Card> cards = getCardsUntilTurn(turn);
-
-		return CardUtils.retainAllSpellsToArrayList(cards);
-	}
-
-	@Override
-	public String toString() {
-		return getCards().toString();
+	public int getLastTurn() {
+		return _cards.size() - _startingHandSize + 1;
 	}
 
 }

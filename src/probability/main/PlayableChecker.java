@@ -35,13 +35,15 @@ public class PlayableChecker {
 
 	public boolean isPlayable(int turn) {
 
-		Collection<Spell> spells = _hand.getSpellsUntilTurn(turn);
+		Collection<Spell> spells = CardUtils.retainAllSpellsToArrayList(_hand
+				.getCardsUntilTurn(turn));
 
 		if (spells.isEmpty()) {
 			return true;
 		}
 
-		Collection<Land> lands = _hand.getLandsUntilTurn(turn);
+		Collection<Land> lands = CardUtils.retainAllLandsToArrayList(_hand
+				.getCardsUntilTurn(turn));
 
 		initializeFetchLands(lands);
 
@@ -197,13 +199,15 @@ public class PlayableChecker {
 
 		private Set<Land> getAvailableLandTypes(Board board, int turn) {
 
-			Collection<Land> lands = _hand.getLandsUntilTurn(turn);
+			Set<Land> result = new HashSet<Land>();
 
-			for (Land land : board.getPlayedLands()) {
-				lands.remove(land);
+			for (Card card : _hand.getCardsUntilTurn(turn)) {
+				if (card instanceof Land) {
+					result.add((Land) card);
+				}
 			}
 
-			return new HashSet<Land>(lands);
+			return result;
 		}
 
 		private static ManaCost reduceCost(Color color, ManaCost spellColors) {

@@ -25,7 +25,7 @@ public final class CardUtils {
 	}
 
 	final static boolean isLand(Card card) {
-		return  (card instanceof Land);
+		return (card instanceof Land);
 	}
 
 	final static boolean isDummy(Card card) {
@@ -47,10 +47,15 @@ public final class CardUtils {
 	public final static Collection<Land> retainAllLandsToArrayList(
 			Collection<Card> cards) {
 
-		Collection<Card> lands = new ArrayList<>(cards);
-		retainAllLands(lands);
+		Collection<Land> lands = new ArrayList<>(cards.size());
 
-		return uncheckedCast(lands);
+		for (Card card : cards) {
+			if (card instanceof Land) {
+				lands.add((Land) card);
+			}
+		}
+
+		return lands;
 	}
 
 	public final static void retainAllSpells(Collection<Card> cards) {
@@ -60,10 +65,15 @@ public final class CardUtils {
 	public final static Collection<Spell> retainAllSpellsToArrayList(
 			Collection<Card> cards) {
 
-		Collection<Card> spells = new ArrayList<>(cards);
-		retainAllSpells(spells);
+		Collection<Spell> spells = new ArrayList<>(cards.size());
 
-		return uncheckedCast(spells);
+		for (Card card : cards) {
+			if (card instanceof Spell) {
+				spells.add((Spell) card);
+			}
+		}
+
+		return spells;
 	}
 
 	/** Create a set that contains the cards sorted by getName() */
@@ -87,12 +97,6 @@ public final class CardUtils {
 				iterator.remove();
 			}
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	final static private <T> Collection<T> uncheckedCast(Collection<Card> cards) {
-		return (Collection<T>) cards;
-
 	}
 
 	private static final Card DUMMY_CARD = new Card() {
