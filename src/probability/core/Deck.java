@@ -3,13 +3,14 @@ package probability.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 
 import probability.config.Config;
+import probability.core.Card.CardType;
 
 public class Deck {
 
@@ -77,19 +78,55 @@ public class Deck {
 		return new Hand(startingHand, drawnCards);
 	}
 
-	@Override
-	public String toString() {
-		final ConcurrentMap<Card, AtomicInteger> map = new ConcurrentHashMap<>();
+	public String toFormatedString() {
+		Map<CardType, Multiset<Card>> cardCounts = new HashMap<>();
+
+		for (CardType type : CardType.values()) {
+			cardCounts.put(type, HashMultiset.create());
+		}
 
 		for (Card card : _cards) {
-			map.putIfAbsent(card, new AtomicInteger(0));
-			map.get(card).incrementAndGet();
+			cardCounts.get(card.getCardType()).add(card);
 		}
 
 		StringBuilder sb = new StringBuilder();
 
-		for (Entry<Card, AtomicInteger> element : map.entrySet()) {
-			sb.append(element.getValue() + "x " + element.getKey() + '\n');
+		for (CardType type : CardType.values()) {
+			sb.append(cardCountsToString(cardCounts.get(type), type));
+			sb.append('\n');
+		}
+
+		return sb.toString();
+	}
+
+	private static String cardCountsToString(Multiset<Card> cardCounts,
+			CardType type) {
+		StringBuilder sb = new StringBuilder();
+
+		if (type != null) {
+			sb.append(type + " (" + cardCounts.size() + "):\n");
+		}
+
+		for (Card card : CardUtils.sortCardsByName(cardCounts.elementSet())) {
+			sb.append(String.format("%2dx " + card + "%n",
+					cardCounts.count(card), card));
+		}
+
+		return sb.toString();
+	}
+
+	@Override
+	public String toString() {
+		final Multiset<Card> cardCounts = HashMultiset.create();
+
+		for (Card card : _cards) {
+			cardCounts.add(card);
+		}
+
+		StringBuilder sb = new StringBuilder();
+
+		for (Card card : cardCounts.elementSet()) {
+			sb.append(cardCounts.count(card) + "x " + card + '\n');
 		}
 
 		return sb.toString();

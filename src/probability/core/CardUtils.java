@@ -2,9 +2,13 @@ package probability.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Predicate;
 
+import probability.core.Card.CardType;
 import probability.core.land.BasicLand;
 import probability.core.land.FetchLand;
 import probability.core.land.Land;
@@ -18,11 +22,15 @@ public final class CardUtils {
 	}
 
 	final static boolean isSpell(Card card) {
-		return (card instanceof Spell);
+		return card.getCardType() == CardType.Spell;
 	}
 
 	final static boolean isLand(Card card) {
-		return (card instanceof Land);
+		return card.getCardType() == CardType.Land;
+	}
+
+	final static boolean isDummy(Card card) {
+		return card.equals(DUMMY_CARD);
 	}
 
 	public final static boolean isBasicLand(Card card) {
@@ -31,10 +39,6 @@ public final class CardUtils {
 
 	public static boolean isFetchLand(Card card) {
 		return (card instanceof FetchLand);
-	}
-
-	final static boolean isDummy(Card card) {
-		return card.equals(DUMMY_CARD);
 	}
 
 	public final static void retainAllLands(Collection<Card> cards) {
@@ -63,11 +67,18 @@ public final class CardUtils {
 		return uncheckedCast(spells);
 	}
 
+	public final static SortedSet<Card> sortCardsByName(Collection<Card> cards) {
+		SortedSet<Card> sorted = new TreeSet<>(
+				Comparator.comparing(Card::getName));
+		sorted.addAll(cards);
+
+		return sorted;
+	}
+
 	/**
 	 * Remove all elements from Card collection that don't fulfill the predicate
 	 */
-	private static void retain(Collection<Card> cards,
-			Predicate<Card> predicate) {
+	private static void retain(Collection<Card> cards, Predicate<Card> predicate) {
 
 		for (Iterator<Card> iterator = cards.iterator(); iterator.hasNext();) {
 			Card card = iterator.next();
@@ -92,9 +103,15 @@ public final class CardUtils {
 		}
 
 		@Override
+		public CardType getCardType() {
+			return CardType.Other;
+		}
+
+		@Override
 		public String toString() {
 			return getName();
 		}
+
 	};
 
 }

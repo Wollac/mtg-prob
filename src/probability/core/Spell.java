@@ -12,8 +12,14 @@ public class Spell implements Card {
 		_cost = cost;
 	}
 
+	@Override
 	public String getName() {
 		return _name;
+	}
+
+	@Override
+	public CardType getCardType() {
+		return CardType.Spell;
 	}
 
 	public ManaCost getCost() {
@@ -36,7 +42,7 @@ public class Spell implements Card {
 
 	@Override
 	public boolean equals(Object obj) {
-		
+
 		if (this == obj) {
 			return true;
 		}

@@ -38,7 +38,7 @@ public class Main {
 
 		Deck deck = buildDeck(config);
 
-		System.out.println(deck);
+		System.out.println(deck.toFormatedString());
 
 		Set<Integer> cmcs = getCmcs(deck);
 
