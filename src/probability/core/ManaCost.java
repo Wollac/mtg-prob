@@ -1,22 +1,24 @@
 package probability.core;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Set;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+
 public class ManaCost {
-	private final Map<Color, Integer> _countMap;
+	private final Multiset<Color> _colorCounts;
 
 	public ManaCost() {
-		_countMap = new HashMap<>();
+		_colorCounts = HashMultiset.create();
 	}
 
 	public ManaCost(String costString) throws IllegalArgumentException {
-		_countMap = new HashMap<>();
+		_colorCounts = HashMultiset.create();
 
 		for (char c : costString.toCharArray()) {
 			if (Character.isDigit(c)) {
-				increaseCount(Color.Colorless, Character.getNumericValue(c));
+				addColor(Color.Colorless, Character.getNumericValue(c));
 			} else {
 				Color color = Color.getColor(c);
 
@@ -25,71 +27,45 @@ public class ManaCost {
 							+ " is no valid letter code");
 				}
 
-				increaseCount(color);
+				addColor(color);
 			}
 		}
 	}
 
 	public ManaCost(ManaCost o) {
-		_countMap = new HashMap<>(o._countMap);
+		_colorCounts = HashMultiset.create(o._colorCounts);
 	}
 
 	public boolean containsColor(Color color) {
 		return getCount(color) > 0 || getCount(Color.Colorless) > 0;
 	}
 
-	public void increaseCount(Color color, int inc) {
-		if (inc == 0) {
-			return;
-		}
-
-		_countMap.put(color, getCount(color) + inc);
+	public void addColor(Color color, int inc) {
+		_colorCounts.add(color, inc);
 	}
 
-	public void increaseCount(Color color) {
-		increaseCount(color, 1);
+	public void addColor(Color color) {
+		_colorCounts.add(color);
 	}
 
-	public void decreaseCount(Color color, int dec) {
-		if (dec == 0) {
-			return;
-		}
-
-		int count = getCount(color);
-
-		if (dec > count) {
-			throw new IllegalArgumentException("Costs cannot be negative");
-		}
-		if (dec == count) {
-			_countMap.remove(color);
-		}
-
-		_countMap.put(color, count - dec);
+	public void removeColor(Color color, int dec) {
+		_colorCounts.remove(color, dec);
 	}
 
-	public void decreaseCount(Color color) {
-		decreaseCount(color, 1);
+	public void removeColor(Color color) {
+		_colorCounts.remove(color);
 	}
 
-	public int getCount(Color object) {
-		if (_countMap.containsKey(object))
-			return _countMap.get(object);
-		else
-			return 0;
+	public int getCount(Color color) {
+		return _colorCounts.count(color);
 	}
 
 	public Set<Color> getColors() {
-		return _countMap.keySet();
+		return Collections.unmodifiableSet(_colorCounts.elementSet());
 	}
 
 	public int getCMC() {
-		int total = 0;
-
-		for (int v : _countMap.values()) {
-			total += v;
-		}
-
-		return total;
+		return _colorCounts.size();
 	}
 
 	@Override
@@ -129,11 +105,11 @@ public class ManaCost {
 
 		final ManaCost other = (ManaCost) obj;
 
-		return _countMap.equals(other._countMap);
+		return _colorCounts.equals(other._colorCounts);
 	}
 
 	@Override
 	public int hashCode() {
-		return _countMap.hashCode();
+		return _colorCounts.hashCode();
 	}
 }

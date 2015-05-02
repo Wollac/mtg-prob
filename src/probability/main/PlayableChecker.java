@@ -153,10 +153,10 @@ public class PlayableChecker {
 			ManaCost reducedCosts = new ManaCost(spellColors);
 
 			if (reducedCosts.getCount(color) >= 1) {
-				reducedCosts.decreaseCount(color);
+				reducedCosts.removeColor(color);
 
 			} else if (reducedCosts.getCount(Color.Colorless) >= 1) {
-				reducedCosts.decreaseCount(Color.Colorless);
+				reducedCosts.removeColor(Color.Colorless);
 			}
 
 			return reducedCosts;
