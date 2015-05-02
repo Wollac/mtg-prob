@@ -8,7 +8,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 
-import probability.core.Card.CardType;
 import probability.core.land.BasicLand;
 import probability.core.land.FetchLand;
 import probability.core.land.Land;
@@ -22,11 +21,11 @@ public final class CardUtils {
 	}
 
 	final static boolean isSpell(Card card) {
-		return card.getCardType() == CardType.Spell;
+		return (card instanceof Spell);
 	}
 
 	final static boolean isLand(Card card) {
-		return card.getCardType() == CardType.Land;
+		return  (card instanceof Land);
 	}
 
 	final static boolean isDummy(Card card) {
@@ -67,6 +66,7 @@ public final class CardUtils {
 		return uncheckedCast(spells);
 	}
 
+	/** Create a set that contains the cards sorted by getName() */
 	public final static SortedSet<Card> sortCardsByName(Collection<Card> cards) {
 		SortedSet<Card> sorted = new TreeSet<>(
 				Comparator.comparing(Card::getName));

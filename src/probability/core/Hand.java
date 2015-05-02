@@ -5,33 +5,33 @@ import java.util.Collection;
 
 import probability.core.land.Land;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-
 public class Hand {
 
-	private ListMultimap<Integer, Card> _cardsByTurn;
+	private ArrayList<Collection<Card>> _cardsUntilTurn;
 
 	private int _lastTurn;
 
 	Hand(Collection<Card> startingHand, Collection<Card> draws) {
 
-		_cardsByTurn = ArrayListMultimap.create();
+		_cardsUntilTurn = new ArrayList<>(draws.size() + 1);
 
-		for (Card card : startingHand) {
-			_cardsByTurn.put(1, card);
-		}
+		_cardsUntilTurn.add(startingHand);
 
-		int turn = 2;
+		Collection<Card> last = startingHand;
 		for (Card card : draws) {
-			_cardsByTurn.put(turn++, card);
+			Collection<Card> cards = new ArrayList<>(last.size() + 1);
+			cards.addAll(last);
+			cards.add(card);
+
+			_cardsUntilTurn.add(cards);
+			last = cards;
 		}
 
-		_lastTurn = turn - 1;
+		_lastTurn = _cardsUntilTurn.size();
 	}
 
 	public Collection<Card> getCards() {
-		return _cardsByTurn.values();
+		return getCardsUntilTurn(_lastTurn);
 	}
 
 	public int size() {
@@ -48,15 +48,7 @@ public class Hand {
 
 	/** Return all cards that are available up to the given turn */
 	public Collection<Card> getCardsUntilTurn(int turn) {
-		Collection<Card> cards = new ArrayList<>();
-
-		int last = Math.min(turn, _lastTurn);
-
-		for (int i = 0; i <= last; i++) {
-			cards.addAll(_cardsByTurn.get(i));
-		}
-
-		return cards;
+		return _cardsUntilTurn.get(turn - 1);
 	}
 
 	public Collection<Land> getLandsUntilTurn(int turn) {
@@ -69,18 +61,6 @@ public class Hand {
 		Collection<Card> cards = getCardsUntilTurn(turn);
 
 		return CardUtils.retainAllSpellsToArrayList(cards);
-	}
-
-	public Collection<Card> getCardsInTurn(int turn) {
-		return _cardsByTurn.get(turn);
-	}
-
-	public Collection<Land> getLandsInTurn(int turn) {
-		return CardUtils.retainAllLandsToArrayList(getCardsInTurn(turn));
-	}
-
-	public Collection<Spell> getSpellsInTurn(int turn) {
-		return CardUtils.retainAllSpellsToArrayList(getCardsInTurn(turn));
 	}
 
 	@Override

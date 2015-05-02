@@ -24,9 +24,13 @@ public class PlayableChecker {
 
 	private Hand _hand;
 
+	private Colors _fetchableColors;
+
 	public PlayableChecker(Deck deck, Hand hand) {
 		_deck = deck;
 		_hand = hand;
+
+		_fetchableColors = null;
 	}
 
 	public boolean isPlayable(int turn) {
@@ -57,18 +61,25 @@ public class PlayableChecker {
 	}
 
 	private void initializeFetchLands(Collection<Land> lands) {
-		Colors fetchableColors = getFetchableColors();
 
 		for (Land land : lands) {
 			if (CardUtils.isFetchLand(land)) {
 				FetchLand fetch = (FetchLand) land;
 
-				fetch.setFetchableColors(fetchableColors);
+				fetch.setFetchableColors(getFetchableColors());
 			}
 		}
 	}
 
 	private Colors getFetchableColors() {
+		if (_fetchableColors == null) {
+			_fetchableColors = computeFetchableColors();
+		}
+
+		return _fetchableColors;
+	}
+
+	private Colors computeFetchableColors() {
 		Collection<Land> remainingLands = CardUtils
 				.retainAllLandsToArrayList(getRemainingCards());
 

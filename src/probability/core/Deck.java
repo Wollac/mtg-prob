@@ -6,11 +6,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 
 import probability.config.Config;
 import probability.core.Card.CardType;
+
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 
 public class Deck {
 
