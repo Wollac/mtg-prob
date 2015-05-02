@@ -5,35 +5,113 @@
 	<artifactId>probability</artifactId>
 	<version>0.9.1-SNAPSHOT</version>
 	<name>MTG Cast Probablity</name>
-	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+
+	<prerequisites>
+		<maven>3.0</maven>
+	</prerequisites>
+
+	<properties>
+		<jdk.version>1.8</jdk.version>
+		<guava.version>18.0</guava.version>
+		<opencsv.version>3.3</opencsv.version>
+		<json.version>20141113</json.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>18.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20141113</version>
+			<version>${guava.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
-			<version>3.3</version>
+			<version>${opencsv.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>${json.version}</version>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<plugins>
+
+			<!-- Set a compile level -->
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+
+			<!-- Maven Shade Plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.3</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<!-- add Main-Class to manifest file -->
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>probability.main.Main</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Use proguard to shrink the package -->
+			<plugin>
+				<groupId>com.github.wvengen</groupId>
+				<artifactId>proguard-maven-plugin</artifactId>
+				<version>2.0.9</version>
+				<executions>
+
+					<execution>
+						<id>shrink</id>
+						<phase>package</phase>
+						<goals>
+							<goal>proguard</goal>
+						</goals>
+						<configuration>
+							<includeDependency>false</includeDependency>
+							<includeDependencyInjar>false</includeDependencyInjar>
+							<addMavenDescriptor>false</addMavenDescriptor>
+							<obfuscate>false</obfuscate>
+							<options>
+								<option>-dontwarn javax.annotation.**</option>
+								<option>-dontnote</option>
+								<option>-dontoptimize</option>
+								<option>-overloadaggressively</option>
+								<option>-allowaccessmodification</option>
+								<option>-verbose</option>
+								<option>-keepclasseswithmembers public class * { public static
+									void main(java.lang.String[]); }</option>
+							</options>
+							<libs>
+								<lib>${java.home}/lib/rt.jar</lib>
+							</libs>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
 </project>
