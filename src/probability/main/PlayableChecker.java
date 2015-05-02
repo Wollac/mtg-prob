@@ -3,26 +3,33 @@ package probability.main;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import probability.core.Board;
+import probability.core.Card;
+import probability.core.CardUtils;
 import probability.core.Color;
+import probability.core.Colors;
+import probability.core.Deck;
 import probability.core.Hand;
 import probability.core.ManaCost;
 import probability.core.Spell;
+import probability.core.land.FetchLand;
 import probability.core.land.Land;
 
 public class PlayableChecker {
 
+	private Deck _deck;
+
 	private Hand _hand;
 
-	public PlayableChecker(Hand hand) {
+	public PlayableChecker(Deck deck, Hand hand) {
+		_deck = deck;
 		_hand = hand;
 	}
 
 	public boolean isPlayable(int turn) {
-
-		Collection<Land> lands = _hand.getLandsUntilTurn(turn);
 
 		Collection<Spell> spells = _hand.getSpellsUntilTurn(turn);
 
@@ -30,9 +37,13 @@ public class PlayableChecker {
 			return true;
 		}
 
-		Set<Spell> playableSpells = getPlayableSpells(spells, turn, lands);
+		Collection<Land> lands = _hand.getLandsUntilTurn(turn);
 
-		for (Spell spell : playableSpells) {
+		initializeFetchLands(lands);
+
+		Set<Spell> playableSpellTypes = getPlayableSpells(spells, turn, lands);
+
+		for (Spell spell : playableSpellTypes) {
 
 			PlayableRecursion recursion = new PlayableRecursion(spell, _hand,
 					turn);
@@ -43,6 +54,41 @@ public class PlayableChecker {
 		}
 
 		return false;
+	}
+
+	private void initializeFetchLands(Collection<Land> lands) {
+		Colors fetchableColors = getFetchableColors();
+
+		for (Land land : lands) {
+			if (CardUtils.isFetchLand(land)) {
+				FetchLand fetch = (FetchLand) land;
+
+				fetch.setFetchableColors(fetchableColors);
+			}
+		}
+	}
+
+	private Colors getFetchableColors() {
+		Collection<Land> remainingLands = CardUtils
+				.retainAllLandsToArrayList(getRemainingCards());
+
+		Set<Land> remainingLandTypes = new HashSet<>(remainingLands);
+
+		Set<Color> colors = new HashSet<>();
+
+		for (Land land : remainingLandTypes) {
+			if (CardUtils.isBasicLand(land)) {
+				colors.addAll(land.producesColors());
+			}
+		}
+
+		return new Colors(colors);
+	}
+
+	private Collection<Card> getRemainingCards() {
+		List<Card> allCards = _deck.cards();
+
+		return allCards.subList(_hand.size(), allCards.size());
 	}
 
 	private Set<Spell> getPlayableSpells(Collection<Spell> spells, int turn,
@@ -106,7 +152,7 @@ public class PlayableChecker {
 
 				board.playLand(land);
 
-				for (Color color : land.colors()) {
+				for (Color color : land.producesColors()) {
 					if (!remainingCost.containsColor(color)) {
 						continue;
 					}

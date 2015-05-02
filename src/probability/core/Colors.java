@@ -22,6 +22,10 @@ public class Colors {
 		_colors = new HashSet<>();
 	}
 
+	public Colors(Colors colors) {
+		this(colors.getColors());
+	}
+
 	public Set<Color> getColors() {
 		return Collections.unmodifiableSet(_colors);
 	}

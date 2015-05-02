@@ -1,7 +1,6 @@
 package probability.core.land;
 
 import probability.core.Board;
-import probability.core.Color;
 import probability.core.Colors;
 
 public class NonBasicLand extends AbstractLand implements Land {
@@ -12,11 +11,6 @@ public class NonBasicLand extends AbstractLand implements Land {
 
 	@Override
 	public boolean comesIntoPlayTapped(Board board) {
-		return false;
-	}
-
-	@Override
-	public boolean isFetchable(Color color) {
 		return false;
 	}
 

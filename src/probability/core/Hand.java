@@ -34,6 +34,10 @@ public class Hand {
 		return _cardsByTurn.values();
 	}
 
+	public int size() {
+		return getCards().size();
+	}
+
 	public Collection<Land> getLands() {
 		return CardUtils.retainAllLandsToArrayList(getCards());
 	}
@@ -78,7 +82,7 @@ public class Hand {
 	public Collection<Spell> getSpellsInTurn(int turn) {
 		return CardUtils.retainAllSpellsToArrayList(getCardsInTurn(turn));
 	}
-	
+
 	@Override
 	public String toString() {
 		return getCards().toString();

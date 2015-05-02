@@ -14,6 +14,7 @@ import probability.core.Colors;
 import probability.core.land.BasicLand;
 import probability.core.land.CheckLand;
 import probability.core.land.FastLand;
+import probability.core.land.FetchLand;
 import probability.core.land.Land;
 import probability.core.land.NonBasicLand;
 import probability.core.land.TapLand;
@@ -48,8 +49,7 @@ public class LandCSVParser extends AbstractCSVParser<Land> {
 		return lands;
 	}
 
-	private static Land createLand(LandTypes type, String name,
-			Colors colors) {
+	private static Land createLand(LandTypes type, String name, Colors colors) {
 
 		switch (type) {
 		case Basic:
@@ -62,13 +62,15 @@ public class LandCSVParser extends AbstractCSVParser<Land> {
 			return new CheckLand(name, colors);
 		case Fast:
 			return new FastLand(name, colors);
+		case Fetch:
+			return new FetchLand(name, colors);
+		default:
+			throw new IllegalStateException("unexpected land type " + type);
 		}
-
-		return null;
 	}
 
 	private static enum LandTypes {
-		Basic, NonBasic, Tap, Check, Fast;
+		Basic, NonBasic, Tap, Check, Fast, Fetch;
 	}
 
 	private static interface ATTR {

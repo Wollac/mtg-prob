@@ -8,12 +8,12 @@ import probability.core.Color;
 
 public interface Land extends Card {
 
-	public boolean canProduce(Color color);
-
 	public Set<Color> colors();
 
 	public boolean comesIntoPlayTapped(Board board);
 
-	public boolean isFetchable(Color color);
+	Set<Color> producesColors();
+
+	public boolean canProduce(Color color);
 
 }

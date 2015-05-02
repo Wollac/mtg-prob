@@ -29,11 +29,16 @@ abstract class AbstractLand implements Land {
 	}
 
 	@Override
-	public boolean canProduce(Color color) {
+	public final boolean canProduce(Color color) {
 		if (color == Color.Colorless)
 			return true;
 
-		return _colors.contains(color);
+		return producesColors().contains(color);
+	}
+	
+	@Override
+	public Set<Color> producesColors() {
+		return colors();
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 import probability.core.land.BasicLand;
+import probability.core.land.FetchLand;
 import probability.core.land.Land;
 
 public final class CardUtils {
@@ -28,15 +29,19 @@ public final class CardUtils {
 		return (card instanceof BasicLand);
 	}
 
+	public static boolean isFetchLand(Card card) {
+		return (card instanceof FetchLand);
+	}
+
 	final static boolean isDummy(Card card) {
 		return card.equals(DUMMY_CARD);
 	}
 
-	final static void retainAllLands(Collection<Card> cards) {
+	public final static void retainAllLands(Collection<Card> cards) {
 		retain(cards, c -> isLand(c));
 	}
 
-	final static Collection<Land> retainAllLandsToArrayList(
+	public final static Collection<Land> retainAllLandsToArrayList(
 			Collection<Card> cards) {
 
 		Collection<Card> lands = new ArrayList<>(cards);
@@ -45,11 +50,11 @@ public final class CardUtils {
 		return uncheckedCast(lands);
 	}
 
-	final static void retainAllSpells(Collection<Card> cards) {
+	public final static void retainAllSpells(Collection<Card> cards) {
 		retain(cards, c -> isSpell(c));
 	}
 
-	final static Collection<Spell> retainAllSpellsToArrayList(
+	public final static Collection<Spell> retainAllSpellsToArrayList(
 			Collection<Card> cards) {
 
 		Collection<Card> spells = new ArrayList<>(cards);
@@ -61,7 +66,7 @@ public final class CardUtils {
 	/**
 	 * Remove all elements from Card collection that don't fulfill the predicate
 	 */
-	final static private void retain(Collection<Card> cards,
+	private static void retain(Collection<Card> cards,
 			Predicate<Card> predicate) {
 
 		for (Iterator<Card> iterator = cards.iterator(); iterator.hasNext();) {

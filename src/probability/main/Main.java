@@ -117,7 +117,7 @@ public class Main {
 
 			Hand hand = deck.draw(turn);
 
-			PlayableChecker checker = new PlayableChecker(hand);
+			PlayableChecker checker = new PlayableChecker(deck, hand);
 
 			if (checker.isPlayable(turn)) {
 				good++;
