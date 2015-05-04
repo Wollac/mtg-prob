@@ -5,21 +5,28 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+/**
+ * A simple Reader that parses the input line by line, removing empty lines and
+ * lines starting with single line comment tags.
+ * 
+ * Extending StringReader is fine, as we are only overwriting the constructor.
+ */
 class LineCommentReader extends StringReader {
 
-	private static final String[] DEFAULT_COMMENT = { "#", "//" };
+	private static final String[] DEFAULT_COMMENT_TAGS = { "#", "//" };
 
-	public LineCommentReader(Reader in, String... comments) throws IOException {
+	public LineCommentReader(Reader in, String... commentTags)
+			throws IOException {
 
-		super(initString(in, comments));
+		super(initString(in, commentTags));
 	}
 
 	public LineCommentReader(Reader in) throws IOException {
 
-		this(in, DEFAULT_COMMENT);
+		this(in, DEFAULT_COMMENT_TAGS);
 	}
 
-	private static String initString(Reader in, String[] comments)
+	private static String initString(Reader in, String[] commentTags)
 			throws IOException {
 
 		BufferedReader reader = new BufferedReader(in);
@@ -34,7 +41,7 @@ class LineCommentReader extends StringReader {
 				continue;
 			}
 
-			if (startsWithComment(line, comments)) {
+			if (startsWithComment(line, commentTags)) {
 				continue;
 			}
 

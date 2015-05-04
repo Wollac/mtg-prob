@@ -42,13 +42,18 @@ public class Hand {
 		return Collections.unmodifiableCollection(_cards.subList(0,
 				_startingHandSize + turn - 1));
 	}
-	
+
 	public int size() {
 		return _cards.size();
 	}
 
 	public int getLastTurn() {
 		return _cards.size() - _startingHandSize + 1;
+	}
+
+	@Override
+	public String toString() {
+		return _cards.toString();
 	}
 
 }
