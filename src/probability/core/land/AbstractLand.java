@@ -14,9 +14,14 @@ abstract class AbstractLand implements Land {
 
 	final private HashSet<Color> _colors;
 
+	final private int hashCode;
+
 	protected AbstractLand(String name, Colors colors) {
 		_name = name;
 		_colors = new HashSet<>(colors.getColors());
+
+		// this class is immutable so we can cache the hash code
+		hashCode = Objects.hash(getClass(), _name, _colors);
 	}
 
 	@Override
@@ -52,15 +57,13 @@ abstract class AbstractLand implements Land {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
-			return false;
-		}
 		if (!(obj instanceof AbstractLand)) {
 			return false;
 		}
 
-		final AbstractLand other = (AbstractLand) obj;
+		AbstractLand other = (AbstractLand) obj;
 
+		// comparing getClass is bad this should go in each super class
 		return Objects.equals(getClass(), other.getClass())
 				&& Objects.equals(_name, other._name)
 				&& Objects.equals(_colors, other._colors);
@@ -68,7 +71,7 @@ abstract class AbstractLand implements Land {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getClass(), _name, _colors);
+		return hashCode;
 	}
 
 	@Override
