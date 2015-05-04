@@ -38,6 +38,7 @@ public class Main {
 
 		Deck deck = buildDeck(config);
 
+		System.out.println("The following deck has been loaded:");
 		System.out.println(deck.toFormatedString());
 
 		Set<Integer> cmcs = getCmcs(deck);
@@ -45,12 +46,15 @@ public class Main {
 		int minCmc = Collections.min(cmcs);
 		int maxCmc = Collections.min(cmcs);
 
+		System.out.println("Calculating the combined failure probability for"
+				+ " the given spells:");
+
 		for (int turn = minCmc; turn <= maxCmc + 3; turn++) {
 
 			int playable = countPlayable(deck, turn);
-			double factor = (double) playable / config.sampleSize();
+			double factor = 1.0 - (double) playable / config.sampleSize();
 
-			System.out.println("Turn " + turn + ": " + factor * 100.0 + "%");
+			System.out.printf("Turn %02d: %4.1f%%%n", turn, factor * 100.0);
 		}
 
 	}
