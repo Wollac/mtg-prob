@@ -6,12 +6,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Colors {
+public final class Colors {
 
 	private final Set<Color> _colors;
 
+	private volatile int _hashCode;
+
 	public Colors(Collection<Color> colors) {
-		_colors = new HashSet<>(colors);
+		_colors = Collections.unmodifiableSet(new HashSet<>(colors));
 	}
 
 	public Colors(Color... colors) {
@@ -27,7 +29,7 @@ public class Colors {
 	}
 
 	public Set<Color> getColors() {
-		return Collections.unmodifiableSet(_colors);
+		return _colors;
 	}
 
 	public boolean containsColor(Color color) {
@@ -53,6 +55,43 @@ public class Colors {
 		}
 
 		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof Color)) {
+			return false;
+		}
+
+		Colors other = (Colors) obj;
+
+		return _colors.equals(other._colors);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = _hashCode;
+
+		if (result == 0) {
+			result = _colors.hashCode();
+			_hashCode = result;
+		}
+
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+
+		for (Color color : _colors) {
+			sb.append(color.getLetterCode());
+		}
+
+		return sb.toString();
 	}
 
 }
