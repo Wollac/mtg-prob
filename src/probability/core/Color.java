@@ -6,6 +6,8 @@ import java.util.Map;
 public enum Color {
 	Colorless('A'), White('W'), Blue('U'), Black('B'), Red('R'), Green('G');
 
+	private static Color[] ALL_COLORS = { White, Blue, Black, Red, Green };
+
 	private final char _c;
 
 	Color(char c) {
@@ -30,11 +32,15 @@ public enum Color {
 		if (!_codeToColor.containsKey(c)) {
 			throw new IllegalArgumentException(c + " is not a valid color code");
 		}
-		
+
 		return _codeToColor.get(c);
 	}
 
+	public static int numberOfColors() {
+		return _codeToColor.size();
+	}
+
 	public static Color[] allColors() {
-		return new Color[] { White, Blue, Black, Red, Green };
+		return ALL_COLORS;
 	}
 }
