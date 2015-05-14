@@ -16,7 +16,7 @@ public class FetchLand extends AbstractLand {
 		_fetchedColors = new Colors();
 	}
 
-	public void setFetchableColors(Colors colors) {
+	public void setFetchableColors(Set<Color> colors) {
 		_fetchedColors = new Colors(colors);
 	}
 

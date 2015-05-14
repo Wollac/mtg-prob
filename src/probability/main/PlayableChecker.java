@@ -1,9 +1,11 @@
 package probability.main;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import probability.core.Board;
@@ -24,13 +26,13 @@ public class PlayableChecker {
 
 	private Hand _hand;
 
-	private Colors _fetchableColors;
+	private Map<Color, Colors> _fetchableColors;
 
 	public PlayableChecker(Deck deck, Hand hand) {
 		_deck = deck;
 		_hand = hand;
 
-		_fetchableColors = null;
+		_fetchableColors = new HashMap<Color, Colors>();
 	}
 
 	public boolean isPlayable(int turn) {
@@ -68,29 +70,40 @@ public class PlayableChecker {
 			if (CardUtils.isFetchLand(land)) {
 				FetchLand fetch = (FetchLand) land;
 
-				fetch.setFetchableColors(getFetchableColors());
+				fetch.setFetchableColors(getFetchableColors(fetch.colors()));
 			}
 		}
 	}
 
-	private Colors getFetchableColors() {
-		if (_fetchableColors == null) {
-			_fetchableColors = computeFetchableColors();
+	private Set<Color> getFetchableColors(Set<Color> colors) {
+		Set<Color> fetchableColors = new HashSet<>(Color.numberOfColors());
+
+		for (Color color : colors) {
+
+			Colors currentFetchableColors = _fetchableColors.get(color);
+
+			if (currentFetchableColors == null) {
+
+				currentFetchableColors = computeFetchableColors(color);
+				_fetchableColors.put(color, currentFetchableColors);
+			}
+
+			fetchableColors.addAll(currentFetchableColors.getColors());
 		}
 
-		return _fetchableColors;
+		return fetchableColors;
 	}
 
-	private Colors computeFetchableColors() {
+	private Colors computeFetchableColors(Color color) {
 		Collection<Land> remainingLands = CardUtils
 				.retainAllLandsToArrayList(getRemainingCards());
 
 		Set<Land> remainingLandTypes = new HashSet<>(remainingLands);
 
-		Set<Color> colors = new HashSet<>();
+		Set<Color> colors = new HashSet<>(Color.numberOfColors());
 
 		for (Land land : remainingLandTypes) {
-			if (CardUtils.isBasicLand(land)) {
+			if (CardUtils.isBasicLand(land) && land.colors().contains(color)) {
 				colors.addAll(land.producesColors());
 			}
 		}

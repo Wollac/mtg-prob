@@ -12,13 +12,14 @@ abstract class AbstractLand implements Land {
 
 	final private String _name;
 
-	final private HashSet<Color> _colors;
+	final private Set<Color> _colors;
 
 	final private int hashCode;
 
 	protected AbstractLand(String name, Colors colors) {
 		_name = name;
-		_colors = new HashSet<>(colors.getColors());
+		_colors = Collections.unmodifiableSet(new HashSet<Color>(colors
+				.getColors()));
 
 		// this class is immutable so we can cache the hash code
 		hashCode = Objects.hash(getClass(), _name, _colors);
@@ -36,7 +37,7 @@ abstract class AbstractLand implements Land {
 
 	@Override
 	final public Set<Color> colors() {
-		return Collections.unmodifiableSet(_colors);
+		return _colors;
 	}
 
 	@Override
