@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import probability.core.Board;
 import probability.core.Color;
 import probability.core.Colors;
 
@@ -41,15 +42,12 @@ abstract class AbstractLand implements Land {
 	}
 
 	@Override
-	public final boolean canProduce(Color color) {
-		if (color == Color.Colorless)
-			return true;
-
-		return producesColors().contains(color);
+	public Set<Color> producableColors() {
+		return colors();
 	}
 
 	@Override
-	public Set<Color> producesColors() {
+	public Set<Color> producesColors(Board board) {
 		return colors();
 	}
 

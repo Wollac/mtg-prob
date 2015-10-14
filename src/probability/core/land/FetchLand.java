@@ -19,9 +19,14 @@ public class FetchLand extends AbstractLand {
 	public void setFetchableColors(Set<Color> colors) {
 		_fetchedColors = new Colors(colors);
 	}
+	
+	@Override
+	public Set<Color> producableColors() {
+		return _fetchedColors.getColors();
+	}
 
 	@Override
-	public Set<Color> producesColors() {
+	public Set<Color> producesColors(Board board) {
 		return _fetchedColors.getColors();
 	}
 

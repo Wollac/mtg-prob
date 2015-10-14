@@ -12,8 +12,8 @@ public interface Land extends Card {
 
 	public boolean comesIntoPlayTapped(Board board);
 
-	Set<Color> producesColors();
+	Set<Color> producableColors();
 
-	public boolean canProduce(Color color);
+	Set<Color> producesColors(Board board);
 
 }

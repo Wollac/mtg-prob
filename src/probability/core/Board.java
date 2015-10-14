@@ -31,6 +31,16 @@ public class Board {
 	public int getNumPlayedLands() {
 		return _playedLands.size();
 	}
+	
+	public Set<Color> getPlayedLandProducableColors() {
+		Set<Color> colors = new HashSet<>();
+
+		for (Land land : _playedLands) {
+				colors.addAll(land.producableColors());
+		}
+
+		return colors;
+	}
 
 	public boolean isBasicColorPlayed(Color color) {
 		return getPlayedBasicLandColors().contains(color);
