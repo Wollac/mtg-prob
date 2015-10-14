@@ -43,6 +43,23 @@ public class Hand {
 				_startingHandSize + turn - 1));
 	}
 
+	public int getNumerOfLandsInStartingHand() {
+		int count = 0;
+
+		for (Card card : _cards.subList(0, _startingHandSize)) {
+			if (CardUtils.isLand(card)) {
+				count++;
+			}
+		}
+
+		return count;
+	}
+
+	public int getStartingHandSize() {
+		
+		return _startingHandSize;
+	}
+
 	public int size() {
 		return _cards.size();
 	}

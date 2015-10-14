@@ -37,15 +37,13 @@ public class PlayableChecker {
 
 	public boolean isPlayable(int turn) {
 
-		Collection<Spell> spells = CardUtils.retainAllSpellsToArrayList(_hand
-				.getCardsUntilTurn(turn));
+		Collection<Spell> spells = CardUtils.retainAllSpellsToArrayList(_hand.getCardsUntilTurn(turn));
 
 		if (spells.isEmpty()) {
 			return true;
 		}
 
-		Collection<Land> lands = CardUtils.retainAllLandsToArrayList(_hand
-				.getCardsUntilTurn(turn));
+		Collection<Land> lands = CardUtils.retainAllLandsToArrayList(_hand.getCardsUntilTurn(turn));
 
 		initializeFetchLands(lands);
 
@@ -53,8 +51,7 @@ public class PlayableChecker {
 
 		for (Spell spell : playableSpellTypes) {
 
-			PlayableRecursion recursion = new PlayableRecursion(spell, _hand,
-					turn);
+			PlayableRecursion recursion = new PlayableRecursion(spell, _hand, turn);
 
 			if (recursion.check()) {
 				return true;
@@ -95,8 +92,7 @@ public class PlayableChecker {
 	}
 
 	private Colors computeFetchableColors(Color color) {
-		Collection<Land> remainingLands = CardUtils
-				.retainAllLandsToArrayList(getRemainingCards());
+		Collection<Land> remainingLands = CardUtils.retainAllLandsToArrayList(getRemainingCards());
 
 		Set<Land> remainingLandTypes = new HashSet<>(remainingLands);
 
@@ -104,7 +100,7 @@ public class PlayableChecker {
 
 		for (Land land : remainingLandTypes) {
 			if (CardUtils.isBasicLand(land) && land.colors().contains(color)) {
-				colors.addAll(land.producesColors());
+				colors.addAll(land.producableColors());
 			}
 		}
 
@@ -178,7 +174,7 @@ public class PlayableChecker {
 
 				board.playLand(land);
 
-				for (Color color : land.producesColors()) {
+				for (Color color : land.producesColors(board)) {
 					if (!remainingCost.containsColor(color)) {
 						continue;
 					}

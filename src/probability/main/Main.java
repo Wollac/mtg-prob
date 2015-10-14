@@ -117,9 +117,28 @@ public class Main {
 		int good = 0;
 
 		for (int i = 0; i < config.sampleSize(); i++) {
-			deck.shuffle();
 
-			Hand hand = deck.draw(turn);
+			int mulligan = 0;
+			Hand hand = null;
+
+			while (mulligan <= 3) {
+
+				deck.shuffle();
+
+				hand = deck.draw(turn, mulligan);
+
+				int lands = hand.getNumerOfLandsInStartingHand();
+				int nonLands = hand.getStartingHandSize() - lands;
+
+				if ((lands >= 2 && nonLands >= 2)) {
+					break;
+				}
+				if (mulligan == 2 && lands >= 1 && nonLands >= 1) {
+					break;
+				}
+
+				mulligan++;
+			}
 
 			PlayableChecker checker = new PlayableChecker(deck, hand);
 

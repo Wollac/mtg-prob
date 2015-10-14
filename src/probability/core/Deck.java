@@ -61,12 +61,18 @@ public class Deck {
 	}
 
 	public Hand draw(int turn) {
+		return draw(turn, 0);
+	}
+
+	public Hand draw(int turn, int mulligan) {
 
 		int handSize = _config.initialHandSize();
 
 		if (_config.drawOnTurn()) {
 			handSize++;
 		}
+
+		handSize -= mulligan;
 
 		Collection<Card> startingHand = Collections.unmodifiableList(_cards
 				.subList(0, handSize));
