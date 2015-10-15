@@ -1,24 +1,19 @@
 package probability.rules;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Stack;
-
-import probability.attr.AttributeKey;
-import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
+import probability.attr.AttributeKey.AttributeParseException;
 
-public class Equals extends Operation {
+public class LessThan {
 
-    public Equals() {
+    public LessThan() {
 
-        super("=");
+        super("<");
     }
 
     @Override
-    public Equals copy() {
+    public LessThan copy() {
 
-        return new Equals();
+        return new LessThan();
     }
 
     @Override
@@ -34,22 +29,26 @@ public class Equals extends Operation {
         _leftOperand = left;
         Variable<?> var = (Variable<?>) left;
 
+        if(!Comparable.class.isAssignableFrom(var.getType())) {
+            throw new IllegalArgumentException("Cannot compare a variable of type "
+                + var.getType());
+        }
+
         if(right instanceof StringValue) {
             _rightOperand = var.createParsedVariableValue(right);
         }
         else {
             throw new IllegalArgumentException("The RHS of " + getSymbol()
-                + " must be a variable or a value");
+                + " must be a value");
         }
     }
 
     @Override
     public boolean interpret(ImmutableAttributeHolder bindings) {
-        
+
         ValueProvider<?> lhs = (ValueProvider<?>) _leftOperand;
         ValueProvider<?> rhs = (ValueProvider<?>) _rightOperand;
 
-        return Objects.equals(lhs.getValue(bindings), rhs.getValue(bindings));
+        return ((Comparable) lhs.getValue(bindings)).compareTo(rhs.getValue(bindings)) < 0;
     }
-
 }
