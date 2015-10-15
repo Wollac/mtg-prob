@@ -5,7 +5,8 @@ import java.util.Map;
 
 enum Operations {
 
-  AND(new And()), OR(new Or()), EQUALS(new Equals()), LESS_THAN(new LessThan());
+  AND(new And()), OR(new Or()), EQUALS(new Equals()), LESS_THAN(new LessThan()), GREATER_THAN(
+      new GreaterThan());
 
   private final static Map<String, Operations> NAME_TO_OPERATIONS = new HashMap<>();
 
