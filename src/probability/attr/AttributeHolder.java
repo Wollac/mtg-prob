@@ -1,32 +1,33 @@
 package probability.attr;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
-import probability.attr.Attribute.AttributeParseException;
+import probability.attr.AttributeKey.AttributeParseException;
 
 public class AttributeHolder implements ImmutableAttributeHolder {
 
-	private final Map<Attribute<?>, Object> _map;
+	private final Map<AttributeKey<?>, Object> _map;
 
 	public AttributeHolder() {
 		_map = new HashMap<>();
 	}
 
-	public <T> void setAttributeValue(Attribute<T> key, T value) {
+	public <T> void setAttributeValue(AttributeKey<T> key, T value) {
 		key.checkValid(value);
 
 		_map.put(key, value);
 	}
 
-	public <T> void setParsedAttributeValue(Attribute<T> attribute,
-			String valueString) throws AttributeParseException {
+	public <T> void setParsedAttributeValue(AttributeKey<T> attribute, String valueString)
+			throws AttributeParseException {
 
 		T value = attribute.parseValue(valueString);
 
 		if (!attribute.isValid(value)) {
-			throw new AttributeParseException(value + " is not a valid value",
-					attribute);
+			throw new AttributeParseException(value + " is not a valid value", attribute);
 		}
 
 		attribute.checkValid(value);
@@ -34,7 +35,7 @@ public class AttributeHolder implements ImmutableAttributeHolder {
 		_map.put(attribute, value);
 	}
 
-	public <T> T getAttributeValue(Attribute<T> key, T def) {
+	public <T> T getAttributeValue(AttributeKey<T> key, T def) {
 		Object valueObject = _map.get(key);
 
 		if (valueObject == null) {
@@ -44,7 +45,12 @@ public class AttributeHolder implements ImmutableAttributeHolder {
 		return key.getValueType().cast(valueObject);
 	}
 
-	public <T> T getAttributeVale(Attribute<T> key) {
+	public <T> T getAttributeValue(AttributeKey<T> key) {
 		return getAttributeValue(key, null);
 	}
+
+	public Set<AttributeKey<?>> getAttributeKeys() {
+		return Collections.unmodifiableSet(_map.keySet());
+	}
+
 }

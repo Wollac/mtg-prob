@@ -1,7 +1,7 @@
 package probability.config;
 
-import probability.attr.BooleanAttribute;
-import probability.attr.IntegerAttribute;
+import probability.attr.BooleanAttributeKey;
+import probability.attr.IntegerAttributeKey;
 
 public class ConfigLoader extends AbstractConfigLoader implements Config {
 
@@ -36,16 +36,16 @@ public class ConfigLoader extends AbstractConfigLoader implements Config {
 
 	private interface ATTR {
 
-		final static IntegerAttribute NUMBER_OF_CARDS = new IntegerAttribute(
+		final static IntegerAttributeKey NUMBER_OF_CARDS = new IntegerAttributeKey(
 				"cards", 60, i -> (i > 0));
 
-		final static IntegerAttribute INITIAL_HAND_SIZE = new IntegerAttribute(
+		final static IntegerAttributeKey INITIAL_HAND_SIZE = new IntegerAttributeKey(
 				"initial hand size", 7, i -> (i > 0));
 
-		final static BooleanAttribute DRAW_ON_TURN = new BooleanAttribute(
+		final static BooleanAttributeKey DRAW_ON_TURN = new BooleanAttributeKey(
 				"draw on turn", false);
 
-		final static IntegerAttribute SAMPLE_SIZE = new IntegerAttribute(
+		final static IntegerAttributeKey SAMPLE_SIZE = new IntegerAttributeKey(
 				"sample size", 10000, i -> (i >= 1000));
 
 	}

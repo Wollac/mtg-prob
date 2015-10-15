@@ -2,18 +2,18 @@ package probability.attr;
 
 import java.util.function.Predicate;
 
-public class StringAttribute extends Attribute<String> {
+public class StringAttributeKey extends AttributeKey<String> {
 
-	public StringAttribute(String name, String defaultValue,
+	public StringAttributeKey(String name, String defaultValue,
 			Predicate<String> validator) {
 		super(name, String.class, defaultValue, validator);
 	}
 
-	public StringAttribute(String name, String defaultValue) {
+	public StringAttributeKey(String name, String defaultValue) {
 		super(name, String.class, defaultValue);
 	}
 
-	public StringAttribute(String name) {
+	public StringAttributeKey(String name) {
 		super(name, String.class, "");
 	}
 

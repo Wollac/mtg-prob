@@ -2,9 +2,9 @@ package probability.attr;
 
 import probability.core.ManaCost;
 
-public class ManaCostAttribute extends Attribute<ManaCost> {
+public class ManaCostAttributeKey extends AttributeKey<ManaCost> {
 
-	public ManaCostAttribute(String name) {
+	public ManaCostAttributeKey(String name) {
 		super(name, ManaCost.class, null);
 	}
 

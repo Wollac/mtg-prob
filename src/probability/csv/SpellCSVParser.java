@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import probability.attr.ImmutableAttributeHolder;
-import probability.attr.IntegerAttribute;
-import probability.attr.ManaCostAttribute;
-import probability.attr.StringAttribute;
+import probability.attr.IntegerAttributeKey;
+import probability.attr.ManaCostAttributeKey;
+import probability.attr.StringAttributeKey;
 import probability.core.Spell;
 
 public class SpellCSVParser extends AbstractCSVParser<Spell> {
@@ -25,12 +25,12 @@ public class SpellCSVParser extends AbstractCSVParser<Spell> {
 	@Override
 	protected Collection<Spell> createInstance(ImmutableAttributeHolder row) {
 
-		int num = row.getAttributeVale(ATTR.NUM);
+		int num = row.getAttributeValue(ATTR.NUM);
 
 		Collection<Spell> spells = new ArrayList<>(num);
 
-		Spell spell = new Spell(row.getAttributeVale(ATTR.NAME),
-				row.getAttributeVale(ATTR.MANA_COST));
+		Spell spell = new Spell(row.getAttributeValue(ATTR.NAME),
+				row.getAttributeValue(ATTR.MANA_COST));
 
 		for (int i = 0; i < num; i++) {
 			spells.add(spell);
@@ -41,12 +41,12 @@ public class SpellCSVParser extends AbstractCSVParser<Spell> {
 
 	private static interface ATTR {
 
-		static final IntegerAttribute NUM = new IntegerAttribute("num", 1,
+		static final IntegerAttributeKey NUM = new IntegerAttributeKey("num", 1,
 				i -> (i > 0));
 
-		static final StringAttribute NAME = new StringAttribute("name");
+		static final StringAttributeKey NAME = new StringAttributeKey("name");
 
-		static final ManaCostAttribute MANA_COST = new ManaCostAttribute("cost");
+		static final ManaCostAttributeKey MANA_COST = new ManaCostAttributeKey("cost");
 	}
 
 }

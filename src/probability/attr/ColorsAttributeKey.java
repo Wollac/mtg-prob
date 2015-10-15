@@ -5,13 +5,13 @@ import java.util.function.Predicate;
 import probability.core.Color;
 import probability.core.Colors;
 
-public class ColorsAttribute extends Attribute<Colors> {
+public class ColorsAttributeKey extends AttributeKey<Colors> {
 
-	public ColorsAttribute(String name, Predicate<Colors> validator) {
+	public ColorsAttributeKey(String name, Predicate<Colors> validator) {
 		super(name, Colors.class, new Colors(Color.Colorless), validator);
 	}
 
-	public ColorsAttribute(String name) {
+	public ColorsAttributeKey(String name) {
 		this(name, s -> true);
 	}
 

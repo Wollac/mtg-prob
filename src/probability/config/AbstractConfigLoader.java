@@ -12,24 +12,24 @@ import org.json.JSONObject;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
-import probability.attr.Attribute;
+import probability.attr.AttributeKey;
 import probability.attr.AttributeHolder;
-import probability.attr.Attribute.AttributeParseException;
+import probability.attr.AttributeKey.AttributeParseException;
 
 public abstract class AbstractConfigLoader {
 
-	private final Set<Attribute<?>> _attributes;
+	private final Set<AttributeKey<?>> _attributes;
 
 	private final AttributeHolder _attributeHolder;
 
-	public AbstractConfigLoader(Attribute<?>... attributes) {
+	public AbstractConfigLoader(AttributeKey<?>... attributes) {
 
 		_attributes = new HashSet<>(Arrays.asList(attributes));
 		_attributeHolder = new AttributeHolder();
 
 	}
 
-	protected void addAttribute(Attribute<?> attribute) {
+	protected void addAttribute(AttributeKey<?> attribute) {
 		_attributes.add(attribute);
 	}
 
@@ -42,7 +42,7 @@ public abstract class AbstractConfigLoader {
 
 			Set<String> propertyNames = obj.keySet();
 
-			for (Attribute<?> attribute : _attributes) {
+			for (AttributeKey<?> attribute : _attributes) {
 				String attributeName = attribute.getName();
 
 				if (propertyNames.contains(attributeName)) {
@@ -62,7 +62,7 @@ public abstract class AbstractConfigLoader {
 		try {
 			JSONObject obj = new JSONObject();
 
-			for (Attribute<?> attribute : _attributes) {
+			for (AttributeKey<?> attribute : _attributes) {
 				obj.put(attribute.getName(), attribute.getDefaultValue());
 			}
 
@@ -72,8 +72,8 @@ public abstract class AbstractConfigLoader {
 		}
 	}
 
-	public <T> T getProperty(Attribute<T> attribute) {
-		return _attributeHolder.getAttributeVale(attribute);
+	public <T> T getProperty(AttributeKey<T> attribute) {
+		return _attributeHolder.getAttributeValue(attribute);
 	}
 
 	public static class ConfigParseException extends Exception {

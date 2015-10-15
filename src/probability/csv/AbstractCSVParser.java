@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import probability.attr.Attribute;
+import probability.attr.AttributeKey;
 import probability.attr.AttributeHolder;
-import probability.attr.Attribute.AttributeParseException;
+import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
 
 import com.opencsv.CSVReader;
@@ -21,9 +21,9 @@ public abstract class AbstractCSVParser<T> {
 
 	private final CSVReader _reader;
 
-	private final Map<Attribute<?>, Boolean> _attributes;
+	private final Map<AttributeKey<?>, Boolean> _attributes;
 
-	private Map<Attribute<?>, Integer> _attribute2colnum;
+	private Map<AttributeKey<?>, Integer> _attribute2colnum;
 
 	public AbstractCSVParser(Reader reader) throws IOException {
 		_reader = new CSVReader(new LineCommentReader(reader));
@@ -31,15 +31,15 @@ public abstract class AbstractCSVParser<T> {
 		_attributes = new HashMap<>();
 	}
 
-	protected void addAttribute(Attribute<?> attribute, boolean mandatory) {
+	protected void addAttribute(AttributeKey<?> attribute, boolean mandatory) {
 		_attributes.put(attribute, mandatory);
 	}
 
-	protected void addOptionalAttribute(Attribute<?> attribute) {
+	protected void addOptionalAttribute(AttributeKey<?> attribute) {
 		addAttribute(attribute, false);
 	}
 
-	protected void addMandatoryAttribute(Attribute<?> attribute) {
+	protected void addMandatoryAttribute(AttributeKey<?> attribute) {
 		addAttribute(attribute, true);
 	}
 
@@ -71,7 +71,7 @@ public abstract class AbstractCSVParser<T> {
 		AttributeHolder attributeHolder = new AttributeHolder();
 
 		try {
-			for (Entry<Attribute<?>, Integer> element : _attribute2colnum
+			for (Entry<AttributeKey<?>, Integer> element : _attribute2colnum
 					.entrySet()) {
 				String valueString = nextLine[element.getValue()].trim();
 
@@ -91,7 +91,7 @@ public abstract class AbstractCSVParser<T> {
 
 		List<String> line = Arrays.asList(_reader.readNext());
 
-		for (Attribute<?> attribute : _attributes.keySet()) {
+		for (AttributeKey<?> attribute : _attributes.keySet()) {
 
 			int index = line.indexOf(attribute.getName());
 
@@ -106,7 +106,7 @@ public abstract class AbstractCSVParser<T> {
 		}
 	}
 
-	private boolean isMandatory(Attribute<?> attribute) {
+	private boolean isMandatory(AttributeKey<?> attribute) {
 		return _attributes.get(attribute);
 	}
 

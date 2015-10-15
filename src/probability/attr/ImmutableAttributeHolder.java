@@ -2,8 +2,8 @@ package probability.attr;
 
 public interface ImmutableAttributeHolder {
 
-	public <T> T getAttributeValue(Attribute<T> key, T def);
+	public <T> T getAttributeValue(AttributeKey<T> key, T def);
 
-	public <T> T getAttributeVale(Attribute<T> key);
+	public <T> T getAttributeValue(AttributeKey<T> key);
 
 }

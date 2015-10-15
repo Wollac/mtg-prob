@@ -2,18 +2,18 @@ package probability.attr;
 
 import java.util.function.Predicate;
 
-public class IntegerAttribute extends Attribute<Integer> {
+public class IntegerAttributeKey extends AttributeKey<Integer> {
 
-	public IntegerAttribute(String name, int defaultValue,
+	public IntegerAttributeKey(String name, int defaultValue,
 			Predicate<Integer> validator) {
 		super(name, Integer.class, defaultValue, validator);
 	}
 
-	public IntegerAttribute(String name, int defaultValue) {
+	public IntegerAttributeKey(String name, int defaultValue) {
 		super(name, Integer.class, defaultValue);
 	}
 
-	public IntegerAttribute(String name) {
+	public IntegerAttributeKey(String name) {
 		super(name, Integer.class, 0);
 	}
 
@@ -27,7 +27,7 @@ public class IntegerAttribute extends Attribute<Integer> {
 			result = Integer.valueOf(valueString);
 		} catch (NumberFormatException e) {
 			throw new AttributeParseException(valueString
-					+ " is not a valid string", this);
+					+ " is not a valid integer", this);
 		}
 
 		return result;

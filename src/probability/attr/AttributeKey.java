@@ -2,7 +2,7 @@ package probability.attr;
 
 import java.util.function.Predicate;
 
-public abstract class Attribute<T> {
+public abstract class AttributeKey<T> {
 
 	final private String _name;
 
@@ -12,15 +12,14 @@ public abstract class Attribute<T> {
 
 	final private Predicate<T> _validator;
 
-	public Attribute(String name, Class<T> type, T defaultValue,
-			Predicate<T> validator) {
+	public AttributeKey(String name, Class<T> type, T defaultValue, Predicate<T> validator) {
 		_name = name;
 		_defaultValue = defaultValue;
 		_type = type;
 		_validator = validator;
 	}
 
-	public Attribute(String name, Class<T> type, T defaultValue) {
+	public AttributeKey(String name, Class<T> type, T defaultValue) {
 
 		// initialize with tautology
 		this(name, type, defaultValue, t -> true);
@@ -45,13 +44,11 @@ public abstract class Attribute<T> {
 	public final void checkValid(T value) throws IllegalArgumentException {
 
 		if (!isValid(value)) {
-			throw new IllegalArgumentException(value + " is an invalid value"
-					+ " for attribute " + getName());
+			throw new IllegalArgumentException(value + " is an invalid value" + " for attribute " + getName());
 		}
 	}
 
-	public abstract T parseValue(String valueString)
-			throws AttributeParseException;
+	public abstract T parseValue(String valueString) throws AttributeParseException;
 
 	@Override
 	public String toString() {
@@ -62,7 +59,7 @@ public abstract class Attribute<T> {
 
 		private static final long serialVersionUID = 1L;
 
-		public AttributeParseException(String s, Attribute<?> attribute) {
+		public AttributeParseException(String s, AttributeKey<?> attribute) {
 			super("attribute " + attribute.getName() + ": " + s);
 		}
 

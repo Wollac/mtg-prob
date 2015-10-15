@@ -5,11 +5,11 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import probability.attr.ColorsAttribute;
-import probability.attr.EnumAttribute;
+import probability.attr.ColorsAttributeKey;
+import probability.attr.EnumAttributeKey;
 import probability.attr.ImmutableAttributeHolder;
-import probability.attr.IntegerAttribute;
-import probability.attr.StringAttribute;
+import probability.attr.IntegerAttributeKey;
+import probability.attr.StringAttributeKey;
 import probability.core.Colors;
 import probability.core.land.BasicLand;
 import probability.core.land.CheckLand;
@@ -35,13 +35,13 @@ public class LandCSVParser extends AbstractCSVParser<Land> {
 	@Override
 	protected Collection<Land> createInstance(ImmutableAttributeHolder row) {
 
-		int num = row.getAttributeVale(ATTR.NUM);
+		int num = row.getAttributeValue(ATTR.NUM);
 
 		Collection<Land> lands = new ArrayList<>(num);
 
-		Land land = createLand(row.getAttributeVale(ATTR.TYPE),
-				row.getAttributeVale(ATTR.NAME),
-				row.getAttributeVale(ATTR.COLORS));
+		Land land = createLand(row.getAttributeValue(ATTR.TYPE),
+				row.getAttributeValue(ATTR.NAME),
+				row.getAttributeValue(ATTR.COLORS));
 
 		for (int i = 0; i < num; i++) {
 			lands.add(land);
@@ -78,15 +78,15 @@ public class LandCSVParser extends AbstractCSVParser<Land> {
 
 	private static interface ATTR {
 
-		static final IntegerAttribute NUM = new IntegerAttribute("num", 1,
+		static final IntegerAttributeKey NUM = new IntegerAttributeKey("num", 1,
 				i -> (i > 0));
 
-		static final StringAttribute NAME = new StringAttribute("name");
+		static final StringAttributeKey NAME = new StringAttributeKey("name");
 
-		static final EnumAttribute<LandTypes> TYPE = new EnumAttribute<>(
+		static final EnumAttributeKey<LandTypes> TYPE = new EnumAttributeKey<>(
 				"type", LandTypes.class, LandTypes.Basic);
 
-		static final ColorsAttribute COLORS = new ColorsAttribute("colors");
+		static final ColorsAttributeKey COLORS = new ColorsAttributeKey("colors");
 
 	}
 
