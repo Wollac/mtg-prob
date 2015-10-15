@@ -1,19 +1,15 @@
 package probability.rules;
 
-import java.util.Map;
-import java.util.Stack;
-
-import probability.attr.AttributeKey;
-import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
 
-public class Or extends Operation {
+class Or extends Operation {
 
 	public Or() {
 		super("OR");
 	}
 
-	public Or copy() {
+	@Override
+  public Or createInstance() {
 		return new Or();
 	}
 

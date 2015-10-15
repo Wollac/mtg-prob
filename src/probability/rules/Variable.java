@@ -1,107 +1,101 @@
 package probability.rules;
 
+import java.util.Objects;
+import java.util.Stack;
+
 import probability.attr.AttributeKey;
-import probability.attr.Class;
 import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
 
-public class Variable<T> implements Expression, ValueProvider<T> {
+class Variable<T> implements Expression, ValueProvider<T> {
 
-    private AttributeKey<T> _key;
+  private AttributeKey<T> _key;
 
-    private Variable(AttributeKey<T> key) {
+  private Variable(AttributeKey<T> key) {
 
-        _key = key;
+    _key = key;
+  }
+
+  public AttributeKey<T> getAttributeKey() {
+
+    return _key;
+  }
+
+  public Class<T> getType() {
+
+    return _key.getValueType();
+  }
+
+  public String getTypeName() {
+
+    return getType().getSimpleName();
+  }
+
+  public Value<T> createParsedValue(Value<String> stringValue) throws AttributeParseException {
+
+    return createParsedValue(stringValue.getValue());
+  }
+
+  public Value<T> createParsedValue(String valueString) throws AttributeParseException {
+
+    return new Value<>(_key.parseValue(valueString), this);
+  }
+
+  public static <T> Variable<T> createVariable(AttributeKey<T> key) {
+
+    return new Variable<>(key);
+  }
+
+  @Override
+  public boolean interpret(ImmutableAttributeHolder bindings) {
+
+    throw new IllegalStateException();
+  }
+
+  @Override
+  public void parse(Stack<Expression> stack) {
+
+    throw new IllegalArgumentException("The variable " + _key.getName() + " cannot be evaluated");
+  }
+
+  @Override
+  public T getValue(ImmutableAttributeHolder bindings) {
+
+    return bindings.getAttributeValue(_key);
+  }
+
+  public boolean equals(Value<?> value, ImmutableAttributeHolder bindings) {
+
+    checkType(value);
+
+    return Objects.equals(getValue(bindings), value.getValue());
+  }
+
+  public int compareTo(Value<?> other, ImmutableAttributeHolder bindings) {
+
+    checkType(other);
+
+    if (Comparable.class.isAssignableFrom(getType())) {
+
+      Comparable comparable = (Comparable) getValue(bindings);
+
+      return comparable.compareTo(other.getValue());
     }
+    throw new IllegalStateException(
+        "Cannot compare a variable of type " + getTypeName());
+  }
 
-    public AttributeKey<T> getAttributeKey() {
+  private void checkType(Value<?> value) {
 
-        return _key;
+    if (!getType().equals(value.getType())) {
+      throw new IllegalStateException("Cannot compare variable " + _key.getName() + " of type "
+          + _key.getValueType() + " with a value of type " + getTypeName());
     }
+  }
 
-    public Class<T> getType() {
+  public static <T extends Comparable<T>> int compare(T x, T y) {
 
-        return _key.getValueType();
-    }
-
-    public VariableValue<T> createParsedVariableValue(String valueString)
-        throws AttributeParseException {
-
-        return new VariableValue<>(_key.parseValue(valueString));
-    }
-
-    public static <T> Variable<T> createVariable(AttributeKey<T> key) {
-
-        return new Variable<>(key);
-    }
-
-    @Override
-    public boolean interpret(ImmutableAttributeHolder bindings) {
-
-        throw new IllegalStateException();
-    }
-
-    @Override
-    public void parse(Stack<Expression> stack) {
-
-        throw new IllegalArgumentException("The variable " + _key.getName()
-            + " cannot be evaluated");
-    }
-
-    @Override
-    public T getValue(ImmutableAttributeHolder bindings) {
-
-        return bindings.getAttributeValue(_key);
-    }
-
-    public boolean equals(VariableValue other, ImmutableAttributeHolder bindings) {
-
-        return Objects.equals(getValue(bindings), other.getValue());
-    }
-
-    public int compareTo(VariableValue other, ImmutableAttributeHolder bindings) {
-
-        if(Comparable.class.isAssignableFrom(_key.getValueType())) {
-
-            Comparable comparable = (Comparable) getValue(bindings);
-            return comparable.compareTo(other.getValue());
-        }
-        throw new IllegalStateException("Cannot compare a variable of type "
-            + _key.getValueType());
-    }
-
-    public class VariableValue implements Expression, ValueProvider<T> {
-
-        private T _value;
-
-        private VariableValue(T value) {
-
-            this._value = value;
-        }
-
-        public T getValue() {
-            _value;
-        }
-
-        @Override
-        public boolean interpret(ImmutableAttributeHolder bindings) {
-
-            throw new IllegalStateException();
-        }
-
-        @Override
-        public void parse(Stack<Expression> stack) {
-
-            throw new IllegalArgumentException("The value " + _value
-                + " of variable " + _key.getName() + " cannot be evaluated");
-        }
-
-        @Override
-        public T getValue(ImmutableAttributeHolder bindings) {
-
-            return getValue();
-        }
-
-    }
+    return x.compareTo(y);
+  }
 
 }

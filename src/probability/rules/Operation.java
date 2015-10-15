@@ -1,12 +1,10 @@
 package probability.rules;
 
-import java.util.Map;
 import java.util.Stack;
 
-import probability.attr.AttributeKey;
 import probability.attr.AttributeKey.AttributeParseException;
 
-public abstract class Operation implements Expression {
+abstract class Operation implements Expression {
 
     protected String _symbol;
 
@@ -16,10 +14,10 @@ public abstract class Operation implements Expression {
 
     protected Operation(String symbol) {
 
-        this._symbol = symbol;
+        _symbol = symbol;
     }
 
-    public abstract Operation copy();
+    public abstract Operation createInstance();
 
     public String getSymbol() {
 
@@ -27,6 +25,7 @@ public abstract class Operation implements Expression {
     }
 
     /** Parse expressions in RPN. */
+    @Override
     public void parse(Stack<Expression> stack) throws AttributeParseException {
 
         _rightOperand = extractOperand(stack);

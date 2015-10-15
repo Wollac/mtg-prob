@@ -1,9 +1,11 @@
 package probability.rules;
 
-import probability.attr.ImmutableAttributeHolder;
-import probability.attr.AttributeKey.AttributeParseException;
+import java.util.Stack;
 
-public interface Expression {
+import probability.attr.AttributeKey.AttributeParseException;
+import probability.attr.ImmutableAttributeHolder;
+
+interface Expression {
 
     public boolean interpret(ImmutableAttributeHolder bindings);
 
