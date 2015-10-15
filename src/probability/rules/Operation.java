@@ -8,41 +8,41 @@ import probability.attr.AttributeKey.AttributeParseException;
 
 public abstract class Operation implements Expression {
 
-	protected String _symbol;
+    protected String _symbol;
 
-	protected Expression _leftOperand = null;
-	protected Expression _rightOperand = null;
+    protected Expression _leftOperand = null;
 
-	protected Operation(String symbol) {
-		this._symbol = symbol;
-	}
+    protected Expression _rightOperand = null;
 
-	public abstract Operation copy();
+    protected Operation(String symbol) {
 
-	public String getSymbol() {
-		return this._symbol;
-	}
+        this._symbol = symbol;
+    }
 
-	public abstract int parse(final String[] tokens, final int pos, Map<String, AttributeKey<?>> variableMap,
-			final Stack<Expression> stack) throws AttributeParseException;
+    public abstract Operation copy();
 
-	protected Integer findNextExpression(String[] tokens, int pos, Map<String, AttributeKey<?>> variableMap,
-			Stack<Expression> stack) throws AttributeParseException {
+    public String getSymbol() {
 
-		Operations operations = Operations.INSTANCE;
+        return this._symbol;
+    }
 
-		for (int i = pos; i < tokens.length; i++) {
-			Operation op = operations.getOperation(tokens[i]);
-			if (op != null) {
-				op = op.copy();
-				// we found an operation
-				i = op.parse(tokens, i, variableMap, stack);
+    /** Parse expressions in RPN. */
+    public void parse(Stack<Expression> stack) throws AttributeParseException {
 
-				return i;
-			}
-		}
+        _rightOperand = extractOperand(stack);
+        _leftOperand = extractOperand(stack);
+    }
 
-		return null;
-	}
+    private Expression extractOperand(Stack<Expression> stack)
+        throws AttributeParseException {
+
+        if(stack.isEmpty()) {
+            throw new IllegalArgumentException("Operand missing for " + getSymbol());
+        }
+        Expression result = stack.pop();
+        result.parse(stack);
+
+        return result;
+    }
 
 }
