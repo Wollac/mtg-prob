@@ -1,19 +1,15 @@
 package probability.rules;
 
-import java.util.Map;
-import java.util.Stack;
-
-import probability.attr.AttributeKey;
-import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
 
-public class And extends Operation {
+class And extends Operation {
 
 	public And() {
 		super("AND");
 	}
 
-	public And copy() {
+	@Override
+  public And createInstance() {
 		return new And();
 	}
 

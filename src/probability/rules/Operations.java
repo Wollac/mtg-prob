@@ -2,35 +2,35 @@ package probability.rules;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-public enum Operations
-{
-    /** Application of the Singleton pattern using enum **/
-    INSTANCE;
+enum Operations {
 
-    private final Map<String, Operation> operations = new HashMap<>();
+  AND(new And()), OR(new Or()), EQUALS(new Equals()), LESS_THAN(new LessThan());
 
-    public void registerOperation(Operation op, String symbol)
-    {
-        if (!operations.containsKey(symbol))
-            operations.put(symbol, op);
+  private final static Map<String, Operations> NAME_TO_OPERATIONS = new HashMap<>();
+
+  static {
+    for (Operations op : Operations.values()) {
+      NAME_TO_OPERATIONS.put(op.getSymbol(), op);
     }
+  }
 
-    public void registerOperation(Operation op)
-    {
-        if (!operations.containsKey(op.getSymbol()))
-            operations.put(op.getSymbol(), op);
-    }
+  private final Operation _op;
 
-    public Operation getOperation(String symbol)
-    {
-        return this.operations.get(symbol);
-    }
+  public Operation createInstance() {
+    return _op.createInstance();
+  }
 
-    public Set<String> getDefinedSymbols()
-    {
-        return this.operations.keySet();
-    }
-    
+  private Operations(Operation op) {
+    _op = op;
+  }
+
+  private String getSymbol() {
+    return _op.getSymbol();
+  }
+
+  public static Operations getOperation(String symbol) {
+    return NAME_TO_OPERATIONS.get(symbol);
+  }
+
 }
