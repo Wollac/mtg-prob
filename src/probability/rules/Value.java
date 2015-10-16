@@ -6,7 +6,7 @@ import java.util.Stack;
 import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
 
-class Value<T> implements Expression, ValueProvider<T> {
+class Value<T> implements Expression {
 
   private T _value;
 
@@ -39,13 +39,6 @@ class Value<T> implements Expression, ValueProvider<T> {
     throw new IllegalArgumentException(
         "The value " + _value + " of type " + _type + " cannot be evaluated");
   }
-
-  @Override
-  public T getValue(ImmutableAttributeHolder bindings) {
-
-    return getValue();
-  }
-
 
   @Override
   public boolean equals(Object obj) {
