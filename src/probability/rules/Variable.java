@@ -7,7 +7,7 @@ import probability.attr.AttributeKey;
 import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
 
-class Variable<T> implements Expression, ValueProvider<T> {
+class Variable<T> implements Expression {
 
   private AttributeKey<T> _key;
 
@@ -58,7 +58,6 @@ class Variable<T> implements Expression, ValueProvider<T> {
     throw new IllegalArgumentException("The variable " + _key.getName() + " cannot be evaluated");
   }
 
-  @Override
   public T getValue(ImmutableAttributeHolder bindings) {
 
     return bindings.getAttributeValue(_key);
@@ -81,8 +80,7 @@ class Variable<T> implements Expression, ValueProvider<T> {
 
       return comparable.compareTo(other.getValue());
     }
-    throw new IllegalStateException(
-        "Cannot compare a variable of type " + getTypeName());
+    throw new IllegalStateException("Cannot compare a variable of type " + getTypeName());
   }
 
   private void checkType(Value<?> value) {
