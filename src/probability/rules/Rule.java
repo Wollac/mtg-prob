@@ -41,4 +41,16 @@ public class Rule {
 
     return false;
   }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+
+    for (Expression expr : expressions) {
+      sb.append(expr);
+      sb.append('\n');
+    }
+
+    return sb.toString();
+  }
 }

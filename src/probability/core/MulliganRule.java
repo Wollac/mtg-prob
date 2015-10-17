@@ -42,6 +42,10 @@ public class MulliganRule {
     return _rule.eval();
   }
 
+  public String toFormatedString() {
+    return _rule.toString() + "\n";
+  }
+
   private interface VARIABLES {
 
     static final IntegerAttributeKey LANDS = new IntegerAttributeKey("LANDS");

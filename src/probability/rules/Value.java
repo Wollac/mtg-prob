@@ -57,6 +57,11 @@ class Value<T> implements Expression {
     return Objects.equals(_value, other._value);
   }
 
+  @Override
+  public String toString() {
+    return _value.toString();
+  }
+
   public static class StringValue extends Value<String> {
 
     public StringValue(String value) {
