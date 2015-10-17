@@ -47,11 +47,7 @@ public class Variables {
 
   public static <T> void assignValue(AttributeKey<T> key, T value) {
 
-    if (!isRegistered(key)) {
-      throw new IllegalArgumentException("No variable has been registered for this key");
-    }
-
-    _bindings.setAttributeValue(key, value);
+    _bindings.setAttributeValueUnchecked(key, value);
   }
 
   static ImmutableAttributeHolder getBindings() {

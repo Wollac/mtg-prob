@@ -16,7 +16,12 @@ public class AttributeHolder implements ImmutableAttributeHolder {
   }
 
   public <T> void setAttributeValue(AttributeKey<T> key, T value) {
+    
     key.checkValid(value);
+    _map.put(key, value);
+  }
+  
+  public <T> void setAttributeValueUnchecked(AttributeKey<T> key, T value) {
 
     _map.put(key, value);
   }
