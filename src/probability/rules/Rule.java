@@ -3,36 +3,42 @@ package probability.rules;
 import java.util.ArrayList;
 import java.util.List;
 
-import probability.attr.AttributeHolder;
+import probability.attr.ImmutableAttributeHolder;
 
 public class Rule {
-	private List<Expression> expressions;
+  private List<Expression> expressions;
 
-	public static class Builder {
+  public static class Builder {
 
 
-		private List<Expression> expressions = new ArrayList<>();
+    private List<Expression> expressions = new ArrayList<>();
 
-		public Builder withExpression(Expression expr) {
-			expressions.add(expr);
-			return this;
-		}
+    public Builder withExpression(Expression expr) {
+      expressions.add(expr);
+      return this;
+    }
 
-		public Rule build() {
-			return new Rule(expressions);
-		}
-	}
+    public Rule build() {
+      return new Rule(expressions);
+    }
+  }
 
-	private Rule(List<Expression> expressions) {
-		this.expressions = expressions;
-	}
+  private Rule(List<Expression> expressions) {
+    this.expressions = expressions;
+  }
 
-	public boolean eval(AttributeHolder bindings) {
-		boolean eval = false;
-		for (Expression expression : expressions) {
-			eval |= expression.interpret(bindings);
-		}
-		
-		return eval;
-	}
+  public boolean eval() {
+
+    ImmutableAttributeHolder bindings = Variables.getBindings();
+
+    for (Expression expression : expressions) {
+      boolean eval = expression.interpret(bindings);
+
+      if (eval) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }
