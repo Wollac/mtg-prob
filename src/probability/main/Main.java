@@ -37,12 +37,15 @@ public class Main {
       return;
     }
 
-    MulliganRule mulliganRule = new MulliganRule();
-
     Deck deck = buildDeck(config);
 
     System.out.println("The following deck has been loaded:");
     System.out.println(deck.toFormatedString());
+
+    MulliganRule mulliganRule = new MulliganRule();
+
+    System.out.println("Taking a mulligan, if one of the following rules apply:");
+    System.out.println(mulliganRule.toFormatedString());
 
     Set<Integer> cmcs = getCmcs(deck);
 

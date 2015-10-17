@@ -4,19 +4,19 @@ import probability.attr.ImmutableAttributeHolder;
 
 class And extends Operation {
 
-	public And() {
-		super("AND");
-	}
+  public And() {
+    super("AND");
+  }
 
-	@Override
+  @Override
   public And createInstance() {
-		return new And();
-	}
+    return new And();
+  }
 
-	@Override
-	public boolean interpret(ImmutableAttributeHolder bindings) {
+  @Override
+  public boolean interpret(ImmutableAttributeHolder bindings) {
 
-		return _leftOperand.interpret(bindings) && _rightOperand.interpret(bindings);
-	}
+    return _leftOperand.interpret(bindings) && _rightOperand.interpret(bindings);
+  }
 
 }

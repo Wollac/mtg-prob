@@ -95,5 +95,10 @@ class Variable<T> implements Expression {
 
     return x.compareTo(y);
   }
+  
+  @Override
+  public String toString() {
+    return _key.getName();
+  }
 
 }
