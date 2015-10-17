@@ -9,48 +9,50 @@ import probability.attr.AttributeKey.AttributeParseException;
 
 public class AttributeHolder implements ImmutableAttributeHolder {
 
-	private final Map<AttributeKey<?>, Object> _map;
+  private final Map<AttributeKey<?>, Object> _map;
 
-	public AttributeHolder() {
-		_map = new HashMap<>();
-	}
+  public AttributeHolder() {
+    _map = new HashMap<>();
+  }
 
-	public <T> void setAttributeValue(AttributeKey<T> key, T value) {
-		key.checkValid(value);
+  public <T> void setAttributeValue(AttributeKey<T> key, T value) {
+    key.checkValid(value);
 
-		_map.put(key, value);
-	}
+    _map.put(key, value);
+  }
 
-	public <T> void setParsedAttributeValue(AttributeKey<T> attribute, String valueString)
-			throws AttributeParseException {
+  public <T> void setParsedAttributeValue(AttributeKey<T> attribute, String valueString)
+      throws AttributeParseException {
 
-		T value = attribute.parseValue(valueString);
+    T value = attribute.parseValue(valueString);
 
-		if (!attribute.isValid(value)) {
-			throw new AttributeParseException(value + " is not a valid value", attribute);
-		}
+    if (!attribute.isValid(value)) {
+      throw new AttributeParseException(value + " is not a valid value", attribute);
+    }
 
-		attribute.checkValid(value);
+    attribute.checkValid(value);
 
-		_map.put(attribute, value);
-	}
+    _map.put(attribute, value);
+  }
 
-	public <T> T getAttributeValue(AttributeKey<T> key, T def) {
-		Object valueObject = _map.get(key);
+  @Override
+  public <T> T getAttributeValue(AttributeKey<T> key, T def) {
+    Object valueObject = _map.get(key);
 
-		if (valueObject == null) {
-			return def != null ? def : key.getDefaultValue();
-		}
+    if (valueObject == null) {
+      return def != null ? def : key.getDefaultValue();
+    }
 
-		return key.getValueType().cast(valueObject);
-	}
+    return key.getValueType().cast(valueObject);
+  }
 
-	public <T> T getAttributeValue(AttributeKey<T> key) {
-		return getAttributeValue(key, null);
-	}
+  @Override
+  public <T> T getAttributeValue(AttributeKey<T> key) {
+    return getAttributeValue(key, null);
+  }
 
-	public Set<AttributeKey<?>> getAttributeKeys() {
-		return Collections.unmodifiableSet(_map.keySet());
-	}
+  public Set<AttributeKey<?>> getAttributeKeys() {
+    return Collections.unmodifiableSet(_map.keySet());
+  }
 
 }

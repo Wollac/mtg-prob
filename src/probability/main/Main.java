@@ -13,6 +13,7 @@ import probability.config.ConfigLoader;
 import probability.core.Card;
 import probability.core.Deck;
 import probability.core.Hand;
+import probability.core.MulliganRule;
 import probability.core.Spell;
 import probability.csv.AbstractCSVParser.CvsParseException;
 import probability.csv.LandCSVParser;
@@ -20,133 +21,130 @@ import probability.csv.SpellCSVParser;
 
 public class Main {
 
-	private static final ConfigLoader config = new ConfigLoader();
+  private static final ConfigLoader config = new ConfigLoader();
 
-	public static void main(String[] args) {
+  public static void main(String[] args) {
 
-		// config.write(new File("mtg.config"));
+    // config.write(new File("mtg.config"));
 
-		try {
-			config.load(new File("mtg.config"));
-		} catch (IOException e) {
-			System.err.println("Could not read config file: " + e.getMessage());
-			return;
-		} catch (ConfigParseException e) {
-			System.err.println("Error parsing config file: " + e.getCause());
-			return;
-		}
+    try {
+      config.load(new File("mtg.config"));
+    } catch (IOException e) {
+      System.err.println("Could not read config file: " + e.getMessage());
+      return;
+    } catch (ConfigParseException e) {
+      System.err.println("Error parsing config file: " + e.getCause());
+      return;
+    }
 
-		Deck deck = buildDeck(config);
+    MulliganRule mulliganRule = new MulliganRule();
 
-		System.out.println("The following deck has been loaded:");
-		System.out.println(deck.toFormatedString());
+    Deck deck = buildDeck(config);
 
-		Set<Integer> cmcs = getCmcs(deck);
+    System.out.println("The following deck has been loaded:");
+    System.out.println(deck.toFormatedString());
 
-		int minCmc = Collections.min(cmcs);
-		int maxCmc = Collections.min(cmcs);
+    Set<Integer> cmcs = getCmcs(deck);
 
-		System.out.println("Calculating the combined failure probability for"
-				+ " the given spells:");
+    int minCmc = Collections.min(cmcs);
+    int maxCmc = Collections.min(cmcs);
 
-		for (int turn = minCmc; turn <= maxCmc + 3; turn++) {
+    System.out.println("Calculating the combined failure probability for" + " the given spells:");
 
-			int playable = countPlayable(deck, turn);
-			double factor = 1.0 - (double) playable / config.sampleSize();
+    for (int turn = minCmc; turn <= maxCmc + 3; turn++) {
 
-			System.out.printf("Turn %02d: %4.1f%%%n", turn, factor * 100.0);
-		}
+      int playable = countPlayable(deck, mulliganRule, turn);
+      double factor = 1.0 - (double) playable / config.sampleSize();
 
-	}
+      System.out.printf("Turn %02d: %4.1f%%%n", turn, factor * 100.0);
+    }
 
-	private static Set<Integer> getCmcs(Deck deck) {
+  }
 
-		Set<Integer> result = new HashSet<>();
+  private static Set<Integer> getCmcs(Deck deck) {
 
-		for (Card card : deck.cards()) {
+    Set<Integer> result = new HashSet<>();
 
-			if (card instanceof Spell) {
-				result.add(((Spell) card).getCMC());
-			}
-		}
+    for (Card card : deck.cards()) {
 
-		return result;
-	}
+      if (card instanceof Spell) {
+        result.add(((Spell) card).getCMC());
+      }
+    }
 
-	private static Deck buildDeck(Config config) {
-		Deck deck = new Deck(config);
+    return result;
+  }
 
-		addLands(deck);
+  private static Deck buildDeck(Config config) {
+    Deck deck = new Deck(config);
 
-		addSpells(deck);
+    addLands(deck);
+    addSpells(deck);
 
-		deck.fillWithDummies();
+    deck.fillWithDummies();
 
-		return deck;
-	}
+    return deck;
+  }
 
-	private static void addLands(Deck deck) {
+  private static void addLands(Deck deck) {
 
-		try {
-			LandCSVParser parser = new LandCSVParser(
-					new FileReader("lands.csv"));
+    try {
+      LandCSVParser parser = new LandCSVParser(new FileReader("lands.csv"));
 
-			deck.addAll(parser.readAll());
-		} catch (IOException e) {
-			System.err.println("Could not read csv file: " + e.getMessage());
-		} catch (CvsParseException e) {
-			System.err.println("Error parsing csv file: " + e.getCause());
-		}
-	}
+      deck.addAll(parser.readAll());
+    } catch (IOException e) {
+      System.err.println("Could not read csv file: " + e.getMessage());
+    } catch (CvsParseException e) {
+      System.err.println("Error parsing csv file: " + e.getCause());
+    }
+  }
 
-	private static void addSpells(Deck deck) {
+  private static void addSpells(Deck deck) {
 
-		try {
-			SpellCSVParser parse = new SpellCSVParser(new FileReader(
-					"spells.csv"));
+    try {
+      SpellCSVParser parse = new SpellCSVParser(new FileReader("spells.csv"));
 
-			deck.addAll(parse.readAll());
-		} catch (IOException e) {
-			System.err.println("Could not read csv file: " + e.getMessage());
-		} catch (CvsParseException e) {
-			System.err.println("Error parsing csv file: " + e.getCause());
-		}
-	}
+      deck.addAll(parse.readAll());
+    } catch (IOException e) {
+      System.err.println("Could not read csv file: " + e.getMessage());
+    } catch (CvsParseException e) {
+      System.err.println("Error parsing csv file: " + e.getCause());
+    }
+  }
 
-	private static int countPlayable(Deck deck, int turn) {
-		int good = 0;
+  private static int countPlayable(Deck deck, MulliganRule mulliganRule, int turn) {
+    int good = 0;
 
-		for (int i = 0; i < config.sampleSize(); i++) {
+    for (int i = 0; i < config.sampleSize(); i++) {
 
-			int mulligan = 0;
-			Hand hand = null;
+      Hand hand = getStartingHand(deck, mulliganRule, turn);
 
-			while (mulligan <= 3) {
+      PlayableChecker checker = new PlayableChecker(deck, hand);
 
-				deck.shuffle();
+      if (checker.isPlayable(turn)) {
+        good++;
+      }
+    }
 
-				hand = deck.draw(turn, mulligan);
+    return good;
+  }
 
-				int lands = hand.getNumerOfLandsInStartingHand();
-				int nonLands = hand.getStartingHandSize() - lands;
+  private static Hand getStartingHand(Deck deck, MulliganRule mulliganRule, int turn) {
+    Hand hand = null;
+    for (int mulligan = 0; mulligan < config.initialHandSize(); mulligan++) {
 
-				if ((lands >= 2 && nonLands >= 2)) {
-					break;
-				}
-				if (mulligan == 2 && lands >= 1 && nonLands >= 1) {
-					break;
-				}
+      deck.shuffle();
+      hand = deck.draw(turn, mulligan);
 
-				mulligan++;
-			}
+      if (!mulliganRule.takeMulligan(hand.getNumerOfLandsInStartingHand(),
+          hand.getStartingHandSize())) {
+        break;
+      }
 
-			PlayableChecker checker = new PlayableChecker(deck, hand);
+      mulligan++;
+    }
 
-			if (checker.isPlayable(turn)) {
-				good++;
-			}
-		}
+    return hand;
+  }
 
-		return good;
-	}
 }
