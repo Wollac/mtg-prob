@@ -10,7 +10,6 @@ public class Rule {
 
   public static class Builder {
 
-
     private List<Expression> expressions = new ArrayList<>();
 
     public Builder withExpression(Expression expr) {
@@ -32,8 +31,8 @@ public class Rule {
     ImmutableAttributeHolder bindings = Variables.getBindings();
 
     for (Expression expression : expressions) {
+      
       boolean eval = expression.interpret(bindings);
-
       if (eval) {
         return true;
       }
