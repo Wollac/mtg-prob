@@ -7,7 +7,7 @@ import probability.rules.Value.StringValue;
 
 public class ExpressionParser {
 
-  public static Expression fromString(String expr) throws AttributeParseException {
+  public static Expression parse(String expr) throws AttributeParseException {
 
     Stack<Expression> stack = new Stack<>();
 

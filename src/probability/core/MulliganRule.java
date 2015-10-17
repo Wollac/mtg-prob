@@ -1,6 +1,5 @@
 package probability.core;
 
-import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.IntegerAttributeKey;
 import probability.rules.ExpressionParser;
 import probability.rules.Rule;
@@ -14,18 +13,22 @@ public class MulliganRule {
     Variables.registerVariable(VARIABLES.CARDS);
   }
 
+  private static final String[] DEFAULT_RULES =
+      {"CARDS 5 > LANDS 2 < NONLANDS 2 < OR AND", "CARDS 5 = LANDS 1 < NONLANDS 1 < OR AND"};
+
   private final Rule _rule;
 
   public MulliganRule() {
     Rule.Builder builder = new Rule.Builder();
 
     try {
-      builder
-          .withExpression(ExpressionParser.fromString("CARDS 5 > LANDS 2 < NONLANDS 2 < OR AND"));
-      builder
-          .withExpression(ExpressionParser.fromString("CARDS 5 = LANDS 1 < NONLANDS 1 < OR AND"));
-    } catch (AttributeParseException e) {
-      e.printStackTrace();
+      for (String rule : DEFAULT_RULES) {
+        builder.withExpression(ExpressionParser.parse(rule));
+      }
+    }
+    // TODO: only catch actual exceptions
+    catch (Exception e) {
+      throw new IllegalStateException("Error parsing default rules", e);
     }
 
     _rule = builder.build();
@@ -39,13 +42,13 @@ public class MulliganRule {
     return _rule.eval();
   }
 
-  private static final class VARIABLES {
+  private interface VARIABLES {
 
-    private static final IntegerAttributeKey LANDS = new IntegerAttributeKey("LANDS");
+    static final IntegerAttributeKey LANDS = new IntegerAttributeKey("LANDS");
 
-    private static final IntegerAttributeKey NONLANDS = new IntegerAttributeKey("NONLANDS");
+    static final IntegerAttributeKey NONLANDS = new IntegerAttributeKey("NONLANDS");
 
-    private static final IntegerAttributeKey CARDS = new IntegerAttributeKey("CARDS");
+    static final IntegerAttributeKey CARDS = new IntegerAttributeKey("CARDS");
 
   }
 
