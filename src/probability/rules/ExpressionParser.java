@@ -7,17 +7,18 @@ import probability.rules.Value.StringValue;
 
 public class ExpressionParser {
 
-  public static Expression parse(String expr) throws AttributeParseException {
+  public static Expression parseRPNString(VariableHolder variables, String expression)
+      throws AttributeParseException {
 
     Stack<Expression> stack = new Stack<>();
 
-    String[] tokens = expr.split("\\s");
+    String[] tokens = expression.split("\\s");
     for (String token : tokens) {
       Operations op = Operations.getOperation(token);
       if (op != null) {
         stack.push(op.createInstance());
-      } else if (Variables.isRegistered(token)) {
-        stack.push(Variables.getVariable(token));
+      } else if (variables.isRegistered(token)) {
+        stack.push(variables.getVariable(token));
       } else {
         stack.push(new StringValue(token));
       }
@@ -32,4 +33,5 @@ public class ExpressionParser {
 
     return top;
   }
+
 }

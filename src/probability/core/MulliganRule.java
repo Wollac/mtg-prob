@@ -1,31 +1,37 @@
 package probability.core;
 
-import java.util.List;
-
 import probability.attr.IntegerAttributeKey;
 import probability.rules.ExpressionParser;
 import probability.rules.Rule;
-import probability.rules.Variables;
+import probability.rules.VariableHolder;
 
 public class MulliganRule {
 
-  static {
-    Variables.registerVariable(VARIABLES.LANDS);
-    Variables.registerVariable(VARIABLES.NONLANDS);
-    Variables.registerVariable(VARIABLES.CARDS);
-  }
-
-  private static final String[] DEFAULT_RULES =
+  private static final String[] DEFAULT_RULES_RPN =
       {"CARDS 5 > LANDS 2 < NONLANDS 2 < OR AND", "CARDS 5 = LANDS 1 < NONLANDS 1 < OR AND"};
 
   private final Rule _rule;
 
+  private final VariableHolder _variables = new VariableHolder();
+
   public MulliganRule() {
+
+    registerVariables();
+    _rule = getDefaultRule(_variables);
+  }
+
+  private void registerVariables() {
+    _variables.registerVariable(VARIABLES.LANDS);
+    _variables.registerVariable(VARIABLES.NONLANDS);
+    _variables.registerVariable(VARIABLES.CARDS);
+  }
+
+  private static Rule getDefaultRule(VariableHolder variables) {
     Rule.Builder builder = new Rule.Builder();
 
     try {
-      for (String rule : DEFAULT_RULES) {
-        builder.withExpression(ExpressionParser.parse(rule));
+      for (String rule : DEFAULT_RULES_RPN) {
+        builder.withExpression(ExpressionParser.parseRPNString(variables, rule));
       }
     }
     // TODO: only catch actual exceptions
@@ -33,15 +39,15 @@ public class MulliganRule {
       throw new IllegalStateException("Error parsing default rules", e);
     }
 
-    _rule = builder.build();
+    return builder.build();
   }
 
   public boolean takeMulligan(int lands, int cards) {
-    Variables.assignValue(VARIABLES.LANDS, lands);
-    Variables.assignValue(VARIABLES.NONLANDS, cards - lands);
-    Variables.assignValue(VARIABLES.CARDS, cards);
+    _variables.assignValue(VARIABLES.LANDS, lands);
+    _variables.assignValue(VARIABLES.NONLANDS, cards - lands);
+    _variables.assignValue(VARIABLES.CARDS, cards);
 
-    return _rule.eval();
+    return _rule.evaluate(_variables);
   }
 
   public String toFormatedString() {
@@ -67,7 +73,6 @@ public class MulliganRule {
     static final IntegerAttributeKey NONLANDS = new IntegerAttributeKey("NONLANDS");
 
     static final IntegerAttributeKey CARDS = new IntegerAttributeKey("CARDS");
-
   }
 
 }

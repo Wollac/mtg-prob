@@ -8,31 +8,34 @@ import probability.attr.AttributeHolder;
 import probability.attr.AttributeKey;
 import probability.attr.ImmutableAttributeHolder;
 
-public class Variables {
+public class VariableHolder {
 
   private static final Pattern NAME_PATTERN = Pattern.compile("[a-zA-Z]\\w*");
 
-  private static final Map<String, Variable<?>> _name2var = new HashMap<>();
+  private final Map<String, Variable<?>> _name2var = new HashMap<>();
 
-  private static final AttributeHolder _bindings = new AttributeHolder();
+  private final AttributeHolder _bindings = new AttributeHolder();
 
-  public static <T> void registerVariable(AttributeKey<T> key) {
+  public <T> void registerVariable(AttributeKey<T> key) {
     registerVariable(key, key.getName());
   }
 
-  public static <T> void registerVariable(AttributeKey<T> key, String name) {
+  public <T> void registerVariable(AttributeKey<T> key, String name) {
 
     checkName(name);
+    if (isRegistered(key)) {
+      throw new IllegalArgumentException("A variable for that key has already been registered");
+    }
 
     _name2var.put(name, Variable.createVariable(key));
   }
 
-  public static <T> void registerAndAssign(AttributeKey<T> key, T value) {
+  public <T> void registerAndAssign(AttributeKey<T> key, T value) {
     registerVariable(key);
     assignValue(key, value);
   }
 
-  public static boolean isRegistered(AttributeKey<?> key) {
+  public boolean isRegistered(AttributeKey<?> key) {
 
     for (Variable<?> var : _name2var.values()) {
       if (var.getAttributeKey().equals(key))
@@ -41,24 +44,24 @@ public class Variables {
     return false;
   }
 
-  public static boolean isRegistered(String name) {
+  public boolean isRegistered(String name) {
     return _name2var.containsKey(name);
   }
 
-  public static <T> void assignValue(AttributeKey<T> key, T value) {
+  public <T> void assignValue(AttributeKey<T> key, T value) {
 
     _bindings.setAttributeValueUnchecked(key, value);
   }
 
-  static ImmutableAttributeHolder getBindings() {
+  ImmutableAttributeHolder getBindings() {
     return _bindings;
   }
 
-  static Variable<?> getVariable(String name) {
+  Variable<?> getVariable(String name) {
     return _name2var.get(name);
   }
 
-  private static void checkName(String name) {
+  private void checkName(String name) {
 
     if (!NAME_PATTERN.matcher(name).matches()) {
       throw new IllegalArgumentException(

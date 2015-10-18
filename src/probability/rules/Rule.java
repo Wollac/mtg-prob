@@ -7,7 +7,8 @@ import java.util.List;
 import probability.attr.ImmutableAttributeHolder;
 
 public class Rule {
-  private List<Expression> expressions;
+
+  private List<Expression> _expressions;
 
   public static class Builder {
 
@@ -24,14 +25,14 @@ public class Rule {
   }
 
   private Rule(List<Expression> expressions) {
-    this.expressions = expressions;
+    this._expressions = expressions;
   }
 
-  public boolean eval() {
+  public boolean evaluate(VariableHolder variables) {
 
-    ImmutableAttributeHolder bindings = Variables.getBindings();
+    ImmutableAttributeHolder bindings = variables.getBindings();
 
-    for (Expression expression : expressions) {
+    for (Expression expression : _expressions) {
 
       boolean eval = expression.interpret(bindings);
       if (eval) {
@@ -44,8 +45,8 @@ public class Rule {
 
   public List<String> toStrings() {
 
-    List<String> result = new ArrayList<>(expressions.size());
-    expressions.stream().forEach(e -> result.add(e.toString()));
+    List<String> result = new ArrayList<>(_expressions.size());
+    _expressions.stream().forEach(e -> result.add(e.toString()));
 
     return result;
   }
@@ -54,7 +55,7 @@ public class Rule {
   public String toString() {
     StringBuilder sb = new StringBuilder();
 
-    Iterator<Expression> it = expressions.iterator();
+    Iterator<Expression> it = _expressions.iterator();
     while (it.hasNext()) {
       sb.append(it.next());
 
@@ -65,4 +66,5 @@ public class Rule {
 
     return sb.toString();
   }
+  
 }
