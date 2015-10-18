@@ -46,21 +46,7 @@ abstract class Operation implements Expression {
   @Override
   public String toString() {
 
-    StringBuilder sb = new StringBuilder();
-
-    if (_leftOperand instanceof Operation) {
-      sb.append("(" + _leftOperand + ")");
-    } else {
-      sb.append(_leftOperand);
-    }
-    sb.append(" " + getSymbol() + " ");
-    if (_rightOperand instanceof Operation) {
-      sb.append("(" + _rightOperand + ")");
-    } else {
-      sb.append(_rightOperand);
-    }
-
-    return sb.toString();
+    return "(" + _leftOperand + " " + getSymbol() + " " + _rightOperand + ")";
   }
 
 }

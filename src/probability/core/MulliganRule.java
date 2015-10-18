@@ -1,5 +1,7 @@
 package probability.core;
 
+import java.util.List;
+
 import probability.attr.IntegerAttributeKey;
 import probability.rules.ExpressionParser;
 import probability.rules.Rule;
@@ -43,7 +45,19 @@ public class MulliganRule {
   }
 
   public String toFormatedString() {
-    return _rule.toString() + "\n";
+
+    StringBuilder sb = new StringBuilder();
+
+    for (String expression : _rule.toStrings()) {
+      if (expression.startsWith("(") && expression.endsWith(")")) {
+        sb.append(expression.substring(1, expression.length() - 1));
+      } else {
+        sb.append(expression);
+      }
+      sb.append('\n');
+    }
+
+    return sb.toString() + "\n";
   }
 
   private interface VARIABLES {
