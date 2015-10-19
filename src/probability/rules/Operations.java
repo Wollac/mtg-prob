@@ -16,17 +16,17 @@ enum Operations {
     }
   }
 
-  private final Operation _op;
+  private final Operator _op;
 
-  public Operation createInstance() {
-    return _op.createInstance();
+  public Operator getInstance() {
+    return _op.getInstance();
   }
 
-  private Operations(Operation op) {
+  private Operations(BinaryOperator op) {
     _op = op;
   }
 
-  private String getSymbol() {
+  public String getSymbol() {
     return _op.getSymbol();
   }
 

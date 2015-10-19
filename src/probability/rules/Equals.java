@@ -6,15 +6,15 @@ import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
 import probability.rules.Value.StringValue;
 
-class Equals extends Operation {
+class Equals extends BinaryOperator {
 
   public Equals() {
 
-    super("=");
+    super("=", 7);
   }
 
   @Override
-  public Equals createInstance() {
+  public Equals getInstance() {
 
     return new Equals();
   }

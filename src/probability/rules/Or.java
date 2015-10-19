@@ -2,21 +2,21 @@ package probability.rules;
 
 import probability.attr.ImmutableAttributeHolder;
 
-class Or extends Operation {
+class Or extends BinaryOperator {
 
-	public Or() {
-		super("OR");
-	}
+  public Or() {
+    super("OR", 12);
+  }
 
-	@Override
-  public Or createInstance() {
-		return new Or();
-	}
+  @Override
+  public Or getInstance() {
+    return new Or();
+  }
 
-	@Override
-	public boolean interpret(ImmutableAttributeHolder bindings) {
+  @Override
+  public boolean interpret(ImmutableAttributeHolder bindings) {
 
-		return _leftOperand.interpret(bindings) || _rightOperand.interpret(bindings);
-	}
+    return _leftOperand.interpret(bindings) || _rightOperand.interpret(bindings);
+  }
 
 }

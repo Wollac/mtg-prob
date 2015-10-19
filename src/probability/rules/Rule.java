@@ -19,6 +19,11 @@ public class Rule {
       return this;
     }
 
+    public Builder withExpressions(List<Expression> exprs) {
+      expressions.addAll(exprs);
+      return this;
+    }
+
     public Rule build() {
       return new Rule(expressions);
     }
@@ -66,5 +71,5 @@ public class Rule {
 
     return sb.toString();
   }
-  
+
 }
