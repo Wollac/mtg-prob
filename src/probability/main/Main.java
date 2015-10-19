@@ -3,6 +3,7 @@ package probability.main;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -91,8 +92,8 @@ public class Main {
 
   private static void addLands(Deck deck) {
 
-    try {
-      LandCSVParser parser = new LandCSVParser(new FileReader("lands.csv"));
+    try (Reader reader = new FileReader("lands.csv")) {
+      LandCSVParser parser = new LandCSVParser(reader);
 
       deck.addAll(parser.readAll());
     } catch (IOException e) {
@@ -104,8 +105,8 @@ public class Main {
 
   private static void addSpells(Deck deck) {
 
-    try {
-      SpellCSVParser parse = new SpellCSVParser(new FileReader("spells.csv"));
+    try (Reader reader = new FileReader("spells.csv")) {
+      SpellCSVParser parse = new SpellCSVParser(reader);
 
       deck.addAll(parse.readAll());
     } catch (IOException e) {
