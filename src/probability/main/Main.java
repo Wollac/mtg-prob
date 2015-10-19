@@ -43,7 +43,7 @@ public class Main {
     System.out.println("The following deck has been loaded:");
     System.out.println(deck.toFormatedString());
 
-    MulliganRule mulliganRule = new MulliganRule();
+    MulliganRule mulliganRule = new MulliganRule(new File("mulligan.txt"));
 
     System.out.println("Taking a mulligan, if one of the following rules apply:");
     System.out.println(mulliganRule.toFormatedString());
