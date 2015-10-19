@@ -73,7 +73,10 @@ class ShuntingYardAlgorithm {
     Operator operator = (Operator) token;
     while (!operatorStack.isEmpty()) {
       Operator other = operatorStack.peek();
-      if (operator.getPrecedence() <= other.getPrecedence()) {
+      if (other == OpenParenthesis.INSTANCE) {
+        break;
+      }
+      if (operator.getPrecedence() >= other.getPrecedence()) {
         output.push(operatorStack.pop());
       } else {
         break;
