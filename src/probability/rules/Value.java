@@ -30,14 +30,20 @@ class Value<T> implements Expression {
   }
 
   @Override
+  public ExpressionType getExpressionType() {
+    return ExpressionType.VALUE;
+  }
+
+
+  @Override
   public boolean interpret(ImmutableAttributeHolder bindings) {
     return true;
   }
 
   @Override
   public void parse(Stack<Expression> stack) throws AttributeParseException {
-    throw new IllegalArgumentException(
-        "The value " + _value + " of type " + _type + " cannot be evaluated");
+    throw new IllegalArgumentException("The value " + _value + " of type " + _type
+        + " cannot be evaluated");
   }
 
   @Override

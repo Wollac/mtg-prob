@@ -47,6 +47,11 @@ class Variable<T> implements Expression {
   }
 
   @Override
+  public ExpressionType getExpressionType() {
+    return ExpressionType.VALUE;
+  }
+
+  @Override
   public boolean interpret(ImmutableAttributeHolder bindings) {
 
     throw new IllegalStateException();
@@ -95,7 +100,7 @@ class Variable<T> implements Expression {
 
     return x.compareTo(y);
   }
-  
+
   @Override
   public String toString() {
     return _key.getName();

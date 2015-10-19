@@ -5,10 +5,10 @@ import java.util.Stack;
 import probability.attr.AttributeKey.AttributeParseException;
 import probability.rules.Value.StringValue;
 
-abstract class Comparator extends Operation {
+abstract class Comparator extends BinaryOperator {
 
-  protected Comparator(String symbol) {
-    super(symbol);
+  protected Comparator(String symbol, int precedence) {
+    super(symbol, precedence);
   }
 
   @Override

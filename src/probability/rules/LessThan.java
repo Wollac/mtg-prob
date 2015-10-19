@@ -6,11 +6,11 @@ class LessThan extends Comparator {
 
   public LessThan() {
 
-    super("<");
+    super("<", 6);
   }
 
   @Override
-  public LessThan createInstance() {
+  public LessThan getInstance() {
 
     return new LessThan();
   }

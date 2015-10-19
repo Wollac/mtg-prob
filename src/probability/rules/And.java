@@ -2,14 +2,14 @@ package probability.rules;
 
 import probability.attr.ImmutableAttributeHolder;
 
-class And extends Operation {
+class And extends BinaryOperator {
 
   public And() {
-    super("AND");
+    super("AND", 11);
   }
 
   @Override
-  public And createInstance() {
+  public And getInstance() {
     return new And();
   }
 

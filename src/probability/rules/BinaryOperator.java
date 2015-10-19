@@ -4,21 +4,32 @@ import java.util.Stack;
 
 import probability.attr.AttributeKey.AttributeParseException;
 
-abstract class Operation implements Expression {
+abstract class BinaryOperator implements Operator {
 
-  protected String _symbol;
+  private final String _symbol;
+
+  private final int _precedence;
 
   protected Expression _leftOperand = null;
 
   protected Expression _rightOperand = null;
 
-  protected Operation(String symbol) {
+  protected BinaryOperator(String symbol, int precedence) {
 
     _symbol = symbol;
+    _precedence = precedence;
   }
 
-  public abstract Operation createInstance();
+  @Override
+  public abstract Operator getInstance();
 
+  @Override
+  public int getPrecedence() {
+
+    return _precedence;
+  }
+
+  @Override
   public String getSymbol() {
 
     return this._symbol;
@@ -41,6 +52,11 @@ abstract class Operation implements Expression {
     result.parse(stack);
 
     return result;
+  }
+
+  @Override
+  public ExpressionType getExpressionType() {
+    return ExpressionType.OPERATOR;
   }
 
   @Override

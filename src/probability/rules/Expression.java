@@ -7,8 +7,14 @@ import probability.attr.ImmutableAttributeHolder;
 
 interface Expression {
 
-    public boolean interpret(ImmutableAttributeHolder bindings);
+  public enum ExpressionType {
+    VALUE, FUNCTION, OPERATOR, OPEN_PARENTHESIS, CLOSE_PARENTHESIS;
+  }
 
-    public void parse(Stack<Expression> stack) throws AttributeParseException;
+  public ExpressionType getExpressionType();
+
+  public abstract boolean interpret(ImmutableAttributeHolder bindings);
+
+  public abstract void parse(Stack<Expression> stack) throws AttributeParseException;
 
 }

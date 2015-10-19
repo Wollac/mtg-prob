@@ -7,8 +7,9 @@ import probability.rules.VariableHolder;
 
 public class MulliganRule {
 
-  private static final String[] DEFAULT_RULES_RPN =
-      {"CARDS 5 > LANDS 2 < NONLANDS 2 < OR AND", "CARDS 5 = LANDS 1 < NONLANDS 1 < OR AND"};
+  private static final String[] DEFAULT_RULES_RPN = {
+      "(CARDS > 5) AND ((LANDS < 2) OR (NONLANDS < 2))",
+      "(CARDS = 5) AND ((LANDS < 1) OR (NONLANDS < 1))"};
 
   private final Rule _rule;
 
@@ -31,7 +32,7 @@ public class MulliganRule {
 
     try {
       for (String rule : DEFAULT_RULES_RPN) {
-        builder.withExpression(ExpressionParser.parseRPNString(variables, rule));
+        builder.withExpressions(ExpressionParser.parseString(variables, rule));
       }
     }
     // TODO: only catch actual exceptions

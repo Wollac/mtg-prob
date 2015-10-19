@@ -6,11 +6,11 @@ class GreaterThan extends Comparator {
 
   public GreaterThan() {
 
-    super(">");
+    super(">", 6);
   }
 
   @Override
-  public GreaterThan createInstance() {
+  public GreaterThan getInstance() {
 
     return new GreaterThan();
   }
