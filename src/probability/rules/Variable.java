@@ -30,14 +30,18 @@ class Variable<T> extends UnparsableToken implements Expression, Token {
     return getType().getSimpleName();
   }
 
-  public Value<T> createParsedValue(Value<String> stringValue) throws AttributeParseException {
+  public Value<T> createParsedValue(Value<String> stringValue) throws RulesTokenException {
 
     return createParsedValue(stringValue.getValue());
   }
 
-  public Value<T> createParsedValue(String valueString) throws AttributeParseException {
+  public Value<T> createParsedValue(String valueString) throws RulesTokenException {
 
-    return new Value<>(_key.parseValue(valueString), this);
+    try {
+      return new Value<>(_key.parseValue(valueString), this);
+    } catch (AttributeParseException e) {
+      throw new RulesTokenException(e.getMessage());
+    }
   }
 
   public static <T> Variable<T> createVariable(AttributeKey<T> key) {
@@ -46,7 +50,7 @@ class Variable<T> extends UnparsableToken implements Expression, Token {
   }
 
   @Override
-  public TokenType getExpressionType() {
+  public TokenType getTokenType() {
     return TokenType.VALUE;
   }
 

@@ -28,7 +28,7 @@ class Value<T> extends UnparsableToken implements Expression, Token {
   }
 
   @Override
-  public TokenType getExpressionType() {
+  public TokenType getTokenType() {
     return TokenType.VALUE;
   }
 

@@ -11,10 +11,10 @@ import java.util.Stack;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
-import probability.attr.AttributeKey.AttributeParseException;
 import probability.rules.Parentheses.CloseParenthesis;
 import probability.rules.Parentheses.OpenParenthesis;
 import probability.rules.StringTokenizer.StringTokenType;
+import probability.rules.Token.RulesTokenException;
 import probability.rules.Value.StringValue;
 
 public class RuleLoader {
@@ -109,7 +109,13 @@ public class RuleLoader {
   private static Expression parseInfixTokens(List<Token> infixExpressions, int lineNumber)
       throws RulesParseException {
 
-    Stack<Token> rpnStack = ShuntingYardAlgorithm.infix2rpn(infixExpressions);
+    Stack<Token> rpnStack;
+    try {
+      rpnStack = ShuntingYardAlgorithm.infix2rpn(infixExpressions);
+    } catch (RulesTokenException e) {
+      throw new RulesParseException(e.getMessage(), lineNumber, e);
+    }
+
     return parseRPNStack(rpnStack, lineNumber);
   }
 
@@ -123,8 +129,8 @@ public class RuleLoader {
     Expression expression;
     try {
       expression = stack.pop().parse(stack);
-    } catch (AttributeParseException e) {
-      throw new RulesParseException("Value could not be parsed", lineNumber, e);
+    } catch (RulesTokenException e) {
+      throw new RulesParseException(e.getMessage(), lineNumber, e);
     }
 
     if (!stack.isEmpty()) {
