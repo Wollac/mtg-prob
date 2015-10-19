@@ -1,15 +1,15 @@
 package probability.core;
 
 import probability.attr.IntegerAttributeKey;
-import probability.rules.ExpressionParser;
 import probability.rules.Rule;
+import probability.rules.RuleLoader;
 import probability.rules.VariableHolder;
 
 public class MulliganRule {
 
-  private static final String[] DEFAULT_RULES_RPN = {
-      "(CARDS > 5) AND ((LANDS < 2) OR (NONLANDS < 2))",
-      "(CARDS = 5) AND ((LANDS < 1) OR (NONLANDS < 1))"};
+  private static final String DEFAULT_RULES_RPN =
+      "(CARDS > 5) AND ((LANDS < 2) OR (NONLANDS < 2))\n"
+          + "(CARDS = 5) AND ((LANDS < 1) OR (NONLANDS < 1))";
 
   private final Rule _rule;
 
@@ -28,19 +28,18 @@ public class MulliganRule {
   }
 
   private static Rule getDefaultRule(VariableHolder variables) {
-    Rule.Builder builder = new Rule.Builder();
 
+    Rule rule;
     try {
-      for (String rule : DEFAULT_RULES_RPN) {
-        builder.withExpressions(ExpressionParser.parseString(variables, rule));
-      }
+      RuleLoader loader = new RuleLoader(variables);
+      rule = loader.readFromString(DEFAULT_RULES_RPN);
     }
     // TODO: only catch actual exceptions
     catch (Exception e) {
       throw new IllegalStateException("Error parsing default rules", e);
     }
 
-    return builder.build();
+    return rule;
   }
 
   public boolean takeMulligan(int lands, int cards) {

@@ -4,7 +4,7 @@ import java.util.Stack;
 
 import probability.attr.AttributeKey.AttributeParseException;
 
-abstract class BinaryOperator implements Operator {
+abstract class BinaryOperator implements Operator, Expression {
 
   private final String _symbol;
 
@@ -37,26 +37,27 @@ abstract class BinaryOperator implements Operator {
 
   /** Parse expressions in RPN. */
   @Override
-  public void parse(Stack<Expression> stack) throws AttributeParseException {
+  public Expression parse(Stack<Token> stack) throws AttributeParseException {
 
     _rightOperand = extractOperand(stack);
     _leftOperand = extractOperand(stack);
+
+    return this;
   }
 
-  private Expression extractOperand(Stack<Expression> stack) throws AttributeParseException {
+  private Expression extractOperand(Stack<Token> stack) throws AttributeParseException {
 
     if (stack.isEmpty()) {
       throw new IllegalArgumentException("Operand missing for " + getSymbol());
     }
-    Expression result = stack.pop();
-    result.parse(stack);
 
-    return result;
+    Token top = stack.pop();
+    return top.parse(stack);
   }
 
   @Override
-  public ExpressionType getExpressionType() {
-    return ExpressionType.OPERATOR;
+  public TokenType getExpressionType() {
+    return TokenType.OPERATOR;
   }
 
   @Override

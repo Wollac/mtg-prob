@@ -3,7 +3,6 @@ package probability.rules;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StreamTokenizer;
-import java.io.StringReader;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,7 +10,7 @@ import com.google.common.primitives.Chars;
 
 public class StringTokenizer {
 
-  public static enum TokenType {
+  public static enum StringTokenType {
     STRING, QUOTED_STRING, OPEN_PARENTHESIS, CLOSE_PARENTHESIS, EOL, EOF, INVALID
   }
 
@@ -22,12 +21,6 @@ public class StringTokenizer {
   private final StreamTokenizer _st;
 
   private String _tokenValue;
-
-  public StringTokenizer(String string) throws IOException {
-
-    // TODO: the StringReader is not closed properly
-    this(new StringReader(string));
-  }
 
   public StringTokenizer(Reader reader) {
 
@@ -51,7 +44,7 @@ public class StringTokenizer {
     return tokenizer;
   }
 
-  public TokenType nextToken() throws IOException {
+  public StringTokenType nextToken() throws IOException {
 
     int ttype = _st.nextToken();
     switch (ttype) {
@@ -81,28 +74,28 @@ public class StringTokenizer {
     return _tokenValue;
   }
 
-  public TokenType tokenType() {
+  public StringTokenType tokenType() {
 
     return code2TokenType(_st.ttype);
   }
 
-  private static TokenType code2TokenType(int code) {
+  private static StringTokenType code2TokenType(int code) {
 
     switch (code) {
       case StreamTokenizer.TT_EOF:
-        return TokenType.EOF;
+        return StringTokenType.EOF;
       case StreamTokenizer.TT_EOL:
-        return TokenType.EOL;
+        return StringTokenType.EOL;
       case StreamTokenizer.TT_WORD:
-        return TokenType.STRING;
+        return StringTokenType.STRING;
       case QUOTE_CHAR:
-        return TokenType.QUOTED_STRING;
+        return StringTokenType.QUOTED_STRING;
       case Parentheses.OPEN_PARENTHESIS_CHAR:
-        return TokenType.OPEN_PARENTHESIS;
+        return StringTokenType.OPEN_PARENTHESIS;
       case Parentheses.CLOSE_PARENTHESIS_CHAR:
-        return TokenType.CLOSE_PARENTHESIS;
+        return StringTokenType.CLOSE_PARENTHESIS;
       default:
-        return TokenType.INVALID;
+        return StringTokenType.INVALID;
     }
   }
 

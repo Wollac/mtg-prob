@@ -3,9 +3,8 @@ package probability.rules;
 import java.util.Stack;
 
 import probability.attr.AttributeKey.AttributeParseException;
-import probability.attr.ImmutableAttributeHolder;
 
-interface Parentheses extends Operator {
+interface Parentheses extends Operator, Token {
 
   static final char OPEN_PARENTHESIS_CHAR = '(';
   static final char CLOSE_PARENTHESIS_CHAR = ')';
@@ -14,15 +13,6 @@ interface Parentheses extends Operator {
 
   enum OpenParenthesis implements Parentheses {
     INSTANCE;
-
-    @Override
-    public boolean interpret(ImmutableAttributeHolder bindings) {
-      // TODO: throw correct excpetion
-      return false;
-    }
-
-    @Override
-    public void parse(Stack<Expression> stack) throws AttributeParseException {}
 
     @Override
     public Operator getInstance() {
@@ -40,23 +30,20 @@ interface Parentheses extends Operator {
     }
 
     @Override
-    public ExpressionType getExpressionType() {
-      return ExpressionType.OPEN_PARENTHESIS;
+    public TokenType getExpressionType() {
+      return TokenType.OPEN_PARENTHESIS;
+    }
+
+    @Override
+    public Expression parse(Stack<Token> stack) throws AttributeParseException {
+      throw new IllegalStateException(
+          getClass().getName() + " cannot be parsed into an expression");
     }
 
   }
 
   enum CloseParenthesis implements Parentheses {
     INSTANCE;
-
-    @Override
-    public boolean interpret(ImmutableAttributeHolder bindings) {
-      // TODO: throw correct excpetion
-      return false;
-    }
-
-    @Override
-    public void parse(Stack<Expression> stack) throws AttributeParseException {}
 
     @Override
     public Operator getInstance() {
@@ -74,8 +61,14 @@ interface Parentheses extends Operator {
     }
 
     @Override
-    public ExpressionType getExpressionType() {
-      return ExpressionType.CLOSE_PARENTHESIS;
+    public TokenType getExpressionType() {
+      return TokenType.CLOSE_PARENTHESIS;
+    }
+
+    @Override
+    public Expression parse(Stack<Token> stack) throws AttributeParseException {
+      throw new IllegalStateException(
+          getClass().getName() + " cannot be parsed into an expression");
     }
 
   }
