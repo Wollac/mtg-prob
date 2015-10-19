@@ -1,5 +1,6 @@
 package probability.core;
 
+import java.io.File;
 import java.io.IOException;
 
 import probability.attr.IntegerAttributeKey;
@@ -10,18 +11,23 @@ import probability.rules.VariableHolder;
 
 public class MulliganRule {
 
-  private static final String DEFAULT_RULES_RPN =
-      "(CARDS > 5) AND ((LANDS < 2) OR (NONLANDS < 2))\n"
-          + "(CARDS = 5) AND ((LANDS < 1) OR (NONLANDS < 1))";
+  private static final String DEFAULT_RULES =
+      "CARDS > 5 AND (LANDS < 2 OR NONLANDS < 2)\n" + "CARDS = 5 AND (LANDS < 1 OR NONLANDS < 1)\n";
 
-  private final Rule _rule;
+  private Rule _rule;
 
   private final VariableHolder _variables = new VariableHolder();
 
   public MulliganRule() {
-
     registerVariables();
-    _rule = getDefaultRule(_variables);
+
+    _rule = getDefaultRule();
+  }
+
+  public MulliganRule(File file) {
+    registerVariables();
+
+    _rule = loadFromFile(file);
   }
 
   private void registerVariables() {
@@ -30,12 +36,28 @@ public class MulliganRule {
     _variables.registerVariable(VARIABLES.CARDS);
   }
 
-  private static Rule getDefaultRule(VariableHolder variables) {
+  private Rule loadFromFile(File file) {
+
+    try {
+      RuleLoader loader = new RuleLoader(_variables);
+      return loader.readFromFile(file);
+    } catch (IOException e) {
+      System.err.println("Could not read mulligan rules file: " + e.getMessage());
+    } catch (RulesParseException e) {
+      System.err.println("Error parsing rules file " + file.getName() + " in line "
+          + e.getErrorLine() + ": " + e.getMessage());
+    }
+    System.err.println("Using default mulligan rules");
+
+    return getDefaultRule();
+  }
+
+  private Rule getDefaultRule() {
 
     Rule rule;
     try {
-      RuleLoader loader = new RuleLoader(variables);
-      rule = loader.readFromString(DEFAULT_RULES_RPN);
+      RuleLoader loader = new RuleLoader(_variables);
+      rule = loader.readFromString(DEFAULT_RULES);
     } catch (IOException | RulesParseException e) {
       throw new IllegalStateException("Error parsing default rules", e);
     }
