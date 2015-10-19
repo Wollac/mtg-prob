@@ -12,16 +12,16 @@ abstract class Comparator extends BinaryOperator {
   }
 
   @Override
-  public void parse(Stack<Expression> stack) throws AttributeParseException {
+  public Expression parse(Stack<Token> stack) throws AttributeParseException {
 
-    Expression right = stack.pop();
-    Expression left = stack.pop();
+    Token right = stack.pop();
+    Token left = stack.pop();
 
     if (!(left instanceof Variable<?>)) {
       throw new IllegalArgumentException("The LHS of " + getSymbol() + " must be a variable");
     }
-    _leftOperand = left;
     Variable<?> var = (Variable<?>) left;
+    _leftOperand = var;
 
     if (!Comparable.class.isAssignableFrom(var.getType())) {
       new IllegalArgumentException("Cannot compare a variable of type " + var.getTypeName());
@@ -32,6 +32,8 @@ abstract class Comparator extends BinaryOperator {
     } else {
       throw new IllegalArgumentException("The RHS of operator " + getSymbol() + " must be a value");
     }
+
+    return this;
   }
 
 }

@@ -10,26 +10,7 @@ public class Rule {
 
   private List<Expression> _expressions;
 
-  public static class Builder {
-
-    private List<Expression> expressions = new ArrayList<>();
-
-    public Builder withExpression(Expression expr) {
-      expressions.add(expr);
-      return this;
-    }
-
-    public Builder withExpressions(List<Expression> exprs) {
-      expressions.addAll(exprs);
-      return this;
-    }
-
-    public Rule build() {
-      return new Rule(expressions);
-    }
-  }
-
-  private Rule(List<Expression> expressions) {
+  Rule(List<Expression> expressions) {
     this._expressions = expressions;
   }
 

@@ -1,12 +1,10 @@
 package probability.rules;
 
 import java.util.Objects;
-import java.util.Stack;
 
-import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
 
-class Value<T> implements Expression {
+class Value<T> extends UnparsableToken implements Expression, Token {
 
   private T _value;
 
@@ -30,20 +28,13 @@ class Value<T> implements Expression {
   }
 
   @Override
-  public ExpressionType getExpressionType() {
-    return ExpressionType.VALUE;
+  public TokenType getExpressionType() {
+    return TokenType.VALUE;
   }
-
 
   @Override
   public boolean interpret(ImmutableAttributeHolder bindings) {
     return true;
-  }
-
-  @Override
-  public void parse(Stack<Expression> stack) throws AttributeParseException {
-    throw new IllegalArgumentException("The value " + _value + " of type " + _type
-        + " cannot be evaluated");
   }
 
   @Override

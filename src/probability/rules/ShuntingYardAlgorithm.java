@@ -3,18 +3,18 @@ package probability.rules;
 import java.util.List;
 import java.util.Stack;
 
-import probability.rules.Expression.ExpressionType;
 import probability.rules.Parentheses.OpenParenthesis;
+import probability.rules.Token.TokenType;
 
 class ShuntingYardAlgorithm {
 
-  public static Stack<Expression> infix2rpn(List<Expression> infixExpressions) {
+  public static Stack<Token> infix2rpn(List<Token> infixExpressions) {
 
-    Stack<Expression> output = new Stack<Expression>();
-    Stack<Operator> operatorStack = new Stack<Operator>();
+    Stack<Token> output = new Stack<>();
+    Stack<Operator> operatorStack = new Stack<>();
 
-    for (Expression token : infixExpressions) {
-      ExpressionType type = token.getExpressionType();
+    for (Token token : infixExpressions) {
+      TokenType type = token.getExpressionType();
       switch (type) {
         case VALUE:
         case FUNCTION:
@@ -41,7 +41,7 @@ class ShuntingYardAlgorithm {
     operatorStack.push(OpenParenthesis.INSTANCE);
   }
 
-  private static void handleCloseParenthesis(Stack<Operator> operatorStack, Stack<Expression> output) {
+  private static void handleCloseParenthesis(Stack<Operator> operatorStack, Stack<Token> output) {
 
     boolean matchingParenthesis = false;
     while (!operatorStack.isEmpty()) {
@@ -60,12 +60,12 @@ class ShuntingYardAlgorithm {
     }
   }
 
-  private static void handleOperator(Expression token, Stack<Operator> operatorStack,
-      Stack<Expression> output) {
+  private static void handleOperator(Token token, Stack<Operator> operatorStack,
+      Stack<Token> output) {
 
     if (!(token instanceof Operator)) {
-      throw new IllegalStateException(token.getClass() + " returns the type "
-          + ExpressionType.OPERATOR + " but it is no extention of " + Operator.class);
+      throw new IllegalStateException(token.getClass() + " returns the type " + TokenType.OPERATOR
+          + " but it is no extention of " + Operator.class);
     }
 
     Operator operator = (Operator) token;
@@ -81,7 +81,7 @@ class ShuntingYardAlgorithm {
     operatorStack.push(operator);
   }
 
-  private static void handleOperatorStack(Stack<Operator> operatorStack, Stack<Expression> output) {
+  private static void handleOperatorStack(Stack<Operator> operatorStack, Stack<Token> output) {
     while (!operatorStack.isEmpty()) {
       Operator op = operatorStack.pop();
 

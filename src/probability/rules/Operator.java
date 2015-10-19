@@ -1,6 +1,6 @@
 package probability.rules;
 
-public interface Operator extends Expression {
+public interface Operator extends Token {
   
   public String getSymbol();
 
