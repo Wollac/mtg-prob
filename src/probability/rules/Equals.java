@@ -2,7 +2,6 @@ package probability.rules;
 
 import java.util.Stack;
 
-import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
 import probability.rules.Value.StringValue;
 
@@ -20,13 +19,13 @@ class Equals extends BinaryOperator {
   }
 
   @Override
-  public Expression parse(Stack<Token> stack) throws AttributeParseException {
+  public Expression parse(Stack<Token> stack) throws RulesTokenException {
 
     Token right = stack.pop();
     Token left = stack.pop();
 
     if (!(left instanceof Variable<?>)) {
-      throw new IllegalArgumentException("The LHS of " + getSymbol() + " must be a variable");
+      throw new RulesTokenException("The LHS of " + getSymbol() + " must be a variable");
     }
     Variable<?> var = (Variable<?>) left;
     _leftOperand = var;
@@ -34,7 +33,7 @@ class Equals extends BinaryOperator {
     if (right instanceof StringValue) {
       _rightOperand = var.createParsedValue((StringValue) right);
     } else {
-      throw new IllegalArgumentException("The RHS of " + getSymbol() + " must be a  value");
+      throw new RulesTokenException("The RHS of " + getSymbol() + " must be a  value");
     }
 
     return this;

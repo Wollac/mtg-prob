@@ -2,9 +2,7 @@ package probability.rules;
 
 import java.util.Stack;
 
-import probability.attr.AttributeKey.AttributeParseException;
-
-abstract class BinaryOperator implements Operator, Expression {
+abstract class BinaryOperator implements Operator, Expression, Token {
 
   private final String _symbol;
 
@@ -35,9 +33,8 @@ abstract class BinaryOperator implements Operator, Expression {
     return this._symbol;
   }
 
-  /** Parse expressions in RPN. */
   @Override
-  public Expression parse(Stack<Token> stack) throws AttributeParseException {
+  public Expression parse(Stack<Token> stack) throws RulesTokenException {
 
     _rightOperand = extractOperand(stack);
     _leftOperand = extractOperand(stack);
@@ -45,10 +42,10 @@ abstract class BinaryOperator implements Operator, Expression {
     return this;
   }
 
-  private Expression extractOperand(Stack<Token> stack) throws AttributeParseException {
+  private Expression extractOperand(Stack<Token> stack) throws RulesTokenException {
 
     if (stack.isEmpty()) {
-      throw new IllegalArgumentException("Operand missing for " + getSymbol());
+      throw new RulesTokenException("Operand missing for " + getSymbol());
     }
 
     Token top = stack.pop();
@@ -56,7 +53,7 @@ abstract class BinaryOperator implements Operator, Expression {
   }
 
   @Override
-  public TokenType getExpressionType() {
+  public TokenType getTokenType() {
     return TokenType.OPERATOR;
   }
 

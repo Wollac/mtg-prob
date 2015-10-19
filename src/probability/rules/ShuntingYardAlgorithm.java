@@ -4,17 +4,18 @@ import java.util.List;
 import java.util.Stack;
 
 import probability.rules.Parentheses.OpenParenthesis;
+import probability.rules.Token.RulesTokenException;
 import probability.rules.Token.TokenType;
 
 class ShuntingYardAlgorithm {
 
-  public static Stack<Token> infix2rpn(List<Token> infixExpressions) {
+  public static Stack<Token> infix2rpn(List<Token> infixTokens) throws RulesTokenException {
 
     Stack<Token> output = new Stack<>();
     Stack<Operator> operatorStack = new Stack<>();
 
-    for (Token token : infixExpressions) {
-      TokenType type = token.getExpressionType();
+    for (Token token : infixTokens) {
+      TokenType type = token.getTokenType();
       switch (type) {
         case VALUE:
         case FUNCTION:
@@ -41,7 +42,8 @@ class ShuntingYardAlgorithm {
     operatorStack.push(OpenParenthesis.INSTANCE);
   }
 
-  private static void handleCloseParenthesis(Stack<Operator> operatorStack, Stack<Token> output) {
+  private static void handleCloseParenthesis(Stack<Operator> operatorStack, Stack<Token> output)
+      throws RulesTokenException {
 
     boolean matchingParenthesis = false;
     while (!operatorStack.isEmpty()) {
@@ -56,7 +58,7 @@ class ShuntingYardAlgorithm {
     }
 
     if (!matchingParenthesis) {
-      throw new IllegalArgumentException("mismatched parentheses");
+      throw new RulesTokenException("Mismatched parentheses");
     }
   }
 
@@ -65,7 +67,7 @@ class ShuntingYardAlgorithm {
 
     if (!(token instanceof Operator)) {
       throw new IllegalStateException(token.getClass() + " returns the type " + TokenType.OPERATOR
-          + " but it is no extention of " + Operator.class);
+          + " but it is no sub class of " + Operator.class);
     }
 
     Operator operator = (Operator) token;
@@ -81,13 +83,13 @@ class ShuntingYardAlgorithm {
     operatorStack.push(operator);
   }
 
-  private static void handleOperatorStack(Stack<Operator> operatorStack, Stack<Token> output) {
+  private static void handleOperatorStack(Stack<Operator> operatorStack, Stack<Token> output)
+      throws RulesTokenException {
     while (!operatorStack.isEmpty()) {
       Operator op = operatorStack.pop();
 
       if (op == OpenParenthesis.INSTANCE) {
-        // TODO: throw less general exception
-        throw new IllegalArgumentException("mismatched parentheses");
+        throw new RulesTokenException("Mismatched parentheses");
       } else {
         output.push(op);
       }
