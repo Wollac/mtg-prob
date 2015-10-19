@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -26,7 +25,7 @@ public class RuleLoader {
     _variables = variables;
   }
 
-  public Rule readFromFile(File file) throws IOException, ParseException, AttributeParseException {
+  public Rule readFromFile(File file) throws IOException, RulesParseException {
 
     try (Reader reader = Files.newReader(file, Charsets.UTF_8)) {
 
@@ -35,8 +34,7 @@ public class RuleLoader {
     }
   }
 
-  public Rule readFromString(String string)
-      throws IOException, ParseException, AttributeParseException {
+  public Rule readFromString(String string) throws IOException, RulesParseException {
 
     try (Reader reader = new StringReader(string)) {
 
@@ -45,26 +43,26 @@ public class RuleLoader {
     }
   }
 
-  private List<Expression> parse(Reader reader)
-      throws IOException, ParseException, AttributeParseException {
+  private List<Expression> parse(Reader reader) throws IOException, RulesParseException {
 
     List<Expression> rules = new ArrayList<>();
 
     StringTokenizer tokenizer = new StringTokenizer(reader);
 
-    while (tokenizer.tokenType() != StringTokenType.EOF) {
+    for (int lineNumber = 1; tokenizer.tokenType() != StringTokenType.EOF; lineNumber++) {
       List<Token> tokens = tokenizeLine(tokenizer);
 
       // ignore empty lines
       if (!tokens.isEmpty()) {
-        rules.add(parseInfixTokens(tokens));
+        rules.add(parseInfixTokens(tokens, lineNumber));
       }
     }
 
     return rules;
   }
 
-  private List<Token> tokenizeLine(StringTokenizer tokenizer) throws IOException, ParseException {
+  private List<Token> tokenizeLine(StringTokenizer tokenizer)
+      throws IOException, RulesParseException {
 
     List<Token> lineToken = new ArrayList<>();
 
@@ -88,7 +86,7 @@ public class RuleLoader {
           lineToken.add(CloseParenthesis.INSTANCE);
           break;
         case INVALID:
-          throw new ParseException("Parsing Error: unrecognized token: " + tokenizer.tokenValue(),
+          throw new RulesParseException("Invalid character " + tokenizer.tokenValue(),
               tokenizer.currentLine());
       }
     }
@@ -108,27 +106,53 @@ public class RuleLoader {
     return new StringValue(tokenValue);
   }
 
-  private static Expression parseInfixTokens(List<Token> infixExpressions)
-      throws AttributeParseException {
+  private static Expression parseInfixTokens(List<Token> infixExpressions, int lineNumber)
+      throws RulesParseException {
 
     Stack<Token> rpnStack = ShuntingYardAlgorithm.infix2rpn(infixExpressions);
-    return parseRPNStack(rpnStack);
+    return parseRPNStack(rpnStack, lineNumber);
   }
 
-  private static Expression parseRPNStack(Stack<Token> stack) throws AttributeParseException {
+  private static Expression parseRPNStack(Stack<Token> stack, int lineNumber)
+      throws RulesParseException {
 
     if (stack.isEmpty()) {
       return null;
     }
 
-    Expression expression = stack.pop().parse(stack);
+    Expression expression;
+    try {
+      expression = stack.pop().parse(stack);
+    } catch (AttributeParseException e) {
+      throw new RulesParseException("Value could not be parsed", lineNumber, e);
+    }
 
     if (!stack.isEmpty()) {
-      // TODO: throw proper exception
-      throw new IllegalArgumentException();
+      throw new RulesParseException(stack.peek() + " is no opperant of any operation", lineNumber);
     }
 
     return expression;
+  }
+
+  public static class RulesParseException extends Exception {
+
+    private static final long serialVersionUID = 4667863316378356215L;
+
+    private final int _errorLine;
+
+    public RulesParseException(String str, int errorLine) {
+      super(str);
+      _errorLine = errorLine;
+    }
+
+    public RulesParseException(String str, int errorLine, Throwable cause) {
+      super(str, cause);
+      _errorLine = errorLine;
+    }
+
+    public int getErrorLine() {
+      return _errorLine;
+    }
   }
 
 }

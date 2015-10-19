@@ -1,8 +1,11 @@
 package probability.core;
 
+import java.io.IOException;
+
 import probability.attr.IntegerAttributeKey;
 import probability.rules.Rule;
 import probability.rules.RuleLoader;
+import probability.rules.RuleLoader.RulesParseException;
 import probability.rules.VariableHolder;
 
 public class MulliganRule {
@@ -33,9 +36,7 @@ public class MulliganRule {
     try {
       RuleLoader loader = new RuleLoader(variables);
       rule = loader.readFromString(DEFAULT_RULES_RPN);
-    }
-    // TODO: only catch actual exceptions
-    catch (Exception e) {
+    } catch (IOException | RulesParseException e) {
       throw new IllegalStateException("Error parsing default rules", e);
     }
 
