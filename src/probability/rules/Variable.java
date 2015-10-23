@@ -78,7 +78,10 @@ class Variable<T> extends UnparsableToken implements Expression, Token {
 
     if (Comparable.class.isAssignableFrom(getType())) {
 
-      Comparable comparable = (Comparable) getValue(bindings);
+      // This cast is correct, as getType() gives aus the class type of the value and due to type
+      // erasure the generic type of Comparable becomes irrelevant
+      @SuppressWarnings("unchecked")
+      Comparable<Object> comparable = (Comparable<Object>) getValue(bindings);
 
       return comparable.compareTo(other.getValue());
     }
@@ -91,11 +94,6 @@ class Variable<T> extends UnparsableToken implements Expression, Token {
       throw new IllegalStateException("Cannot compare variable " + _key.getName() + " of type "
           + _key.getValueType() + " with a value of type " + getTypeName());
     }
-  }
-
-  public static <T extends Comparable<T>> int compare(T x, T y) {
-
-    return x.compareTo(y);
   }
 
   @Override
