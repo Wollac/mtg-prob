@@ -2,17 +2,17 @@ package probability.rules;
 
 import probability.attr.ImmutableAttributeHolder;
 
-class GreaterThan extends Comparator {
+class Equal extends VariableValueOperator {
 
-    public GreaterThan() {
+    Equal() {
 
-        super(">", 6);
+        super("=", 7);
     }
 
     @Override
-    public GreaterThan getInstance() {
+    public Equal getInstance() {
 
-        return new GreaterThan();
+        return new Equal();
     }
 
     @Override
@@ -21,7 +21,7 @@ class GreaterThan extends Comparator {
         Variable<?> var = (Variable<?>) _leftOperand;
         Value<?> value = (Value<?>) _rightOperand;
 
-        return var.compareTo(value, bindings) > 0;
+        return var.equals(value, bindings);
     }
 
 }

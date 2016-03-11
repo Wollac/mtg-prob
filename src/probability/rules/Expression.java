@@ -4,6 +4,6 @@ import probability.attr.ImmutableAttributeHolder;
 
 interface Expression {
 
-  boolean interpret(ImmutableAttributeHolder bindings);
+    boolean interpret(ImmutableAttributeHolder bindings);
 
 }
