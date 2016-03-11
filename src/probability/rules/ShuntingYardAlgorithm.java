@@ -9,94 +9,98 @@ import probability.rules.Token.TokenType;
 
 class ShuntingYardAlgorithm {
 
-  public static Stack<Token> infix2rpn(List<Token> infixTokens) throws RulesTokenException {
 
-    Stack<Token> output = new Stack<>();
-    Stack<Operator> operatorStack = new Stack<>();
-
-    for (Token token : infixTokens) {
-      TokenType type = token.getTokenType();
-      switch (type) {
-        case VALUE:
-        case FUNCTION:
-          output.push(token);
-          break;
-        case OPERATOR:
-          handleOperator(token, operatorStack, output);
-          break;
-        case OPEN_PARENTHESIS:
-          handleOpenParenthesis(operatorStack);
-          break;
-        case CLOSE_PARENTHESIS:
-          handleCloseParenthesis(operatorStack, output);
-          break;
-      }
+    private ShuntingYardAlgorithm() {
     }
 
-    handleOperatorStack(operatorStack, output);
+    public static Stack<Token> infix2rpn(List<Token> infixTokens) throws RulesTokenException {
 
-    return output;
-  }
+        Stack<Token> output = new Stack<>();
+        Stack<Operator> operatorStack = new Stack<>();
 
-  private static void handleOpenParenthesis(Stack<Operator> operatorStack) {
-    operatorStack.push(OpenParenthesis.INSTANCE);
-  }
+        for (Token token : infixTokens) {
+            TokenType type = token.getTokenType();
+            switch (type) {
+                case VALUE:
+                case FUNCTION:
+                    output.push(token);
+                    break;
+                case OPERATOR:
+                    handleOperator(token, operatorStack, output);
+                    break;
+                case OPEN_PARENTHESIS:
+                    handleOpenParenthesis(operatorStack);
+                    break;
+                case CLOSE_PARENTHESIS:
+                    handleCloseParenthesis(operatorStack, output);
+                    break;
+            }
+        }
 
-  private static void handleCloseParenthesis(Stack<Operator> operatorStack, Stack<Token> output)
-      throws RulesTokenException {
+        handleOperatorStack(operatorStack, output);
 
-    boolean matchingParenthesis = false;
-    while (!operatorStack.isEmpty()) {
-      Operator op = operatorStack.pop();
-
-      if (op == OpenParenthesis.INSTANCE) {
-        matchingParenthesis = true;
-        break;
-      } else {
-        output.push(op);
-      }
+        return output;
     }
 
-    if (!matchingParenthesis) {
-      throw new RulesTokenException("Mismatched parentheses");
-    }
-  }
-
-  private static void handleOperator(Token token, Stack<Operator> operatorStack,
-      Stack<Token> output) {
-
-    if (!(token instanceof Operator)) {
-      throw new IllegalStateException(token.getClass() + " returns the type " + TokenType.OPERATOR
-          + " but it is no sub class of " + Operator.class);
+    private static void handleOpenParenthesis(Stack<Operator> operatorStack) {
+        operatorStack.push(OpenParenthesis.INSTANCE);
     }
 
-    Operator operator = (Operator) token;
-    while (!operatorStack.isEmpty()) {
-      Operator other = operatorStack.peek();
-      if (other == OpenParenthesis.INSTANCE) {
-        break;
-      }
-      if (operator.getPrecedence() >= other.getPrecedence()) {
-        output.push(operatorStack.pop());
-      } else {
-        break;
-      }
+    private static void handleCloseParenthesis(Stack<Operator> operatorStack, Stack<Token> output)
+            throws RulesTokenException {
+
+        boolean matchingParenthesis = false;
+        while (!operatorStack.isEmpty()) {
+            Operator op = operatorStack.pop();
+
+            if (op == OpenParenthesis.INSTANCE) {
+                matchingParenthesis = true;
+                break;
+            } else {
+                output.push(op);
+            }
+        }
+
+        if (!matchingParenthesis) {
+            throw new RulesTokenException("Mismatched parentheses");
+        }
     }
 
-    operatorStack.push(operator);
-  }
+    private static void handleOperator(Token token, Stack<Operator> operatorStack,
+                                       Stack<Token> output) {
 
-  private static void handleOperatorStack(Stack<Operator> operatorStack, Stack<Token> output)
-      throws RulesTokenException {
-    while (!operatorStack.isEmpty()) {
-      Operator op = operatorStack.pop();
+        if (!(token instanceof Operator)) {
+            throw new IllegalStateException(token.getClass() + " returns the type " + TokenType.OPERATOR
+                    + " but it is no sub class of " + Operator.class);
+        }
 
-      if (op == OpenParenthesis.INSTANCE) {
-        throw new RulesTokenException("Mismatched parentheses");
-      } else {
-        output.push(op);
-      }
+        Operator operator = (Operator) token;
+        while (!operatorStack.isEmpty()) {
+            Operator other = operatorStack.peek();
+            if (other == OpenParenthesis.INSTANCE) {
+                break;
+            }
+            if (operator.getPrecedence() >= other.getPrecedence()) {
+                output.push(operatorStack.pop());
+            } else {
+                break;
+            }
+        }
+
+        operatorStack.push(operator);
     }
-  }
+
+    private static void handleOperatorStack(Stack<Operator> operatorStack, Stack<Token> output)
+            throws RulesTokenException {
+        while (!operatorStack.isEmpty()) {
+            Operator op = operatorStack.pop();
+
+            if (op == OpenParenthesis.INSTANCE) {
+                throw new RulesTokenException("Mismatched parentheses");
+            } else {
+                output.push(op);
+            }
+        }
+    }
 
 }
