@@ -25,7 +25,7 @@ public abstract class AbstractCSVParser<T> {
 
 	private Map<AttributeKey<?>, Integer> _attribute2column;
 
-	public AbstractCSVParser(Reader reader) throws IOException {
+	protected AbstractCSVParser(Reader reader) throws IOException {
 		_reader = new CSVReader(new LineCommentReader(reader));
 
 		_attributes = new HashMap<>();

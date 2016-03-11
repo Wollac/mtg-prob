@@ -17,7 +17,7 @@ abstract class AbstractLand implements Land {
 
 	final private int hashCode;
 
-	protected AbstractLand(String name, Colors colors) {
+	AbstractLand(String name, Colors colors) {
 		_name = name;
 		_colors = Collections.unmodifiableSet(new HashSet<>(colors
 				.getColors()));

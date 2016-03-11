@@ -20,7 +20,7 @@ public class Hand {
 		_cards.addAll(draws);
 	}
 
-	public Collection<Card> getStartingHand() {
+	private Collection<Card> getStartingHand() {
 		return Collections.unmodifiableCollection(_cards.subList(0,
 				_startingHandSize));
 	}

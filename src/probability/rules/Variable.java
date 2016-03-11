@@ -35,7 +35,7 @@ class Variable<T> extends UnparsableToken implements Expression, Token {
     return createParsedValue(stringValue.getValue());
   }
 
-  public Value<T> createParsedValue(String valueString) throws RulesTokenException {
+  Value<T> createParsedValue(String valueString) throws RulesTokenException {
 
     try {
       return new Value<>(_key.parseValue(valueString), this);
@@ -60,7 +60,7 @@ class Variable<T> extends UnparsableToken implements Expression, Token {
     throw new IllegalStateException();
   }
 
-  public T getValue(ImmutableAttributeHolder bindings) {
+  T getValue(ImmutableAttributeHolder bindings) {
 
     return bindings.getAttributeValue(_key);
   }

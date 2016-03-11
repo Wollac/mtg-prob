@@ -12,14 +12,14 @@ public abstract class AttributeKey<T> {
 
 	final private Predicate<T> _validator;
 
-	public AttributeKey(String name, Class<T> type, T defaultValue, Predicate<T> validator) {
+	AttributeKey(String name, Class<T> type, T defaultValue, Predicate<T> validator) {
 		_name = name;
 		_defaultValue = defaultValue;
 		_type = type;
 		_validator = validator;
 	}
 
-	public AttributeKey(String name, Class<T> type, T defaultValue) {
+	AttributeKey(String name, Class<T> type, T defaultValue) {
 
 		// initialize with tautology
 		this(name, type, defaultValue, t -> true);

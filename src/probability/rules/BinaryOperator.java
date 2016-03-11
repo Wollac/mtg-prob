@@ -8,11 +8,11 @@ abstract class BinaryOperator implements Operator, Expression, Token {
 
   private final int _precedence;
 
-  protected Expression _leftOperand = null;
+  Expression _leftOperand = null;
 
-  protected Expression _rightOperand = null;
+  Expression _rightOperand = null;
 
-  protected BinaryOperator(String symbol, int precedence) {
+  BinaryOperator(String symbol, int precedence) {
 
     _symbol = symbol;
     _precedence = precedence;
