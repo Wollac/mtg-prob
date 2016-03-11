@@ -1,5 +1,8 @@
 package probability.core;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,128 +13,130 @@ import java.util.Map;
 import probability.config.Config;
 import probability.core.Card.CardType;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-
 public class Deck {
 
-	private final Config _config;
+    private final Config _config;
 
-	ArrayList<Card> _cards;
+    private ArrayList<Card> _cards;
 
-	public Deck(Config config) {
-		_config = config;
-		_cards = new ArrayList<>();
-	}
+    public Deck(Config config) {
+        _config = config;
+        _cards = new ArrayList<>();
+    }
 
-	public void add(Card card, int num) {
-		for (int i = 0; i < num; i++) {
-			_cards.add(card);
-		}
-	}
+    private static String cardCountsToString(Multiset<Card> cardCounts,
+                                             CardType type) {
+        StringBuilder sb = new StringBuilder();
 
-	public void add(Card card) {
-		add(card, 1);
-	}
+        if (type != null) {
+            sb.append(type).append(" (").append(cardCounts.size()).append("):\n");
+        }
 
-	public void addAll(Collection<? extends Card> cards) {
-		cards.forEach(this::add);
-	}
+        for (Card card : CardUtils.sortCardsByName(cardCounts.elementSet())) {
+            sb.append(String.format("%2dx " + card + "%n",
+                    cardCounts.count(card), card));
+        }
 
-	public List<Card> cards() {
-		return Collections.unmodifiableList(_cards);
-	}
+        return sb.toString();
+    }
 
-	public void fillWithDummies() {
-		if (_cards.size() > _config.numberOfCards()) {
-			throw new IllegalStateException(
-					"The predefined deck consists of more than "
-							+ _config.numberOfCards() + " cards");
-		}
+    private void add(Card card, int num) {
+        for (int i = 0; i < num; i++) {
+            _cards.add(card);
+        }
+    }
 
-		for (int i = _cards.size(); i < _config.numberOfCards(); i++) {
-			_cards.add(CardUtils.getDummyCard());
-		}
-	}
+    private void add(Card card) {
+        add(card, 1);
+    }
 
-	public void shuffle() {
-		java.util.Collections.shuffle(_cards);
-	}
+    public void addAll(Collection<? extends Card> cards) {
+        cards.forEach(this::add);
+    }
 
-	public Hand draw(int turn) {
-		return draw(turn, 0);
-	}
+    public List<Card> cards() {
+        return Collections.unmodifiableList(_cards);
+    }
 
-	public Hand draw(int turn, int mulligan) {
+    public void fillWithDummies() {
+        if (_cards.size() > _config.numberOfCards()) {
+            throw new IllegalStateException(
+                    "The predefined deck consists of more than "
+                            + _config.numberOfCards() + " cards");
+        }
 
-		int handSize = _config.initialHandSize();
+        for (int i = _cards.size(); i < _config.numberOfCards(); i++) {
+            _cards.add(CardUtils.getDummyCard());
+        }
+    }
 
-		if (_config.drawOnTurn()) {
-			handSize++;
-		}
+    public boolean isEmpty() {
 
-		handSize -= mulligan;
+        return _cards.isEmpty();
+    }
 
-		Collection<Card> startingHand = Collections.unmodifiableList(_cards
-				.subList(0, handSize));
+    public void shuffle() {
+        java.util.Collections.shuffle(_cards);
+    }
 
-		int totalSize = handSize + turn - 1;
+    public Hand draw(int turn) {
+        return draw(turn, 0);
+    }
 
-		Collection<Card> drawnCards = Collections.unmodifiableList(_cards
-				.subList(handSize, totalSize));
+    public Hand draw(int turn, int mulligan) {
 
-		return new Hand(startingHand, drawnCards);
-	}
+        int handSize = _config.initialHandSize();
 
-	public String toFormattedString() {
-		Map<CardType, Multiset<Card>> cardCounts = new HashMap<>();
+        if (_config.drawOnTurn()) {
+            handSize++;
+        }
 
-		for (CardType type : CardType.values()) {
-			cardCounts.put(type, HashMultiset.create());
-		}
+        handSize -= mulligan;
 
-		for (Card card : _cards) {
-			cardCounts.get(card.getCardType()).add(card);
-		}
+        Collection<Card> startingHand = Collections.unmodifiableList(_cards
+                .subList(0, handSize));
 
-		StringBuilder sb = new StringBuilder();
+        int totalSize = handSize + turn - 1;
 
-		for (CardType type : CardType.values()) {
-			sb.append(cardCountsToString(cardCounts.get(type), type));
-			sb.append('\n');
-		}
+        Collection<Card> drawnCards = Collections.unmodifiableList(_cards
+                .subList(handSize, totalSize));
 
-		return sb.toString();
-	}
+        return new Hand(startingHand, drawnCards);
+    }
 
-	private static String cardCountsToString(Multiset<Card> cardCounts,
-			CardType type) {
-		StringBuilder sb = new StringBuilder();
+    public String toFormattedString() {
+        Map<CardType, Multiset<Card>> cardCounts = new HashMap<>();
 
-		if (type != null) {
-			sb.append(type).append(" (").append(cardCounts.size()).append("):\n");
-		}
+        for (CardType type : CardType.values()) {
+            cardCounts.put(type, HashMultiset.create());
+        }
 
-		for (Card card : CardUtils.sortCardsByName(cardCounts.elementSet())) {
-			sb.append(String.format("%2dx " + card + "%n",
-					cardCounts.count(card), card));
-		}
+        for (Card card : _cards) {
+            cardCounts.get(card.getCardType()).add(card);
+        }
 
-		return sb.toString();
-	}
+        StringBuilder sb = new StringBuilder();
 
-	@Override
-	public String toString() {
+        for (CardType type : CardType.values()) {
+            sb.append(cardCountsToString(cardCounts.get(type), type));
+            sb.append('\n');
+        }
 
-		final Multiset<Card> cardCounts = HashMultiset.create(_cards);
+        return sb.toString();
+    }
 
-		StringBuilder sb = new StringBuilder();
+    @Override
+    public String toString() {
 
-		for (Card card : cardCounts.elementSet()) {
-			sb.append(cardCounts.count(card)).append("x ").append(card).append('\n');
-		}
+        final Multiset<Card> cardCounts = HashMultiset.create(_cards);
 
-		return sb.toString();
-	}
+        StringBuilder sb = new StringBuilder();
+
+        for (Card card : cardCounts.elementSet()) {
+            sb.append(cardCounts.count(card)).append("x ").append(card).append('\n');
+        }
+
+        return sb.toString();
+    }
 
 }
