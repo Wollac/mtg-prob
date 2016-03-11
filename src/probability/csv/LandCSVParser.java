@@ -72,21 +72,21 @@ public class LandCSVParser extends AbstractCSVParser<Land> {
 		}
 	}
 
-	private static enum LandTypes {
-		Basic, NonBasic, Tap, Check, Fast, Fetch, Reflecting;
+	private enum LandTypes {
+		Basic, NonBasic, Tap, Check, Fast, Fetch, Reflecting
 	}
 
-	private static interface ATTR {
+	private interface ATTR {
 
-		static final IntegerAttributeKey NUM = new IntegerAttributeKey("num", 1,
+		IntegerAttributeKey NUM = new IntegerAttributeKey("num", 1,
 				i -> (i > 0));
 
-		static final StringAttributeKey NAME = new StringAttributeKey("name");
+		StringAttributeKey NAME = new StringAttributeKey("name");
 
-		static final EnumAttributeKey<LandTypes> TYPE = new EnumAttributeKey<>(
+		EnumAttributeKey<LandTypes> TYPE = new EnumAttributeKey<>(
 				"type", LandTypes.class, LandTypes.Basic);
 
-		static final ColorsAttributeKey COLORS = new ColorsAttributeKey("colors");
+		ColorsAttributeKey COLORS = new ColorsAttributeKey("colors");
 
 	}
 

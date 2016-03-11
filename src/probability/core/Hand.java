@@ -15,7 +15,7 @@ public class Hand {
 
 		_startingHandSize = startingHand.size();
 
-		_cards = new ArrayList<Card>(startingHand.size() + draws.size());
+		_cards = new ArrayList<>(startingHand.size() + draws.size());
 		_cards.addAll(startingHand);
 		_cards.addAll(draws);
 	}
@@ -43,7 +43,7 @@ public class Hand {
 				_startingHandSize + turn - 1));
 	}
 
-	public int getNumerOfLandsInStartingHand() {
+	public int getNumberOfLandsInStartingHand() {
 		int count = 0;
 
 		for (Card card : _cards.subList(0, _startingHandSize)) {

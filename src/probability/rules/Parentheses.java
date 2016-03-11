@@ -4,10 +4,10 @@ import java.util.Stack;
 
 interface Parentheses extends Operator, Token {
 
-  static final char OPEN_PARENTHESIS_CHAR = '(';
-  static final char CLOSE_PARENTHESIS_CHAR = ')';
+  char OPEN_PARENTHESIS_CHAR = '(';
+  char CLOSE_PARENTHESIS_CHAR = ')';
 
-  static final int PARENTHESIS_PRECEDENCE = -1;
+  int PARENTHESIS_PRECEDENCE = -1;
 
   enum OpenParenthesis implements Parentheses {
     INSTANCE;

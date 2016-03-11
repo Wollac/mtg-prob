@@ -47,11 +47,8 @@ class Value<T> extends UnparsableToken implements Expression, Token {
     }
 
     Value<?> other = (Value<?>) obj;
-    if (!_type.equals(other._type)) {
-      return false;
-    }
 
-    return Objects.equals(_value, other._value);
+    return _type.equals(other._type) &&  Objects.equals(_value, other._value);
   }
 
   @Override

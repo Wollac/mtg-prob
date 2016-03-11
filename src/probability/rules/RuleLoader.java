@@ -134,7 +134,7 @@ public class RuleLoader {
     }
 
     if (!stack.isEmpty()) {
-      throw new RulesParseException(stack.peek() + " is no opperant of any operation", lineNumber);
+      throw new RulesParseException(stack.peek() + " is no operand of any operation", lineNumber);
     }
 
     return expression;

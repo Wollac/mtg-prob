@@ -16,7 +16,7 @@ public class ReflectingLand extends NonBasicLand {
 
 	@Override
 	public Set<Color> producesColors(Board board) {
-		return Sets.intersection(board.getPlayedLandProducableColors(), colors());
+		return Sets.intersection(board.getPlayedLandProducibleColors(), colors());
 	}
 
 }

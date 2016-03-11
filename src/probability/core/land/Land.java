@@ -8,11 +8,11 @@ import probability.core.Color;
 
 public interface Land extends Card {
 
-	public Set<Color> colors();
+	Set<Color> colors();
 
-	public boolean comesIntoPlayTapped(Board board);
+	boolean comesIntoPlayTapped(Board board);
 
-	Set<Color> producableColors();
+	Set<Color> producibleColors();
 
 	Set<Color> producesColors(Board board);
 

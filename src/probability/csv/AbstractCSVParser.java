@@ -23,7 +23,7 @@ public abstract class AbstractCSVParser<T> {
 
 	private final Map<AttributeKey<?>, Boolean> _attributes;
 
-	private Map<AttributeKey<?>, Integer> _attribute2colnum;
+	private Map<AttributeKey<?>, Integer> _attribute2column;
 
 	public AbstractCSVParser(Reader reader) throws IOException {
 		_reader = new CSVReader(new LineCommentReader(reader));
@@ -71,7 +71,7 @@ public abstract class AbstractCSVParser<T> {
 		AttributeHolder attributeHolder = new AttributeHolder();
 
 		try {
-			for (Entry<AttributeKey<?>, Integer> element : _attribute2colnum
+			for (Entry<AttributeKey<?>, Integer> element : _attribute2column
 					.entrySet()) {
 				String valueString = nextLine[element.getValue()].trim();
 
@@ -87,7 +87,7 @@ public abstract class AbstractCSVParser<T> {
 
 	private void readHeader() throws IOException, CvsParseException {
 
-		_attribute2colnum = new HashMap<>();
+		_attribute2column = new HashMap<>();
 
 		List<String> line = Arrays.asList(_reader.readNext());
 
@@ -96,7 +96,7 @@ public abstract class AbstractCSVParser<T> {
 			int index = line.indexOf(attribute.getName());
 
 			if (index >= 0) {
-				_attribute2colnum.put(attribute, index);
+				_attribute2column.put(attribute, index);
 			} else if (isMandatory(attribute)) {
 
 				throw new CvsParseException("error parsing csv file",

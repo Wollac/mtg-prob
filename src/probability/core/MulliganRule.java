@@ -73,7 +73,7 @@ public class MulliganRule {
     return _rule.evaluate(_variables);
   }
 
-  public String toFormatedString() {
+  public String toFormattedString() {
 
     StringBuilder sb = new StringBuilder();
 
@@ -91,11 +91,11 @@ public class MulliganRule {
 
   private interface VARIABLES {
 
-    static final IntegerAttributeKey LANDS = new IntegerAttributeKey("LANDS");
+    IntegerAttributeKey LANDS = new IntegerAttributeKey("LANDS");
 
-    static final IntegerAttributeKey NONLANDS = new IntegerAttributeKey("NONLANDS");
+    IntegerAttributeKey NONLANDS = new IntegerAttributeKey("NONLANDS");
 
-    static final IntegerAttributeKey CARDS = new IntegerAttributeKey("CARDS");
+    IntegerAttributeKey CARDS = new IntegerAttributeKey("CARDS");
   }
 
 }

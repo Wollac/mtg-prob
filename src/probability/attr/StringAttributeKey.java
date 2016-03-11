@@ -19,7 +19,7 @@ public class StringAttributeKey extends AttributeKey<String> {
 
 	@Override
 	public String parseValue(String valueString) {
-		return new String(valueString);
+		return valueString;
 	}
 
 }

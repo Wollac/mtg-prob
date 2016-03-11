@@ -32,11 +32,11 @@ public class Board {
 		return _playedLands.size();
 	}
 	
-	public Set<Color> getPlayedLandProducableColors() {
+	public Set<Color> getPlayedLandProducibleColors() {
 		Set<Color> colors = new HashSet<>();
 
 		for (Land land : _playedLands) {
-				colors.addAll(land.producableColors());
+				colors.addAll(land.producibleColors());
 		}
 
 		return colors;

@@ -2,9 +2,9 @@ package probability.rules;
 
 public interface Operator extends Token {
   
-  public String getSymbol();
+  String getSymbol();
 
-  public Operator getInstance();
+  Operator getInstance();
 
-  public int getPrecedence();
+  int getPrecedence();
 }

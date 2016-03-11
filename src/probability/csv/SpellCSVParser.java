@@ -39,14 +39,14 @@ public class SpellCSVParser extends AbstractCSVParser<Spell> {
 		return spells;
 	}
 
-	private static interface ATTR {
+	private interface ATTR {
 
-		static final IntegerAttributeKey NUM = new IntegerAttributeKey("num", 1,
+		IntegerAttributeKey NUM = new IntegerAttributeKey("num", 1,
 				i -> (i > 0));
 
-		static final StringAttributeKey NAME = new StringAttributeKey("name");
+		StringAttributeKey NAME = new StringAttributeKey("name");
 
-		static final ManaCostAttributeKey MANA_COST = new ManaCostAttributeKey("cost");
+		ManaCostAttributeKey MANA_COST = new ManaCostAttributeKey("cost");
 	}
 
 }

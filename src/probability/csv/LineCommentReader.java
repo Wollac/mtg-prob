@@ -45,7 +45,7 @@ class LineCommentReader extends StringReader {
 				continue;
 			}
 
-			builder.append(line + '\n');
+			builder.append(line).append('\n');
 
 		}
 
