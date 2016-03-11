@@ -10,7 +10,7 @@ import com.google.common.primitives.Chars;
 
 public class StringTokenizer {
 
-  public static enum StringTokenType {
+  public enum StringTokenType {
     STRING, QUOTED_STRING, OPEN_PARENTHESIS, CLOSE_PARENTHESIS, EOL, EOF, INVALID
   }
 
@@ -46,8 +46,8 @@ public class StringTokenizer {
 
   public StringTokenType nextToken() throws IOException {
 
-    int ttype = _st.nextToken();
-    switch (ttype) {
+    int tokenType = _st.nextToken();
+    switch (tokenType) {
       case StreamTokenizer.TT_EOF:
       case StreamTokenizer.TT_EOL:
         _tokenValue = "";
@@ -60,10 +60,10 @@ public class StringTokenizer {
         _tokenValue = String.valueOf(_st.nval);
         break;
       default:
-        _tokenValue = String.valueOf((char) ttype);
+        _tokenValue = String.valueOf((char) tokenType);
     }
 
-    return code2TokenType(ttype);
+    return code2TokenType(tokenType);
   }
 
   public int currentLine() {
@@ -128,7 +128,7 @@ public class StringTokenizer {
 
   private static Set<Character> getOperationsCharacters() {
 
-    Set<Character> result = new HashSet<Character>();
+    Set<Character> result = new HashSet<>();
     for (Operations op : Operations.values()) {
       result.addAll(Chars.asList(op.getSymbol().toCharArray()));
     }

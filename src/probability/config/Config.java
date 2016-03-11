@@ -2,12 +2,12 @@ package probability.config;
 
 public interface Config {
 
-	public int numberOfCards();
+	int numberOfCards();
 
-	public int initialHandSize();
+	int initialHandSize();
 
-	public boolean drawOnTurn();
+	boolean drawOnTurn();
 
-	public int sampleSize();
+	int sampleSize();
 
 }

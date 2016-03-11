@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public final class Colors {
@@ -62,13 +63,12 @@ public final class Colors {
 		if (obj == this) {
 			return true;
 		}
-		if (!(obj instanceof Color)) {
+		if (!(obj instanceof Colors)) {
 			return false;
 		}
 
 		Colors other = (Colors) obj;
-
-		return _colors.equals(other._colors);
+		return Objects.equals(_colors, other._colors);
 	}
 
 	@Override

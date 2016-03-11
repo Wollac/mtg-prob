@@ -4,8 +4,8 @@ import java.util.Stack;
 
 interface Token {
 
-  public enum TokenType {
-    VALUE, FUNCTION, OPERATOR, OPEN_PARENTHESIS, CLOSE_PARENTHESIS;
+  enum TokenType {
+    VALUE, FUNCTION, OPERATOR, OPEN_PARENTHESIS, CLOSE_PARENTHESIS
   }
 
   /**
@@ -13,7 +13,7 @@ interface Token {
    * 
    * @return one from {@link TokenType}
    */
-  public TokenType getTokenType();
+  TokenType getTokenType();
 
   /**
    * Parses this token into an expression. Potential operands are on the stack.
@@ -22,12 +22,12 @@ interface Token {
    * @return the parsed expression
    * @throws RulesTokenException if the token could not be passed
    */
-  public Expression parse(Stack<Token> stack) throws RulesTokenException;
+  Expression parse(Stack<Token> stack) throws RulesTokenException;
 
   /**
    * An Exception related to tokens and token parsing.
    */
-  public final static class RulesTokenException extends Exception {
+  final class RulesTokenException extends Exception {
 
     private static final long serialVersionUID = -6313095374416249621L;
 

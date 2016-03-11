@@ -19,7 +19,7 @@ abstract class AbstractLand implements Land {
 
 	protected AbstractLand(String name, Colors colors) {
 		_name = name;
-		_colors = Collections.unmodifiableSet(new HashSet<Color>(colors
+		_colors = Collections.unmodifiableSet(new HashSet<>(colors
 				.getColors()));
 
 		// this class is immutable so we can cache the hash code
@@ -42,7 +42,7 @@ abstract class AbstractLand implements Land {
 	}
 
 	@Override
-	public Set<Color> producableColors() {
+	public Set<Color> producibleColors() {
 		return colors();
 	}
 

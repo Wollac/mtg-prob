@@ -21,7 +21,7 @@ public class FetchLand extends AbstractLand {
 	}
 	
 	@Override
-	public Set<Color> producableColors() {
+	public Set<Color> producibleColors() {
 		return _fetchedColors.getColors();
 	}
 

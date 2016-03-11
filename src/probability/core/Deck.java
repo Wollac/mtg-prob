@@ -35,9 +35,7 @@ public class Deck {
 	}
 
 	public void addAll(Collection<? extends Card> cards) {
-		for (Card card : cards) {
-			add(card);
-		}
+		cards.forEach(this::add);
 	}
 
 	public List<Card> cards() {
@@ -85,7 +83,7 @@ public class Deck {
 		return new Hand(startingHand, drawnCards);
 	}
 
-	public String toFormatedString() {
+	public String toFormattedString() {
 		Map<CardType, Multiset<Card>> cardCounts = new HashMap<>();
 
 		for (CardType type : CardType.values()) {
@@ -111,7 +109,7 @@ public class Deck {
 		StringBuilder sb = new StringBuilder();
 
 		if (type != null) {
-			sb.append(type + " (" + cardCounts.size() + "):\n");
+			sb.append(type).append(" (").append(cardCounts.size()).append("):\n");
 		}
 
 		for (Card card : CardUtils.sortCardsByName(cardCounts.elementSet())) {
@@ -124,16 +122,13 @@ public class Deck {
 
 	@Override
 	public String toString() {
-		final Multiset<Card> cardCounts = HashMultiset.create();
 
-		for (Card card : _cards) {
-			cardCounts.add(card);
-		}
+		final Multiset<Card> cardCounts = HashMultiset.create(_cards);
 
 		StringBuilder sb = new StringBuilder();
 
 		for (Card card : cardCounts.elementSet()) {
-			sb.append(cardCounts.count(card) + "x " + card + '\n');
+			sb.append(cardCounts.count(card)).append("x ").append(card).append('\n');
 		}
 
 		return sb.toString();

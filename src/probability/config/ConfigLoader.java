@@ -36,16 +36,16 @@ public class ConfigLoader extends AbstractConfigLoader implements Config {
 
 	private interface ATTR {
 
-		final static IntegerAttributeKey NUMBER_OF_CARDS = new IntegerAttributeKey(
+		IntegerAttributeKey NUMBER_OF_CARDS = new IntegerAttributeKey(
 				"cards", 60, i -> (i > 0));
 
-		final static IntegerAttributeKey INITIAL_HAND_SIZE = new IntegerAttributeKey(
+		IntegerAttributeKey INITIAL_HAND_SIZE = new IntegerAttributeKey(
 				"initial hand size", 7, i -> (i > 0));
 
-		final static BooleanAttributeKey DRAW_ON_TURN = new BooleanAttributeKey(
+		BooleanAttributeKey DRAW_ON_TURN = new BooleanAttributeKey(
 				"draw on turn", false);
 
-		final static IntegerAttributeKey SAMPLE_SIZE = new IntegerAttributeKey(
+		IntegerAttributeKey SAMPLE_SIZE = new IntegerAttributeKey(
 				"sample size", 10000, i -> (i >= 1000));
 
 	}

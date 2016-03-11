@@ -22,7 +22,7 @@ enum Operations {
     return _op.getInstance();
   }
 
-  private Operations(BinaryOperator op) {
+  Operations(BinaryOperator op) {
     _op = op;
   }
 

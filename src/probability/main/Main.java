@@ -41,12 +41,12 @@ public class Main {
     Deck deck = buildDeck(config);
 
     System.out.println("The following deck has been loaded:");
-    System.out.println(deck.toFormatedString());
+    System.out.println(deck.toFormattedString());
 
     MulliganRule mulliganRule = new MulliganRule(new File("mulligan.txt"));
 
     System.out.println("Taking a mulligan, if one of the following rules apply:");
-    System.out.println(mulliganRule.toFormatedString());
+    System.out.println(mulliganRule.toFormattedString());
 
     Set<Integer> cmcs = getCmcs(deck);
 
@@ -140,7 +140,7 @@ public class Main {
       deck.shuffle();
       hand = deck.draw(turn, mulligan);
 
-      if (!mulliganRule.takeMulligan(hand.getNumerOfLandsInStartingHand(),
+      if (!mulliganRule.takeMulligan(hand.getNumberOfLandsInStartingHand(),
           hand.getStartingHandSize())) {
         break;
       }

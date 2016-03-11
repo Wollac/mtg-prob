@@ -32,7 +32,7 @@ public class PlayableChecker {
 		_deck = deck;
 		_hand = hand;
 
-		_fetchableColors = new HashMap<Color, Colors>();
+		_fetchableColors = new HashMap<>();
 	}
 
 	public boolean isPlayable(int turn) {
@@ -100,7 +100,7 @@ public class PlayableChecker {
 
 		for (Land land : remainingLandTypes) {
 			if (CardUtils.isBasicLand(land) && land.colors().contains(color)) {
-				colors.addAll(land.producableColors());
+				colors.addAll(land.producibleColors());
 			}
 		}
 
@@ -208,7 +208,7 @@ public class PlayableChecker {
 
 		private Set<Land> getAvailableLandTypes(Board board, int turn) {
 
-			Set<Land> result = new HashSet<Land>();
+			Set<Land> result = new HashSet<>();
 
 			for (Card card : _hand.getCardsUntilTurn(turn)) {
 				if (card instanceof Land) {

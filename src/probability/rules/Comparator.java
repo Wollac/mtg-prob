@@ -23,7 +23,7 @@ abstract class Comparator extends BinaryOperator {
     _leftOperand = var;
 
     if (!Comparable.class.isAssignableFrom(var.getType())) {
-      new RulesTokenException("Cannot compare a variable of type " + var.getTypeName());
+      throw new RulesTokenException("Cannot compare a variable of type " + var.getTypeName());
     }
 
     if (right instanceof StringValue) {

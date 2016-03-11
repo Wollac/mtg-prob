@@ -16,23 +16,23 @@ public final class CardUtils {
 	private CardUtils() {
 	}
 
-	final static Card getDummyCard() {
+	public static Card getDummyCard() {
 		return DUMMY_CARD;
 	}
 
-	final static boolean isSpell(Card card) {
+	public static boolean isSpell(Card card) {
 		return (card instanceof Spell);
 	}
 
-	final static boolean isLand(Card card) {
+	public static boolean isLand(Card card) {
 		return (card instanceof Land);
 	}
 
-	final static boolean isDummy(Card card) {
+	public static boolean isDummy(Card card) {
 		return card.equals(DUMMY_CARD);
 	}
 
-	public final static boolean isBasicLand(Card card) {
+	public static boolean isBasicLand(Card card) {
 		return (card instanceof BasicLand);
 	}
 
@@ -40,11 +40,11 @@ public final class CardUtils {
 		return (card instanceof FetchLand);
 	}
 
-	public final static void retainAllLands(Collection<Card> cards) {
-		retain(cards, c -> isLand(c));
+	public static void retainAllLands(Collection<Card> cards) {
+		retain(cards, CardUtils::isLand);
 	}
 
-	public final static Collection<Land> retainAllLandsToArrayList(
+	public static Collection<Land> retainAllLandsToArrayList(
 			Collection<Card> cards) {
 
 		Collection<Land> lands = new ArrayList<>(cards.size());
@@ -58,11 +58,11 @@ public final class CardUtils {
 		return lands;
 	}
 
-	public final static void retainAllSpells(Collection<Card> cards) {
-		retain(cards, c -> isSpell(c));
+	public static void retainAllSpells(Collection<Card> cards) {
+		retain(cards, CardUtils::isSpell);
 	}
 
-	public final static Collection<Spell> retainAllSpellsToArrayList(
+	public static Collection<Spell> retainAllSpellsToArrayList(
 			Collection<Card> cards) {
 
 		Collection<Spell> spells = new ArrayList<>(cards.size());
@@ -77,7 +77,7 @@ public final class CardUtils {
 	}
 
 	/** Create a set that contains the cards sorted by getName() */
-	public final static SortedSet<Card> sortCardsByName(Collection<Card> cards) {
+	public static SortedSet<Card> sortCardsByName(Collection<Card> cards) {
 		SortedSet<Card> sorted = new TreeSet<>(
 				Comparator.comparing(Card::getName));
 		sorted.addAll(cards);
