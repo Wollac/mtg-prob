@@ -3,8 +3,8 @@ package probability.rules;
 import probability.attr.ImmutableAttributeHolder;
 
 /**
- * Class for a combination of parsed {@linkplain Token} object that can be
- * evaluated with respected to given variable bindings.
+ * Class for a combination of parsed {@linkplain Token} object that can be evaluated with respected
+ * to given variable bindings.
  */
 interface Expression {
 

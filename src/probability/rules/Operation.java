@@ -8,7 +8,7 @@ import java.util.Map;
  */
 enum Operation {
 
-    AND(new And()), OR(new Or()), EQUALS(new Equal()), NOT_EQUAL(new NotEqual()),
+    NOT(new Not()), AND(new And()), OR(new Or()), EQUAL(new Equal()), NOT_EQUAL(new NotEqual()),
     LESS_THAN(new LessThan()), GREATER_THAN(new GreaterThan());
 
     private final static Map<String, Operation> OPERATIONS_BY_SYMBOL;

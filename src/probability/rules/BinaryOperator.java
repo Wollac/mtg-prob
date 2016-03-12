@@ -3,39 +3,24 @@ package probability.rules;
 
 import java.util.Stack;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+/**
+ * Common functionality for all binary operators.
+ */
+abstract class BinaryOperator extends AbstractOperator implements Operator, Expression, Token {
 
-abstract class BinaryOperator implements Operator, Expression, Token {
+    Expression _leftOperand;
 
-    private final String _symbol;
+    Expression _rightOperand;
 
-    private final int _precedence;
-
-    Expression _leftOperand = null;
-
-    Expression _rightOperand = null;
-
+    /**
+     * Creates a binary operator.
+     *
+     * @param symbol     nonempty string used to identify the operator
+     * @param precedence precedence value of the operator
+     */
     BinaryOperator(String symbol, int precedence) {
 
-        checkNotNull(symbol);
-        checkArgument(symbol.length() > 0);
-        checkArgument(precedence >= 0);
-
-        _symbol = symbol;
-        _precedence = precedence;
-    }
-
-    @Override
-    public int getPrecedence() {
-
-        return _precedence;
-    }
-
-    @Override
-    public String getSymbol() {
-
-        return _symbol;
+        super(symbol, precedence);
     }
 
     @Override
@@ -55,11 +40,6 @@ abstract class BinaryOperator implements Operator, Expression, Token {
 
         Token top = stack.pop();
         return top.parse(stack);
-    }
-
-    @Override
-    public TokenType getTokenType() {
-        return TokenType.OPERATOR;
     }
 
     @Override

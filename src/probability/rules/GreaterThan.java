@@ -2,7 +2,10 @@ package probability.rules;
 
 import probability.attr.ImmutableAttributeHolder;
 
-class GreaterThan extends Comparator {
+/**
+ * Operator for the greater-than relation of a variable and a value of comparable type.
+ */
+class GreaterThan extends RelationalOperator {
 
     public GreaterThan() {
 

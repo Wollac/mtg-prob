@@ -5,36 +5,42 @@ import com.google.common.primitives.Chars;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StreamTokenizer;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+/**
+ * Tokenizer for rules that heavily relies on {@link StreamTokenizer}.
+ */
 class StringTokenizer {
 
-    private static final Set<Character> OPERATION_CHARS = getOperationsCharacters();
-    private static final int QUOTE_CHAR = '"';
-    private final StreamTokenizer _st;
-    private String _tokenValue;
+    /**
+     * Characters that can occur in Operations.
+     */
+    private static final Collection<Character> OPERATION_CHARS = getOperationsCharacters();
 
+    /**
+     * Character starting and ending a quotation.
+     */
+    private static final int QUOTE_CHAR = '"';
+
+    private final StreamTokenizer _st;
+
+    /**
+     * String value of the last read token.
+     */
+    private String _tokenValue = "";
+
+    /**
+     * Creates a tokenizer from the given reader.
+     */
     public StringTokenizer(Reader reader) {
 
+        checkNotNull(reader);
+
         _st = createStreamTokenizer(reader);
-    }
-
-    private static StreamTokenizer createStreamTokenizer(Reader reader) {
-
-        StreamTokenizer tokenizer = new StreamTokenizer(reader);
-
-        tokenizer.resetSyntax();
-
-        setVariableChars(tokenizer);
-        setNumberChars(tokenizer);
-        setOperationChars(tokenizer);
-        setSpecialChars(tokenizer);
-
-        tokenizer.slashSlashComments(true);
-        tokenizer.eolIsSignificant(true);
-
-        return tokenizer;
     }
 
     private static StringTokenType code2TokenType(int code) {
@@ -57,6 +63,33 @@ class StringTokenizer {
         }
     }
 
+    private static Set<Character> getOperationsCharacters() {
+
+        Set<Character> result = new HashSet<>();
+        for (Operation op : Operation.values()) {
+            result.addAll(Chars.asList(op.getSymbol().toCharArray()));
+        }
+
+        return result;
+    }
+
+    private static StreamTokenizer createStreamTokenizer(Reader reader) {
+
+        StreamTokenizer tokenizer = new StreamTokenizer(reader);
+
+        tokenizer.resetSyntax();
+
+        setVariableChars(tokenizer);
+        setNumberChars(tokenizer);
+        setOperationChars(tokenizer);
+        setSpecialChars(tokenizer);
+
+        tokenizer.slashSlashComments(true);
+        tokenizer.eolIsSignificant(true);
+
+        return tokenizer;
+    }
+
     private static void setVariableChars(StreamTokenizer tokenizer) {
         tokenizer.wordChars('a', 'z');
         tokenizer.wordChars('A', 'Z');
@@ -69,6 +102,12 @@ class StringTokenizer {
         tokenizer.wordChars('-', '-');
     }
 
+    private static void setOperationChars(StreamTokenizer tokenizer) {
+        for (char c : OPERATION_CHARS) {
+            tokenizer.wordChars(c, c);
+        }
+    }
+
     private static void setSpecialChars(StreamTokenizer tokenizer) {
         tokenizer.whitespaceChars(0, ' ');
         tokenizer.commentChar('#');
@@ -77,22 +116,12 @@ class StringTokenizer {
         tokenizer.ordinaryChar(Parentheses.CLOSE_PARENTHESIS_CHAR);
     }
 
-    private static void setOperationChars(StreamTokenizer tokenizer) {
-        for (char c : OPERATION_CHARS) {
-            tokenizer.wordChars(c, c);
-        }
-    }
-
-    private static Set<Character> getOperationsCharacters() {
-
-        Set<Character> result = new HashSet<>();
-        for (Operation op : Operation.values()) {
-            result.addAll(Chars.asList(op.getSymbol().toCharArray()));
-        }
-
-        return result;
-    }
-
+    /**
+     * Parses the next token from the reader of this tokenizer. The string value of the read value
+     * (if applicable) can be obtained by {@linkplain #tokenValue()}.
+     *
+     * @return the type of the last read token
+     */
     public StringTokenType nextToken() throws IOException {
 
         int tokenType = _st.nextToken();
@@ -115,20 +144,34 @@ class StringTokenizer {
         return code2TokenType(tokenType);
     }
 
+    /**
+     * Return the current line number.
+     */
     public int currentLine() {
         return _st.lineno();
     }
 
+    /**
+     * Returns the string value of the last read token.
+     */
     public String tokenValue() {
         return _tokenValue;
     }
 
+    /**
+     * After a call to the {@code nextToken} method, this method returns the type of the token just
+     * read.
+     */
     public StringTokenType tokenType() {
 
         return code2TokenType(_st.ttype);
     }
 
+    /**
+     * The possible types of a token.
+     */
     public enum StringTokenType {
+
         STRING, QUOTED_STRING, OPEN_PARENTHESIS, CLOSE_PARENTHESIS, EOL, EOF, INVALID
     }
 
