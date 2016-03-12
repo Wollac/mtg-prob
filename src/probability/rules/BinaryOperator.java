@@ -18,14 +18,13 @@ abstract class BinaryOperator implements Operator, Expression, Token {
 
     BinaryOperator(String symbol, int precedence) {
 
+        checkNotNull(symbol);
+        checkArgument(symbol.length() > 0);
         checkArgument(precedence >= 0);
 
-        _symbol = checkNotNull(symbol);
+        _symbol = symbol;
         _precedence = precedence;
     }
-
-    @Override
-    public abstract Operator getInstance();
 
     @Override
     public int getPrecedence() {

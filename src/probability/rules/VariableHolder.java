@@ -1,12 +1,12 @@
 package probability.rules;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 import probability.attr.AttributeHolder;
 import probability.attr.AttributeKey;
 import probability.attr.ImmutableAttributeHolder;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 public class VariableHolder {
 
@@ -73,7 +73,7 @@ public class VariableHolder {
                     "Invalid variable name: " + name + " has already been registered");
         }
 
-        if (Operations.getOperation(name) != null) {
+        if (Operation.getOperationFromSymbol(name) != null) {
             throw new IllegalArgumentException(
                     "Invalid variable name: " + name + " is the name of an operation");
         }

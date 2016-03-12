@@ -18,10 +18,7 @@ class NotEqual extends VariableValueOperator {
     @Override
     public boolean interpret(ImmutableAttributeHolder bindings) {
 
-        Variable<?> var = (Variable<?>) _leftOperand;
-        Value<?> value = (Value<?>) _rightOperand;
-
-        return !var.equals(value, bindings);
+        return _variable.equals(_value, bindings);
     }
 
 }

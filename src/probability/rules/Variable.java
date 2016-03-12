@@ -1,14 +1,14 @@
 package probability.rules;
 
-import java.util.Objects;
-
 import probability.attr.AttributeKey;
 import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
 
+import java.util.Objects;
+
 class Variable<T> extends UnparsableToken implements Expression, Token {
 
-    private AttributeKey<T> _key;
+    private final AttributeKey<T> _key;
 
     private Variable(AttributeKey<T> key) {
 
@@ -35,15 +35,9 @@ class Variable<T> extends UnparsableToken implements Expression, Token {
         return getType().getSimpleName();
     }
 
-    public Value<T> createParsedValue(Value<String> stringValue) throws RulesTokenException {
-
-        return createParsedValue(stringValue.getValue());
-    }
-
-    Value<T> createParsedValue(String valueString) throws RulesTokenException {
-
+    T parseValue(Value<String> stringValue) throws RulesTokenException {
         try {
-            return new Value<>(_key.parseValue(valueString), this);
+            return _key.parseValue(stringValue.getValue());
         } catch (AttributeParseException e) {
             throw new RulesTokenException(e.getMessage());
         }
@@ -57,7 +51,13 @@ class Variable<T> extends UnparsableToken implements Expression, Token {
     @Override
     public boolean interpret(ImmutableAttributeHolder bindings) {
 
-        throw new IllegalStateException();
+        if (!getType().equals(Boolean.class)) {
+
+            throw new IllegalStateException("only boolean variables can be" +
+                    " evaluated directly");
+        }
+
+        return (Boolean) getValue(bindings);
     }
 
     T getValue(ImmutableAttributeHolder bindings) {
@@ -65,16 +65,12 @@ class Variable<T> extends UnparsableToken implements Expression, Token {
         return bindings.getAttributeValue(_key);
     }
 
-    public boolean equals(Value<?> value, ImmutableAttributeHolder bindings) {
+    public boolean equals(Object other, ImmutableAttributeHolder bindings) {
 
-        checkType(value);
-
-        return Objects.equals(getValue(bindings), value.getValue());
+        return Objects.equals(getValue(bindings), other);
     }
 
-    public int compareTo(Value<?> other, ImmutableAttributeHolder bindings) {
-
-        checkType(other);
+    public int compareTo(Object other, ImmutableAttributeHolder bindings) {
 
         if (Comparable.class.isAssignableFrom(getType())) {
 
@@ -82,17 +78,9 @@ class Variable<T> extends UnparsableToken implements Expression, Token {
             // erasure the generic type of Comparable becomes irrelevant
             Comparable<Object> comparable = (Comparable<Object>) getValue(bindings);
 
-            return comparable.compareTo(other.getValue());
+            return comparable.compareTo(other);
         }
         throw new IllegalStateException("Cannot compare a variable of type " + getTypeName());
-    }
-
-    private void checkType(Value<?> value) {
-
-        if (!getType().equals(value.getType())) {
-            throw new IllegalStateException("Cannot compare variable " + _key.getName() + " of type "
-                    + _key.getValueType() + " with a value of type " + getTypeName());
-        }
     }
 
     @Override

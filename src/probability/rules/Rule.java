@@ -1,19 +1,27 @@
 package probability.rules;
 
+import probability.attr.ImmutableAttributeHolder;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import probability.attr.ImmutableAttributeHolder;
-
+/**
+ * A Rule corresponds to multiple {@linkplain Expression} evaluating to true,
+ * if at least one expression evaluates to true.
+ */
 public class Rule {
 
-    private List<Expression> _expressions;
+    private final List<Expression> _expressions;
 
     Rule(List<Expression> expressions) {
-        this._expressions = expressions;
+
+        _expressions = expressions;
     }
 
+    /**
+     * Evaluates a rules with respect to variable bindings.
+     */
     public boolean evaluate(VariableHolder variables) {
 
         ImmutableAttributeHolder bindings = variables.getBindings();
@@ -29,6 +37,9 @@ public class Rule {
         return false;
     }
 
+    /**
+     * Converts each expression of the rule to its corresponding string.
+     */
     public List<String> toStrings() {
 
         List<String> result = new ArrayList<>(_expressions.size());
