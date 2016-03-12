@@ -2,13 +2,24 @@ package probability.rules;
 
 import java.util.Stack;
 
-interface Parentheses extends Operator, Token {
+/**
+ * Parentheses are a special {@linkplain Operator} and has the highest possible
+ * priority.
+ * As Parentheses cannot be evaluated on their own, a singleton is sufficient.
+ */
+interface Parentheses extends Operator {
 
     char OPEN_PARENTHESIS_CHAR = '(';
     char CLOSE_PARENTHESIS_CHAR = ')';
 
+    /**
+     * Just a dummy value, as it will not be used explicitly.
+     */
     int PARENTHESIS_PRECEDENCE = -1;
 
+    /**
+     * An open Parenthesis.
+     */
     enum OpenParenthesis implements Parentheses {
         INSTANCE;
 
@@ -39,6 +50,9 @@ interface Parentheses extends Operator, Token {
 
     }
 
+    /**
+     * A Closed Parenthesis.
+     */
     enum CloseParenthesis implements Parentheses {
         INSTANCE;
 

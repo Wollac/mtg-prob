@@ -8,7 +8,7 @@ import java.io.StreamTokenizer;
 import java.util.HashSet;
 import java.util.Set;
 
-public class StringTokenizer {
+class StringTokenizer {
 
     private static final Set<Character> OPERATION_CHARS = getOperationsCharacters();
     private static final int QUOTE_CHAR = '"';
@@ -86,7 +86,7 @@ public class StringTokenizer {
     private static Set<Character> getOperationsCharacters() {
 
         Set<Character> result = new HashSet<>();
-        for (Operations op : Operations.values()) {
+        for (Operation op : Operation.values()) {
             result.addAll(Chars.asList(op.getSymbol().toCharArray()));
         }
 

@@ -6,7 +6,7 @@ class LessThan extends Comparator {
 
     public LessThan() {
 
-        super("<", 6);
+        super("<");
     }
 
     @Override
@@ -18,10 +18,7 @@ class LessThan extends Comparator {
     @Override
     public boolean interpret(ImmutableAttributeHolder bindings) {
 
-        Variable<?> var = (Variable<?>) _leftOperand;
-        Value<?> value = (Value<?>) _rightOperand;
-
-        return var.compareTo(value, bindings) < 0;
+        return _variable.compareTo(_value, bindings) < 0;
     }
 
 }

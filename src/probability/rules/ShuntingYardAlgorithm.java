@@ -1,11 +1,11 @@
 package probability.rules;
 
-import java.util.List;
-import java.util.Stack;
-
 import probability.rules.Parentheses.OpenParenthesis;
 import probability.rules.Token.RulesTokenException;
 import probability.rules.Token.TokenType;
+
+import java.util.List;
+import java.util.Stack;
 
 class ShuntingYardAlgorithm {
 

@@ -2,13 +2,11 @@ package probability.rules;
 
 import java.util.Objects;
 
-import probability.attr.ImmutableAttributeHolder;
+class Value<T> extends UnparsableToken {
 
-class Value<T> extends UnparsableToken implements Expression, Token {
+    private final T _value;
 
-    private T _value;
-
-    private Class<T> _type;
+    private final Class<T> _type;
 
     public Value(T value, Variable<T> variable) {
         this(value, variable.getType());
@@ -30,11 +28,6 @@ class Value<T> extends UnparsableToken implements Expression, Token {
     @Override
     public TokenType getTokenType() {
         return TokenType.VALUE;
-    }
-
-    @Override
-    public boolean interpret(ImmutableAttributeHolder bindings) {
-        return true;
     }
 
     @Override

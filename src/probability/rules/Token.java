@@ -2,6 +2,11 @@ package probability.rules;
 
 import java.util.Stack;
 
+/**
+ * Class for an atomic parse element.
+ * A token can only be parsed and has a certain type which is needed in the
+ * {@linkplain ShuntingYardAlgorithm}.
+ */
 interface Token {
 
     /**
@@ -12,7 +17,7 @@ interface Token {
     TokenType getTokenType();
 
     /**
-     * Parses this token into an expression. Potential operands are on the stack.
+     * Parses this token into an {@linkplain Expression}. Potential operands are on the stack.
      *
      * @param stack containing tokens in RPN order
      * @return the parsed expression

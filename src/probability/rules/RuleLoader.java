@@ -2,6 +2,11 @@ package probability.rules;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import probability.rules.Parentheses.CloseParenthesis;
+import probability.rules.Parentheses.OpenParenthesis;
+import probability.rules.StringTokenizer.StringTokenType;
+import probability.rules.Token.RulesTokenException;
+import probability.rules.Value.StringValue;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,15 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import probability.rules.Parentheses.CloseParenthesis;
-import probability.rules.Parentheses.OpenParenthesis;
-import probability.rules.StringTokenizer.StringTokenType;
-import probability.rules.Token.RulesTokenException;
-import probability.rules.Value.StringValue;
-
 public class RuleLoader {
 
-    private VariableHolder _variables;
+    private final VariableHolder _variables;
 
     public RuleLoader(VariableHolder variables) {
         _variables = variables;
@@ -128,9 +127,9 @@ public class RuleLoader {
 
     private Token string2Token(String tokenValue) {
 
-        Operations op = Operations.getOperation(tokenValue);
+        Operation op = Operation.getOperationFromSymbol(tokenValue);
         if (op != null) {
-            return op.getInstance();
+            return op.getOperatorInstance();
         }
 
         if (_variables.isRegistered(tokenValue)) {

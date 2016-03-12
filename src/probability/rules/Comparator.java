@@ -4,8 +4,8 @@ import java.util.Stack;
 
 abstract class Comparator extends VariableValueOperator {
 
-    Comparator(String symbol, int precedence) {
-        super(symbol, precedence);
+    Comparator(String symbol) {
+        super(symbol, 6);
     }
 
     @Override
@@ -13,10 +13,11 @@ abstract class Comparator extends VariableValueOperator {
 
         super.parse(stack);
 
-        Variable<?> var = (Variable<?>) _leftOperand;
 
-        if (!Comparable.class.isAssignableFrom(var.getType())) {
-            throw new RulesTokenException("Cannot compare a variable of type " + var.getTypeName());
+        if (!Comparable.class.isAssignableFrom(_variable.getType())) {
+
+            throw new RulesTokenException("Cannot compare a variable of type " +
+                    _variable.getTypeName());
         }
 
         return this;
