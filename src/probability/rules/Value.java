@@ -1,8 +1,16 @@
 package probability.rules;
 
 import java.util.Objects;
+import java.util.Stack;
 
-class Value<T> extends UnparsableToken {
+import static com.google.common.base.Preconditions.checkNotNull;
+
+/**
+ * A value is a special {@linkplain Token} representing a constant in the rule.
+ *
+ * @param <T> actual type of the value
+ */
+class Value<T> implements Token {
 
     private final T _value;
 
@@ -13,8 +21,9 @@ class Value<T> extends UnparsableToken {
     }
 
     private Value(T value, Class<T> type) {
+
         _value = value;
-        _type = type;
+        _type = checkNotNull(type);
     }
 
     public T getValue() {
@@ -32,6 +41,7 @@ class Value<T> extends UnparsableToken {
 
     @Override
     public boolean equals(Object obj) {
+
         if (this == obj) {
             return true;
         }
@@ -40,8 +50,13 @@ class Value<T> extends UnparsableToken {
         }
 
         Value<?> other = (Value<?>) obj;
-
         return _type.equals(other._type) && Objects.equals(_value, other._value);
+    }
+
+    @Override
+    public Expression parse(Stack<Token> stack) throws RulesTokenException {
+
+        throw new RulesTokenException("Values cannot be used as an expression");
     }
 
     @Override

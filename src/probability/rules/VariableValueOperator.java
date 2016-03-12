@@ -2,45 +2,46 @@ package probability.rules;
 
 import java.util.Stack;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
-abstract class VariableValueOperator implements Operator, Expression, Token {
-
-    private final String _symbol;
-
-    private final int _precedence;
+/**
+ * Common functionality for all operators that have exactly one variable and one value as operands.
+ */
+abstract class VariableValueOperator extends AbstractOperator implements Operator, Expression, Token {
 
     Variable<?> _variable;
 
     Object _value;
 
+    /**
+     * Creates an operator.
+     *
+     * @param symbol     nonempty string used to identify the operator
+     * @param precedence precedence value of the operator
+     */
     VariableValueOperator(String symbol, int precedence) {
 
-        checkNotNull(symbol);
-        checkArgument(symbol.length() > 0);
-        checkArgument(precedence >= 0);
-
-        _symbol = symbol;
-        _precedence = precedence;
-    }
-
-
-    @Override
-    public int getPrecedence() {
-
-        return _precedence;
+        super(symbol, precedence);
     }
 
     @Override
-    public String getSymbol() {
+    public Expression parse(Stack<Token> stack) throws RulesTokenException {
 
-        return _symbol;
-    }
+        if (stack.size() < 2) {
+            throw new RulesTokenException("Operand missing for " + getSymbol());
+        }
 
-    @Override
-    public TokenType getTokenType() {
-        return TokenType.OPERATOR;
+        Token right = stack.pop();
+        Token left = stack.pop();
+
+        if (left instanceof Variable<?>) {
+            parse((Variable<?>) left, right);
+        } else if (right instanceof Variable<?>) {
+            parse((Variable<?>) right, left);
+        } else {
+            throw new RulesTokenException("One operand of " + getSymbol() +
+                    " must be a variable");
+        }
+
+        return this;
     }
 
     private void parse(Variable<?> variable, Token other) throws RulesTokenException {
@@ -53,26 +54,6 @@ abstract class VariableValueOperator implements Operator, Expression, Token {
             throw new RulesTokenException("One operand of " + getSymbol() +
                     " must be a value");
         }
-    }
-
-    @Override
-    public Expression parse(Stack<Token> stack) throws RulesTokenException {
-
-        Token right = stack.pop();
-        Token left = stack.pop();
-
-        if (left instanceof Variable<?>) {
-
-            parse((Variable<?>) left, right);
-        } else if (right instanceof Variable<?>) {
-
-            parse((Variable<?>) right, left);
-        } else {
-            throw new RulesTokenException("One operand of " + getSymbol() +
-                    " must be a variable");
-        }
-
-        return this;
     }
 
 

@@ -1,0 +1,42 @@
+package probability.rules;
+
+import java.util.Stack;
+
+/**
+ * Common functionality for all unary operators.
+ */
+abstract class UnaryOperator extends AbstractOperator implements Operator, Expression, Token {
+
+    private static final int UNARY_PRECEDENCE = 2;
+
+    Expression _operand;
+
+    /**
+     * Creates an unary operator with the precedence of 2.
+     *
+     * @param symbol nonempty string used to identify the operator
+     */
+    UnaryOperator(String symbol) {
+        super(symbol, UNARY_PRECEDENCE);
+    }
+
+    @Override
+    public Expression parse(Stack<Token> stack) throws RulesTokenException {
+
+        if (stack.isEmpty()) {
+            throw new RulesTokenException("Operand missing for " + getSymbol());
+        }
+
+        Token top = stack.pop();
+        _operand = top.parse(stack);
+
+        return this;
+    }
+
+    @Override
+    public String toString() {
+
+        return "(" + getSymbol() + " " + _operand + ")";
+    }
+
+}

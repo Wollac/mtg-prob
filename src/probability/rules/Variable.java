@@ -1,18 +1,21 @@
 package probability.rules;
 
+import java.util.Objects;
+import java.util.Stack;
+
 import probability.attr.AttributeKey;
 import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
 
-import java.util.Objects;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-class Variable<T> extends UnparsableToken implements Expression, Token {
+class Variable<T> implements Expression, Token {
 
     private final AttributeKey<T> _key;
 
     private Variable(AttributeKey<T> key) {
 
-        _key = key;
+        _key = checkNotNull(key);
     }
 
     public static <T> Variable<T> createVariable(AttributeKey<T> key) {
@@ -43,24 +46,7 @@ class Variable<T> extends UnparsableToken implements Expression, Token {
         }
     }
 
-    @Override
-    public TokenType getTokenType() {
-        return TokenType.VALUE;
-    }
-
-    @Override
-    public boolean interpret(ImmutableAttributeHolder bindings) {
-
-        if (!getType().equals(Boolean.class)) {
-
-            throw new IllegalStateException("only boolean variables can be" +
-                    " evaluated directly");
-        }
-
-        return (Boolean) getValue(bindings);
-    }
-
-    T getValue(ImmutableAttributeHolder bindings) {
+    private T getValue(ImmutableAttributeHolder bindings) {
 
         return bindings.getAttributeValue(_key);
     }
@@ -76,11 +62,40 @@ class Variable<T> extends UnparsableToken implements Expression, Token {
 
             // This cast is correct, as getType() gives aus the class type of the value and due to type
             // erasure the generic type of Comparable becomes irrelevant
+            @SuppressWarnings("unchecked")
             Comparable<Object> comparable = (Comparable<Object>) getValue(bindings);
 
             return comparable.compareTo(other);
         }
         throw new IllegalStateException("Cannot compare a variable of type " + getTypeName());
+    }
+
+    @Override
+    public boolean interpret(ImmutableAttributeHolder bindings) {
+
+        if (!getType().equals(Boolean.class)) {
+
+            throw new IllegalStateException("only boolean variables can be" +
+                    " evaluated directly");
+        }
+
+        return (Boolean) getValue(bindings);
+    }
+
+    @Override
+    public Expression parse(Stack<Token> stack) throws RulesTokenException {
+
+        if (!getType().equals(Boolean.class)) {
+
+            throw new RulesTokenException("Only Boolean-Variables can be used as an expression");
+        }
+
+        return this;
+    }
+
+    @Override
+    public TokenType getTokenType() {
+        return TokenType.VALUE;
     }
 
     @Override

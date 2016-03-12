@@ -1,22 +1,27 @@
 package probability.rules;
 
-import probability.attr.ImmutableAttributeHolder;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import probability.attr.ImmutableAttributeHolder;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * A Rule corresponds to multiple {@linkplain Expression} evaluating to true,
- * if at least one expression evaluates to true.
+ * A Rule corresponds to multiple {@linkplain Expression} evaluating to true, if at least one
+ * expression evaluates to true.
  */
 public class Rule {
 
     private final List<Expression> _expressions;
 
+    /**
+     * Creates a rule from a list of expressions.
+     */
     Rule(List<Expression> expressions) {
 
-        _expressions = expressions;
+        _expressions = checkNotNull(expressions);
     }
 
     /**

@@ -3,9 +3,8 @@ package probability.rules;
 import java.util.Stack;
 
 /**
- * Class for an atomic parse element.
- * A token can only be parsed and has a certain type which is needed in the
- * {@linkplain ShuntingYardAlgorithm}.
+ * Class for an atomic parse element. A token can only be parsed and has a certain type which is
+ * needed in the {@linkplain ShuntingYardAlgorithm}.
  */
 interface Token {
 

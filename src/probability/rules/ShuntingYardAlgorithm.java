@@ -1,19 +1,35 @@
 package probability.rules;
 
+import java.util.List;
+import java.util.Stack;
+
 import probability.rules.Parentheses.OpenParenthesis;
 import probability.rules.Token.RulesTokenException;
 import probability.rules.Token.TokenType;
 
-import java.util.List;
-import java.util.Stack;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-class ShuntingYardAlgorithm {
-
+/**
+ * Simple implementation of the shunting-yard algorithm to transform mathematical expressions
+ * specified in infix notation into the in Reverse Polish notation (RPN).
+ */
+final class ShuntingYardAlgorithm {
 
     private ShuntingYardAlgorithm() {
+        // do not initialize
     }
 
-    public static Stack<Token> infix2rpn(List<Token> infixTokens) throws RulesTokenException {
+    /**
+     * Converts tokens in infix notation into the Reverse Polish notation.
+     *
+     * @param infixTokens mathematical expression specified as token in infix notation
+     * @return a stack of tokens in RPN
+     * @throws RulesTokenException if an error occurred
+     */
+    public static Stack<Token> infix2rpn(List<? extends Token> infixTokens)
+            throws RulesTokenException {
+
+        checkNotNull(infixTokens);
 
         Stack<Token> output = new Stack<>();
         Stack<Operator> operatorStack = new Stack<>();
@@ -70,8 +86,8 @@ class ShuntingYardAlgorithm {
                                        Stack<Token> output) {
 
         if (!(token instanceof Operator)) {
-            throw new IllegalStateException(token.getClass() + " returns the type " + TokenType.OPERATOR
-                    + " but it is no sub class of " + Operator.class);
+            throw new IllegalStateException(token.getClass() + " returns the type " +
+                    TokenType.OPERATOR + " but it is no sub class of " + Operator.class);
         }
 
         Operator operator = (Operator) token;
@@ -92,6 +108,7 @@ class ShuntingYardAlgorithm {
 
     private static void handleOperatorStack(Stack<Operator> operatorStack, Stack<Token> output)
             throws RulesTokenException {
+
         while (!operatorStack.isEmpty()) {
             Operator op = operatorStack.pop();
 

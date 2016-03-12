@@ -2,6 +2,9 @@ package probability.rules;
 
 import probability.attr.ImmutableAttributeHolder;
 
+/**
+ * Operator for the logical AND, performing short-circuit evaluation.
+ */
 class And extends BinaryOperator {
 
     public And() {

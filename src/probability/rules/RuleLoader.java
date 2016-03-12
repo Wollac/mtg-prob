@@ -2,11 +2,6 @@ package probability.rules;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-import probability.rules.Parentheses.CloseParenthesis;
-import probability.rules.Parentheses.OpenParenthesis;
-import probability.rules.StringTokenizer.StringTokenType;
-import probability.rules.Token.RulesTokenException;
-import probability.rules.Value.StringValue;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,12 +11,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import probability.rules.Parentheses.CloseParenthesis;
+import probability.rules.Parentheses.OpenParenthesis;
+import probability.rules.StringTokenizer.StringTokenType;
+import probability.rules.Token.RulesTokenException;
+import probability.rules.Value.StringValue;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+/**
+ * Class for loading and parsing a rule provided as text input into an evaluable expression.
+ */
 public class RuleLoader {
 
     private final VariableHolder _variables;
 
     public RuleLoader(VariableHolder variables) {
-        _variables = variables;
+        _variables = checkNotNull(variables);
     }
 
     private static Expression parseInfixTokens(List<Token> infixExpressions, int lineNumber)
@@ -52,13 +58,19 @@ public class RuleLoader {
         }
 
         if (!stack.isEmpty()) {
-            throw new RulesParseException(stack.peek() + " is no operand of any operation", lineNumber);
+            throw new RulesParseException(stack.peek() + " is no operand of any operation",
+                    lineNumber);
         }
 
         return expression;
     }
 
+    /**
+     * Reads a rule from the given text file.
+     */
     public Rule readFromFile(File file) throws IOException, RulesParseException {
+
+        checkNotNull(file);
 
         try (Reader reader = Files.newReader(file, Charsets.UTF_8)) {
 
@@ -67,7 +79,12 @@ public class RuleLoader {
         }
     }
 
+    /**
+     * Reads a rule from the given string.
+     */
     public Rule readFromString(String string) throws IOException, RulesParseException {
+
+        checkNotNull(string);
 
         try (Reader reader = new StringReader(string)) {
 
@@ -83,11 +100,19 @@ public class RuleLoader {
         StringTokenizer tokenizer = new StringTokenizer(reader);
 
         for (int lineNumber = 1; tokenizer.tokenType() != StringTokenType.EOF; lineNumber++) {
+
             List<Token> tokens = tokenizeLine(tokenizer);
 
             // ignore empty lines
             if (!tokens.isEmpty()) {
-                rules.add(parseInfixTokens(tokens, lineNumber));
+
+                Expression expression = parseInfixTokens(tokens, lineNumber);
+                if (expression == null) {
+                    throw new RulesParseException("Line could not be parsed",
+                            tokenizer.currentLine());
+                }
+
+                rules.add(expression);
             }
         }
 
@@ -125,6 +150,10 @@ public class RuleLoader {
         }
     }
 
+    /**
+     * Returns an instance of the operator corresponding to the string, or returns a StringValue if
+     * no such operator exists.
+     */
     private Token string2Token(String tokenValue) {
 
         Operation op = Operation.getOperationFromSymbol(tokenValue);

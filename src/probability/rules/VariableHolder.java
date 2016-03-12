@@ -1,12 +1,14 @@
 package probability.rules;
 
-import probability.attr.AttributeHolder;
-import probability.attr.AttributeKey;
-import probability.attr.ImmutableAttributeHolder;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import probability.attr.AttributeKey;
+import probability.attr.ImmutableAttributeHolder;
 
 public class VariableHolder {
 
@@ -14,7 +16,7 @@ public class VariableHolder {
 
     private final Map<String, Variable<?>> _name2var = new HashMap<>();
 
-    private final AttributeHolder _bindings = new AttributeHolder();
+    private final SuppliedAttributeHolder _bindings = new SuppliedAttributeHolder();
 
     public <T> void registerVariable(AttributeKey<T> key) {
         registerVariable(key, key.getName());
@@ -28,11 +30,7 @@ public class VariableHolder {
         }
 
         _name2var.put(name, Variable.createVariable(key));
-    }
-
-    public <T> void registerAndAssign(AttributeKey<T> key, T value) {
-        registerVariable(key);
-        assignValue(key, value);
+        _bindings.putAttributeValue(key, key.getDefaultValue());
     }
 
     public boolean isRegistered(AttributeKey<?> key) {
@@ -50,7 +48,12 @@ public class VariableHolder {
 
     public <T> void assignValue(AttributeKey<T> key, T value) {
 
-        _bindings.setAttributeValueUnchecked(key, value);
+        _bindings.putAttributeValue(key, value);
+    }
+
+    public <T> void assignSupplier(AttributeKey<T> key, Supplier<T> supplier) {
+
+        _bindings.putAttributeSupplier(key, supplier);
     }
 
     ImmutableAttributeHolder getBindings() {
@@ -76,6 +79,39 @@ public class VariableHolder {
         if (Operation.getOperationFromSymbol(name) != null) {
             throw new IllegalArgumentException(
                     "Invalid variable name: " + name + " is the name of an operation");
+        }
+    }
+
+    private static final class SuppliedAttributeHolder implements ImmutableAttributeHolder {
+
+        private final Map<AttributeKey<?>, Supplier<?>> _supplierMap = new HashMap<>();
+
+        public <T> void putAttributeValue(AttributeKey<T> key, T value) {
+
+            _supplierMap.put(key, () -> value);
+        }
+
+        public <T> void putAttributeSupplier(AttributeKey<T> key, Supplier<T> supplier) {
+
+            _supplierMap.put(key, Suppliers.memoize(supplier));
+        }
+
+        @Override
+        public <T> T getAttributeValue(AttributeKey<T> key, T def) {
+
+            if (_supplierMap.containsKey(key)) {
+                return getAttributeValue(key);
+            }
+
+            return def;
+        }
+
+        @Override
+        public <T> T getAttributeValue(AttributeKey<T> key) {
+
+            // the variable holder assures that there are no variables without a value
+            Object valueObject = _supplierMap.get(key).get();
+            return key.getValueType().cast(valueObject);
         }
     }
 

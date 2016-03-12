@@ -2,6 +2,9 @@ package probability.rules;
 
 import probability.attr.ImmutableAttributeHolder;
 
+/**
+ * Operator for the logical OR, performing short-circuit evaluation.
+ */
 class Or extends BinaryOperator {
 
     public Or() {

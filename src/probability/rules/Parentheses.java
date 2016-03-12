@@ -3,9 +3,8 @@ package probability.rules;
 import java.util.Stack;
 
 /**
- * Parentheses are a special {@linkplain Operator} and has the highest possible
- * priority.
- * As Parentheses cannot be evaluated on their own, a singleton is sufficient.
+ * Parentheses are a special {@linkplain Operator} and has the highest possible priority. As
+ * Parentheses cannot be evaluated on their own, a singleton is sufficient.
  */
 interface Parentheses extends Operator {
 
@@ -45,7 +44,8 @@ interface Parentheses extends Operator {
 
         @Override
         public Expression parse(Stack<Token> stack) throws RulesTokenException {
-            throw new RulesTokenException(getClass().getName() + " cannot be parsed into an expression");
+
+            throw new IllegalStateException();
         }
 
     }
@@ -78,7 +78,8 @@ interface Parentheses extends Operator {
 
         @Override
         public Expression parse(Stack<Token> stack) throws RulesTokenException {
-            throw new RulesTokenException(getClass().getName() + " cannot be parsed into an expression");
+
+            throw new IllegalStateException();
         }
 
     }

@@ -2,6 +2,9 @@ package probability.rules;
 
 import probability.attr.ImmutableAttributeHolder;
 
+/**
+ * Operator for the not-equality of a variable and a value.
+ */
 class NotEqual extends VariableValueOperator {
 
     NotEqual() {
