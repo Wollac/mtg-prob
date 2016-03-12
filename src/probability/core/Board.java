@@ -51,7 +51,8 @@ public class Board {
 	}
 
 	private Set<Color> getPlayedBasicLandColors() {
-		Set<Color> colors = new HashSet<>();
+
+		Set<Color> colors = Color.emptyEnumSet();
 
 		for (Land land : _playedLands) {
 			if (CardUtils.isBasicLand(land)) {

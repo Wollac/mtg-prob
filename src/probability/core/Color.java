@@ -1,46 +1,46 @@
 package probability.core;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
 public enum Color {
-	Colorless('A'), White('W'), Blue('U'), Black('B'), Red('R'), Green('G');
+    Colorless('A'), White('W'), Blue('U'), Black('B'), Red('R'), Green('G');
 
-	private static Color[] ALL_COLORS = { White, Blue, Black, Red, Green };
+    private static final Map<Character, Color> _codeToColor;
 
-	private final char _c;
+    static {
+        _codeToColor = new HashMap<>();
 
-	Color(char c) {
-		_c = c;
-	}
+        for (Color c : Color.values()) {
+            _codeToColor.put(c.getLetterCode(), c);
+        }
+    }
 
-	public char getLetterCode() {
-		return _c;
-	}
+    private final char _c;
 
-	private static final Map<Character, Color> _codeToColor;
+    Color(char c) {
+        _c = c;
+    }
 
-	static {
-		_codeToColor = new HashMap<>();
+    public static Color getColor(char c) {
 
-		for (Color c : Color.values()) {
-			_codeToColor.put(c.getLetterCode(), c);
-		}
-	}
+        if (!_codeToColor.containsKey(c)) {
+            throw new IllegalArgumentException(c + " is not a valid color code");
+        }
 
-	public static Color getColor(char c) {
-		if (!_codeToColor.containsKey(c)) {
-			throw new IllegalArgumentException(c + " is not a valid color code");
-		}
+        return _codeToColor.get(c);
+    }
 
-		return _codeToColor.get(c);
-	}
+    public static EnumSet<Color> emptyEnumSet() {
+        return EnumSet.noneOf(Color.class);
+    }
 
-	public static int numberOfColors() {
-		return _codeToColor.size();
-	}
+    public static int numberOfColors() {
+        return _codeToColor.size();
+    }
 
-	public static Color[] allColors() {
-		return ALL_COLORS;
-	}
+    public char getLetterCode() {
+        return _c;
+    }
 }
