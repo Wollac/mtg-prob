@@ -22,11 +22,11 @@ import probability.core.land.Land;
 
 class PlayableChecker {
 
-    private Deck _deck;
+    private final Deck _deck;
 
-    private Hand _hand;
+    private final Hand _hand;
 
-    private Map<Color, Colors> _fetchableColors;
+    private final Map<Color, Colors> _fetchableColors;
 
     public PlayableChecker(Deck deck, Hand hand) {
         _deck = deck;
@@ -73,7 +73,8 @@ class PlayableChecker {
     }
 
     private Set<Color> getFetchableColors(Set<Color> colors) {
-        Set<Color> fetchableColors = new HashSet<>(Color.numberOfColors());
+
+        Set<Color> fetchableColors = Color.emptyEnumSet();
 
         for (Color color : colors) {
 
@@ -96,7 +97,7 @@ class PlayableChecker {
 
         Set<Land> remainingLandTypes = new HashSet<>(remainingLands);
 
-        Set<Color> colors = new HashSet<>(Color.numberOfColors());
+        Set<Color> colors = Color.emptyEnumSet();
 
         for (Land land : remainingLandTypes) {
             if (CardUtils.isBasicLand(land) && land.colors().contains(color)) {
@@ -179,7 +180,7 @@ class PlayableChecker {
                 }
             }
 
-            Set<Land> availableLandTypes = getAvailableLandTypes(board, turn);
+            Set<Land> availableLandTypes = getAvailableLandTypes(turn);
 
             for (Land land : availableLandTypes) {
 
@@ -219,7 +220,7 @@ class PlayableChecker {
             return recursion(board, null, remainingCost, turn + 1);
         }
 
-        private Set<Land> getAvailableLandTypes(Board board, int turn) {
+        private Set<Land> getAvailableLandTypes(int turn) {
 
             Set<Land> result = new HashSet<>();
 

@@ -1,97 +1,100 @@
 package probability.core;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
 public final class Colors {
 
-	private final Set<Color> _colors;
+    private final Set<Color> _colors;
 
-	private volatile int _hashCode;
+    private volatile int _hashCode;
 
-	public Colors(Collection<Color> colors) {
-		_colors = Collections.unmodifiableSet(new HashSet<>(colors));
-	}
+    public Colors(EnumSet<Color> colors) {
+        _colors = Collections.unmodifiableSet(colors.clone());
+    }
 
-	public Colors(Color... colors) {
-		this(Arrays.asList(colors));
-	}
+    public Colors(Iterable<Color> colors) {
 
-	private Colors() {
-		_colors = new HashSet<>();
-	}
+        EnumSet<Color> colorSet = Color.emptyEnumSet();
 
-	public Colors(Colors colors) {
-		this(colors.getColors());
-	}
+        for (Color color : colors) {
+            colorSet.add(color);
+        }
 
-	public Set<Color> getColors() {
-		return _colors;
-	}
+        _colors = Collections.unmodifiableSet(colorSet);
+    }
 
-	public boolean containsColor(Color color) {
-		return _colors.contains(color);
-	}
+    public Colors(Color... colors) {
+        this(Arrays.asList(colors));
+    }
 
-	public static Colors valueOf(String str) throws IllegalArgumentException {
-		Colors result = new Colors();
+    public Colors(Colors colors) {
+        this(colors.getColors());
+    }
 
-		for (int i = 0; i < str.length(); i++) {
-			Color color = Color.getColor(str.charAt(i));
+    public static Colors valueOf(String str) throws IllegalArgumentException {
 
-			if (result.containsColor(color)) {
-				throw new IllegalArgumentException(color + " is contained"
-						+ " twice in " + str);
-			}
+        EnumSet<Color> colorSet = Color.emptyEnumSet();
 
-			result._colors.add(color);
-		}
+        for (int i = 0; i < str.length(); i++) {
 
-		if (result.getColors().isEmpty()) {
-			result._colors.add(Color.Colorless);
-		}
+            Color color = Color.getColor(str.charAt(i));
 
-		return result;
-	}
+            if (colorSet.contains(color)) {
+                throw new IllegalArgumentException(color + " is contained twice in " + str);
+            }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == this) {
-			return true;
-		}
-		if (!(obj instanceof Colors)) {
-			return false;
-		}
+            colorSet.add(color);
+        }
 
-		Colors other = (Colors) obj;
-		return Objects.equals(_colors, other._colors);
-	}
+        if (colorSet.isEmpty()) {
+            colorSet.add(Color.Colorless);
+        }
 
-	@Override
-	public int hashCode() {
-		int result = _hashCode;
+        return new Colors(colorSet);
+    }
 
-		if (result == 0) {
-			result = _colors.hashCode();
-			_hashCode = result;
-		}
+    public Set<Color> getColors() {
+        return _colors;
+    }
 
-		return result;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Colors)) {
+            return false;
+        }
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
+        Colors other = (Colors) obj;
+        return Objects.equals(_colors, other._colors);
+    }
 
-		for (Color color : _colors) {
-			sb.append(color.getLetterCode());
-		}
+    @Override
+    public int hashCode() {
+        int result = _hashCode;
 
-		return sb.toString();
-	}
+        if (result == 0) {
+            result = _colors.hashCode();
+            _hashCode = result;
+        }
+
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (Color color : _colors) {
+            sb.append(color.getLetterCode());
+        }
+
+        return sb.toString();
+    }
 
 }

@@ -20,7 +20,7 @@ public class Hand {
 		_cards.addAll(draws);
 	}
 
-	private Collection<Card> getStartingHand() {
+	public Collection<Card> getStartingHand() {
 		return Collections.unmodifiableCollection(_cards.subList(0,
 				_startingHandSize));
 	}
@@ -41,18 +41,6 @@ public class Hand {
 	public Collection<Card> getCardsUntilTurn(int turn) {
 		return Collections.unmodifiableCollection(_cards.subList(0,
 				_startingHandSize + turn - 1));
-	}
-
-	public int getNumberOfLandsInStartingHand() {
-		int count = 0;
-
-		for (Card card : _cards.subList(0, _startingHandSize)) {
-			if (CardUtils.isLand(card)) {
-				count++;
-			}
-		}
-
-		return count;
 	}
 
 	public int getStartingHandSize() {

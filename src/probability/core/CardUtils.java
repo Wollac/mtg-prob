@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Predicate;
@@ -13,109 +14,123 @@ import probability.core.land.FetchLand;
 import probability.core.land.Land;
 
 public final class CardUtils {
-	private CardUtils() {
-	}
 
-	public static Card getDummyCard() {
-		return DUMMY_CARD;
-	}
+    private static final Card DUMMY_CARD = new Card() {
 
-	public static boolean isSpell(Card card) {
-		return (card instanceof Spell);
-	}
+        @Override
+        public String getName() {
+            return "Dummy";
+        }
 
-	public static boolean isLand(Card card) {
-		return (card instanceof Land);
-	}
+        @Override
+        public CardType getCardType() {
+            return CardType.Other;
+        }
 
-	public static boolean isDummy(Card card) {
-		return card.equals(DUMMY_CARD);
-	}
+        @Override
+        public String toString() {
+            return getName();
+        }
 
-	public static boolean isBasicLand(Card card) {
-		return (card instanceof BasicLand);
-	}
+    };
 
-	public static boolean isFetchLand(Card card) {
-		return (card instanceof FetchLand);
-	}
+    private CardUtils() {
+    }
 
-	public static void retainAllLands(Collection<Card> cards) {
-		retain(cards, CardUtils::isLand);
-	}
+    public static Card getDummyCard() {
+        return DUMMY_CARD;
+    }
 
-	public static Collection<Land> retainAllLandsToArrayList(
-			Collection<Card> cards) {
+    public static boolean isSpell(Card card) {
+        return (card instanceof Spell);
+    }
 
-		Collection<Land> lands = new ArrayList<>(cards.size());
+    public static boolean isLand(Card card) {
+        return (card instanceof Land);
+    }
 
-		for (Card card : cards) {
-			if (card instanceof Land) {
-				lands.add((Land) card);
-			}
-		}
+    public static boolean isDummy(Card card) {
+        return card.equals(DUMMY_CARD);
+    }
 
-		return lands;
-	}
+    public static boolean isBasicLand(Card card) {
+        return (card instanceof BasicLand);
+    }
 
-	public static void retainAllSpells(Collection<Card> cards) {
-		retain(cards, CardUtils::isSpell);
-	}
+    public static boolean isFetchLand(Card card) {
+        return (card instanceof FetchLand);
+    }
 
-	public static Collection<Spell> retainAllSpellsToArrayList(
-			Collection<Card> cards) {
+    public static void retainAllLands(Collection<Card> cards) {
+        retain(cards, CardUtils::isLand);
+    }
 
-		Collection<Spell> spells = new ArrayList<>(cards.size());
+    public static Collection<Land> retainAllLandsToArrayList(
+            Collection<Card> cards) {
 
-		for (Card card : cards) {
-			if (card instanceof Spell) {
-				spells.add((Spell) card);
-			}
-		}
+        Collection<Land> lands = new ArrayList<>(cards.size());
 
-		return spells;
-	}
+        for (Card card : cards) {
+            if (card instanceof Land) {
+                lands.add((Land) card);
+            }
+        }
 
-	/** Create a set that contains the cards sorted by getName() */
-	public static SortedSet<Card> sortCardsByName(Collection<Card> cards) {
-		SortedSet<Card> sorted = new TreeSet<>(
-				Comparator.comparing(Card::getName));
-		sorted.addAll(cards);
+        return lands;
+    }
 
-		return sorted;
-	}
+    public static void retainAllSpells(Collection<Card> cards) {
+        retain(cards, CardUtils::isSpell);
+    }
 
-	/**
-	 * Remove all elements from Card collection that don't fulfill the predicate
-	 */
-	private static void retain(Collection<Card> cards, Predicate<Card> predicate) {
+    public static Collection<Spell> retainAllSpellsToArrayList(
+            Collection<Card> cards) {
 
-		for (Iterator<Card> iterator = cards.iterator(); iterator.hasNext();) {
-			Card card = iterator.next();
+        Collection<Spell> spells = new ArrayList<>(cards.size());
 
-			if (!predicate.test(card)) {
-				iterator.remove();
-			}
-		}
-	}
+        for (Card card : cards) {
+            if (card instanceof Spell) {
+                spells.add((Spell) card);
+            }
+        }
 
-	private static final Card DUMMY_CARD = new Card() {
+        return spells;
+    }
 
-		@Override
-		public String getName() {
-			return "Dummy";
-		}
+    public static Colors getColors(Collection<? extends Land> lands) {
 
-		@Override
-		public CardType getCardType() {
-			return CardType.Other;
-		}
+        Set<Color> colorSet = Color.emptyEnumSet();
 
-		@Override
-		public String toString() {
-			return getName();
-		}
+        for (Land land : lands) {
+            colorSet.addAll(land.colors());
+        }
 
-	};
+        return new Colors(colorSet);
+    }
+
+    /**
+     * Create a set that contains the cards sorted by getName()
+     */
+    public static SortedSet<Card> sortCardsByName(Collection<Card> cards) {
+        SortedSet<Card> sorted = new TreeSet<>(
+                Comparator.comparing(Card::getName));
+        sorted.addAll(cards);
+
+        return sorted;
+    }
+
+    /**
+     * Remove all elements from Card collection that don't fulfill the predicate
+     */
+    private static void retain(Collection<Card> cards, Predicate<Card> predicate) {
+
+        for (Iterator<Card> iterator = cards.iterator(); iterator.hasNext(); ) {
+            Card card = iterator.next();
+
+            if (!predicate.test(card)) {
+                iterator.remove();
+            }
+        }
+    }
 
 }

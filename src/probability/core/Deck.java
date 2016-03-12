@@ -17,7 +17,7 @@ public class Deck {
 
     private final Config _config;
 
-    private ArrayList<Card> _cards;
+    private final ArrayList<Card> _cards;
 
     public Deck(Config config) {
         _config = config;
