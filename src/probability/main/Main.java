@@ -144,8 +144,7 @@ public class Main {
             deck.shuffle();
             hand = deck.draw(turn, mulligan);
 
-            if (!mulliganRule.takeMulligan(hand.getNumberOfLandsInStartingHand(),
-                    hand.getStartingHandSize())) {
+            if (!mulliganRule.takeMulligan(hand.getStartingHand())) {
                 break;
             }
 
