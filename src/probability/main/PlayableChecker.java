@@ -195,10 +195,13 @@ class PlayableChecker {
 
         private final int _maxTurn;
 
+        private Map<Integer, Set<Land>> _cachedLandTypes;
+
         public PlayableRecursion(Spell spell, Hand hand, int maxTurn) {
             _spell = spell;
             _hand = hand;
             _maxTurn = maxTurn;
+            _cachedLandTypes = new HashMap<>(maxTurn);
         }
 
         public boolean check() {
@@ -274,8 +277,7 @@ class PlayableChecker {
             return recursion(board, null, remainingCost, turn + 1);
         }
 
-        private Set<Land> getAvailableLandTypes(int turn) {
-
+        private Set<Land> computeAvailableLandTypes(int turn) {
             Set<Land> result = new HashSet<>();
 
             for (Card card : _hand.getCardsUntilTurn(turn)) {
@@ -285,6 +287,11 @@ class PlayableChecker {
             }
 
             return result;
+        }
+
+        private Set<Land> getAvailableLandTypes(int turn) {
+
+            return _cachedLandTypes.computeIfAbsent(turn, x -> computeAvailableLandTypes(x));
         }
     }
 
