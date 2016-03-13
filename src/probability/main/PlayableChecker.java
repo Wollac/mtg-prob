@@ -205,9 +205,10 @@ class PlayableChecker {
 
             Board board = new Board();
             RemainingManaCost cost = new RemainingManaCost(_spell.getCost());
-            Color tappedColor = null;
+            final Color tappedColor = null;
+            final int turn = 1;
 
-            return recursion(board, tappedColor, cost, 1);
+            return recursion(board, tappedColor, cost, turn);
         }
 
         private boolean recursion(Board board, Color tappedColor,

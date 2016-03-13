@@ -8,6 +8,9 @@ public class ManaCost {
 
     private int _genericMana;
 
+    // As the ManaCost is immutable, its hash code can be cached
+    private volatile int _hash;
+
     public ManaCost() {
 
         _colorCounts = new EnumCount<>(Color.class);
@@ -79,7 +82,15 @@ public class ManaCost {
 
     @Override
     public int hashCode() {
-        return Objects.hash(_colorCounts, _genericMana);
+
+        int result = _hash;
+
+        if (result == 0) {
+
+            _hash = result = Objects.hash(_genericMana, _colorCounts);
+        }
+
+        return result;
     }
 
     @Override
