@@ -102,6 +102,17 @@ public class EnumCount<K extends Enum<K>> {
         public int dec() {
             return --_val;
         }
+
+        @Override
+        public int hashCode() {
+            return _val;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof MutableInteger && ((MutableInteger) obj)._val == _val;
+        }
+
     }
 
 }
