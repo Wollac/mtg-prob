@@ -17,7 +17,7 @@ abstract class AbstractLand implements Land {
 
     AbstractLand(String name, Colors colors) {
         _name = name;
-        _colors = new Colors(colors);
+        _colors = colors;
     }
 
     @Override
