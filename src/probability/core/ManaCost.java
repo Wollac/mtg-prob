@@ -1,115 +1,104 @@
 package probability.core;
 
-import java.util.Collections;
-import java.util.Set;
-
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
+import java.util.Objects;
 
 public class ManaCost {
-	private final Multiset<Color> _colorCounts;
 
-	public ManaCost() {
-		_colorCounts = HashMultiset.create();
-	}
+    private final EnumCount<Color> _colorCounts;
 
-	public ManaCost(String costString) throws IllegalArgumentException {
-		_colorCounts = HashMultiset.create();
+    private int _genericMana;
 
-		for (char c : costString.toCharArray()) {
-			if (Character.isDigit(c)) {
-				addColor(Color.Colorless, Character.getNumericValue(c));
-			} else {
-				Color color = Color.getColor(c);
+    public ManaCost() {
 
-				if (color == null) {
-					throw new IllegalArgumentException(c
-							+ " is no valid letter code");
-				}
+        _colorCounts = new EnumCount<>(Color.class);
+        _genericMana = 0;
+    }
 
-				addColor(color);
-			}
-		}
-	}
+    public ManaCost(String costString) throws IllegalArgumentException {
 
-	public ManaCost(ManaCost o) {
-		_colorCounts = HashMultiset.create(o._colorCounts);
-	}
+        this();
 
-	public boolean containsColor(Color color) {
-		return getCount(color) > 0 || getCount(Color.Colorless) > 0;
-	}
+        boolean genericSet = false;
 
-	public void addColor(Color color, int inc) {
-		_colorCounts.add(color, inc);
-	}
+        for (char c : costString.toCharArray()) {
 
-	public void addColor(Color color) {
-		_colorCounts.add(color);
-	}
+            if (Character.isDigit(c)) {
 
-	public void removeColor(Color color, int dec) {
-		_colorCounts.remove(color, dec);
-	}
+                if (genericSet) {
+                    throw new IllegalArgumentException("Only one dict generic mana costs allowed");
+                }
 
-	public void removeColor(Color color) {
-		_colorCounts.remove(color);
-	}
+                _genericMana = Character.getNumericValue(c);
+                genericSet = true;
+            } else {
 
-	public int getCount(Color color) {
-		return _colorCounts.count(color);
-	}
+                Color color = Color.getColor(c);
+                if (color == null) {
+                    throw new IllegalArgumentException(c + " is not a valid color code");
+                }
 
-	public Set<Color> getColors() {
-		return Collections.unmodifiableSet(_colorCounts.elementSet());
-	}
+                _colorCounts.increase(color);
+            }
+        }
+    }
 
-	public int getCMC() {
-		return _colorCounts.size();
-	}
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
+    public boolean contains(Color color) {
 
-		for (Color c : Color.values()) {
-			if (c == Color.Colorless) {
-				int colorless = getCount(Color.Colorless);
+        return _genericMana > 0 && _colorCounts.contains(color);
+    }
 
-				if (colorless > 0) {
-					sb.append(colorless);
-				}
-			} else {
-				for (int i = 0; i < getCount(c); i++) {
-					sb.append(c.getLetterCode());
-				}
-			}
+    public int count(Color color) {
+        return _colorCounts.count(color);
+    }
 
-		}
+    public int genericCount() {
+        return _genericMana;
+    }
 
-		return sb.toString();
-	}
+    /**
+     * Returns the converted mana cost.
+     */
+    public int getConverted() {
+        return _colorCounts.totalCount() + _genericMana;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
+    @Override
+    public boolean equals(Object obj) {
 
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof ManaCost)) {
-			return false;
-		}
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof ManaCost)) {
+            return false;
+        }
 
-		final ManaCost other = (ManaCost) obj;
+        ManaCost other = (ManaCost) obj;
+        return _genericMana == other._genericMana && Objects.equals(_colorCounts, other._colorCounts);
+    }
 
-		return _colorCounts.equals(other._colorCounts);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(_colorCounts, _genericMana);
+    }
 
-	@Override
-	public int hashCode() {
-		return _colorCounts.hashCode();
-	}
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        if (_genericMana > 0) {
+            sb.append(_genericMana);
+        }
+
+        for (Color c : Color.values()) {
+
+            for (int i = 0; i < _colorCounts.count(c); i++) {
+                sb.append(c.getLetterCode());
+            }
+        }
+
+        return sb.toString();
+    }
+
 }

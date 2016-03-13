@@ -27,7 +27,7 @@ public class Spell implements Card {
 	}
 
 	public int getCMC() {
-		return _cost.getCMC();
+		return _cost.getConverted();
 	}
 
 	@Override
