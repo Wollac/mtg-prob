@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Color {
-    Colorless('A'), White('W'), Blue('U'), Black('B'), Red('R'), Green('G');
+    White('W'), Blue('U'), Black('B'), Red('R'), Green('G'), Colorless('C');
 
     private static final Map<Character, Color> _codeToColor;
 

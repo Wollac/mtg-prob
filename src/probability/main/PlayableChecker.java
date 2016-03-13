@@ -14,6 +14,7 @@ import probability.core.CardUtils;
 import probability.core.Color;
 import probability.core.Colors;
 import probability.core.Deck;
+import probability.core.EnumCount;
 import probability.core.Hand;
 import probability.core.ManaCost;
 import probability.core.Spell;
@@ -130,6 +131,62 @@ class PlayableChecker {
         return result;
     }
 
+    private static class RemainingManaCost {
+
+        private final ManaCost _originalCost;
+
+        private final EnumCount<Color> _manaPool;
+
+        private int _spentGenericMana;
+
+        RemainingManaCost(ManaCost cost) {
+            _originalCost = cost;
+
+            _manaPool = new EnumCount<>(Color.class);
+            _spentGenericMana = 0;
+        }
+
+        public void payMana(Color color) {
+
+            final int newCount = _manaPool.increase(color);
+
+            if (_originalCost.count(color) < newCount) {
+                _spentGenericMana++;
+            }
+
+            // we will never pay more than we could
+            if (_spentGenericMana > _originalCost.genericCount()) {
+                throw new IllegalStateException();
+            }
+        }
+
+        public void freeMana(Color color) {
+
+            final int oldCount = _manaPool.decrease(color) + 1;
+
+            if (_originalCost.count(color) < oldCount) {
+                _spentGenericMana--;
+            }
+
+            // we will never free mana that has not been paid
+            if (oldCount == 0) {
+                throw new IllegalStateException();
+            }
+        }
+
+        public boolean allPaid() {
+
+            return _originalCost.getConverted() <= _manaPool.totalCount();
+        }
+
+        public boolean contains(Color color) {
+
+            final int remainingGeneric = _originalCost.genericCount() - _spentGenericMana;
+
+            return remainingGeneric > 0 || _originalCost.count(color) > _manaPool.count(color);
+        }
+    }
+
     private static class PlayableRecursion {
 
         private final Spell _spell;
@@ -144,38 +201,26 @@ class PlayableChecker {
             _maxTurn = maxTurn;
         }
 
-        private static ManaCost reduceCost(Color color, ManaCost spellColors) {
-            ManaCost reducedCosts = new ManaCost(spellColors);
-
-            if (reducedCosts.getCount(color) >= 1) {
-                reducedCosts.removeColor(color);
-
-            } else if (reducedCosts.getCount(Color.Colorless) >= 1) {
-                reducedCosts.removeColor(Color.Colorless);
-            }
-
-            return reducedCosts;
-        }
-
         public boolean check() {
+
             Board board = new Board();
+            RemainingManaCost cost = new RemainingManaCost(_spell.getCost());
+            Color tappedColor = null;
 
-            ManaCost cost = _spell.getCost();
-
-            return recursion(board, null, cost, 1);
+            return recursion(board, tappedColor, cost, 1);
         }
 
         private boolean recursion(Board board, Color tappedColor,
-                                  ManaCost remainingCost, int turn) {
+                                  RemainingManaCost remainingCost, int turn) {
 
             if (turn > _maxTurn) {
                 return false;
             }
 
             if (tappedColor != null) {
-                remainingCost = reduceCost(tappedColor, remainingCost);
 
-                if (remainingCost.getCMC() == 0) {
+                remainingCost.payMana(tappedColor);
+                if (remainingCost.allPaid()) {
                     return true;
                 }
             }
@@ -189,27 +234,35 @@ class PlayableChecker {
                 board.playLand(land);
 
                 for (Color color : land.producesColors(board)) {
-                    if (!remainingCost.containsColor(color)) {
+
+                    if (!remainingCost.contains(color)) {
                         continue;
                     }
 
                     if (tapped) {
-                        tappedColor = color;
 
-                        if (recursion(board, tappedColor, remainingCost,
-                                turn + 1)) {
-                            return true;
+                        if (turn < _maxTurn) {
+
+                            tappedColor = color;
+
+                            if (recursion(board, tappedColor, remainingCost,
+                                    turn + 1)) {
+                                return true;
+                            }
+                            remainingCost.freeMana(tappedColor);
                         }
                     } else {
-                        remainingCost = reduceCost(color, remainingCost);
 
-                        if (remainingCost.getCMC() == 0) {
+                        remainingCost.payMana(color);
+                        if (remainingCost.allPaid()) {
                             return true;
                         }
 
                         if (recursion(board, null, remainingCost, turn + 1)) {
                             return true;
                         }
+                        remainingCost.freeMana(color);
+
                     }
 
                 }
