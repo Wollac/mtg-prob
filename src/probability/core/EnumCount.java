@@ -1,6 +1,7 @@
 package probability.core;
 
 import java.util.EnumMap;
+import java.util.Objects;
 
 public class EnumCount<K extends Enum<K>> {
 
@@ -13,7 +14,6 @@ public class EnumCount<K extends Enum<K>> {
     }
 
     public EnumCount(EnumCount<K> c) {
-
 
         map = new EnumMap<>(c.map);
         totalCount = c.totalCount;
@@ -81,6 +81,24 @@ public class EnumCount<K extends Enum<K>> {
     public int totalCount() {
 
         return totalCount;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof EnumCount)) {
+            return false;
+        }
+
+        EnumCount other = (EnumCount) obj;
+        return totalCount == other.totalCount && Objects.equals(map, other.map);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(map);
     }
 
     private static final class MutableInteger {
