@@ -37,6 +37,7 @@
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
+
 		<plugins>
 
 			<!-- Set a compile level -->
@@ -50,57 +51,47 @@
 				</configuration>
 			</plugin>
 
-			<!-- Maven Shade Plugin -->
+			<!-- Create jar-file with correct manifest -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.3</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<transformers>
-								<!-- add Main-Class to manifest file -->
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>probability.main.Main</mainClass>
-								</transformer>
-							</transformers>
-						</configuration>
-					</execution>
-				</executions>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>probability.main.Main</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
 			</plugin>
 
-			<!-- Use proguard to shrink the package -->
+			<!-- Use ProGuard to Obfuscate and package -->
 			<plugin>
 				<groupId>com.github.wvengen</groupId>
 				<artifactId>proguard-maven-plugin</artifactId>
-				<version>2.0.9</version>
+				<version>2.0.11</version>
+				<dependencies>
+					<dependency>
+						<groupId>net.sf.proguard</groupId>
+						<artifactId>proguard-base</artifactId>
+						<version>5.2.1</version>
+						<scope>runtime</scope>
+					</dependency>
+				</dependencies>
+
 				<executions>
 
 					<execution>
-						<id>shrink</id>
+						<id>obfuscate</id>
 						<phase>package</phase>
 						<goals>
 							<goal>proguard</goal>
 						</goals>
 						<configuration>
-							<includeDependency>false</includeDependency>
-							<includeDependencyInjar>false</includeDependencyInjar>
-							<addMavenDescriptor>false</addMavenDescriptor>
-							<obfuscate>false</obfuscate>
+							<proguardInclude>${basedir}/proguard.conf</proguardInclude>
 							<options>
-								<option>-dontwarn javax.annotation.**</option>
-								<option>-dontnote</option>
-								<option>-dontoptimize</option>
-								<option>-overloadaggressively</option>
-								<option>-allowaccessmodification</option>
-								<option>-verbose</option>
-								<option>-keepclasseswithmembers public class * { public static
-									void main(java.lang.String[]); }</option>
+								<option>-printusage ${project.build.directory}/proguard_usage.txt</option>
+								<!-- <option>-verbose</option> -->
 							</options>
 							<libs>
 								<lib>${java.home}/lib/rt.jar</lib>
@@ -108,10 +99,39 @@
 						</configuration>
 					</execution>
 
+					<execution>
+						<id>package</id>
+						<phase>package</phase>
+						<goals>
+							<goal>proguard</goal>
+						</goals>
+						<configuration>
+							<includeDependency>true</includeDependency>
+							<includeDependencyInjar>true</includeDependencyInjar>
+							<proguardInclude>${basedir}/proguard.conf</proguardInclude>
+							
+							<options>
+								<option>-dontoptimize</option>
+								<option>-dontobfuscate</option>
+								<option>-dontnote</option>
+								<option>-dontwarn javax.annotation.**</option>
+								<option>-dontwarn javax.inject.**</option>
+								<option>-dontwarn sun.misc.Unsafe</option>
+								<option>-dontwarn com.google.common.collect.MinMaxPriorityQueue</option>
+								<!-- <option>-verbose</option> -->
+							</options>
+
+							<libs>
+								<lib>${java.home}/lib/rt.jar</lib>
+							</libs>
+
+						</configuration>
+					</execution>
+
 				</executions>
 			</plugin>
-
 		</plugins>
+
 	</build>
 
 </project>
