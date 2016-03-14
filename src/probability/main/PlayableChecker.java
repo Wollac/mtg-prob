@@ -291,7 +291,7 @@ class PlayableChecker {
 
         private Set<Land> getAvailableLandTypes(int turn) {
 
-            return _cachedLandTypes.computeIfAbsent(turn, x -> computeAvailableLandTypes(x));
+            return _cachedLandTypes.computeIfAbsent(turn, this::computeAvailableLandTypes);
         }
     }
 

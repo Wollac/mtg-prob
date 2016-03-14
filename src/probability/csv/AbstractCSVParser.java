@@ -1,5 +1,7 @@
 package probability.csv;
 
+import com.opencsv.CSVReader;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -10,114 +12,138 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import probability.attr.AttributeKey;
 import probability.attr.AttributeHolder;
+import probability.attr.AttributeKey;
 import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
 
-import com.opencsv.CSVReader;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class AbstractCSVParser<T> {
 
-	private final CSVReader _reader;
+    private final CSVReader _reader;
 
-	private final Map<AttributeKey<?>, Boolean> _attributes;
+    private final Map<AttributeKey<?>, Boolean> _attributes;
 
-	private Map<AttributeKey<?>, Integer> _attribute2column;
+    private Map<AttributeKey<?>, Integer> _attribute2column;
 
-	protected AbstractCSVParser(Reader reader) throws IOException {
-		_reader = new CSVReader(new LineCommentReader(reader));
+    protected AbstractCSVParser(Reader reader) throws IOException {
 
-		_attributes = new HashMap<>();
-	}
+        checkNotNull(reader);
 
-	protected void addAttribute(AttributeKey<?> attribute, boolean mandatory) {
-		_attributes.put(attribute, mandatory);
-	}
+        _reader = new CSVReader(new LineCommentReader(reader));
+        _attributes = new HashMap<>();
+    }
 
-	protected void addOptionalAttribute(AttributeKey<?> attribute) {
-		addAttribute(attribute, false);
-	}
+    protected void addAttribute(AttributeKey<?> attribute, boolean mandatory) {
 
-	protected void addMandatoryAttribute(AttributeKey<?> attribute) {
-		addAttribute(attribute, true);
-	}
+        checkNotNull(attribute);
+        checkArgument(!_attributes.containsKey(attribute), "attribute already added");
+        checkArgument(attribute.getName().startsWith(" "),
+                " attribute name must not start with a space");
+        checkArgument(attribute.getName().endsWith(" "),
+                " attribute name must not end with a space");
 
-	public List<T> readAll() throws IOException, CvsParseException {
+        _attributes.put(attribute, mandatory);
+    }
 
-		if (_attributes.isEmpty()) {
-			throw new IllegalStateException("At least one attribute is needed.");
-		}
+    protected void addOptionalAttribute(AttributeKey<?> attribute) {
+        addAttribute(attribute, false);
+    }
 
-		readHeader();
+    protected void addMandatoryAttribute(AttributeKey<?> attribute) {
+        addAttribute(attribute, true);
+    }
 
-		List<T> instances = new ArrayList<>();
+    public List<T> readAll() throws IOException, CvsParseException {
 
-		String[] nextLine;
-		while ((nextLine = _reader.readNext()) != null) {
-			ImmutableAttributeHolder row = parseLine(nextLine);
+        if (_attributes.isEmpty()) {
+            throw new IllegalStateException("At least one attribute is needed.");
+        }
 
-			instances.addAll(createInstance(row));
-		}
+        readHeader();
 
-		return instances;
-	}
+        List<T> instances = new ArrayList<>();
 
-	protected abstract Collection<T> createInstance(ImmutableAttributeHolder row);
+        String[] nextLine;
+        while ((nextLine = _reader.readNext()) != null) {
+            ImmutableAttributeHolder row = parseLine(nextLine);
 
-	private ImmutableAttributeHolder parseLine(String[] nextLine)
-			throws CvsParseException {
+            instances.addAll(createInstance(row));
+        }
 
-		AttributeHolder attributeHolder = new AttributeHolder();
+        return instances;
+    }
 
-		try {
-			for (Entry<AttributeKey<?>, Integer> element : _attribute2column
-					.entrySet()) {
-				String valueString = nextLine[element.getValue()].trim();
+    protected abstract Collection<T> createInstance(ImmutableAttributeHolder row);
 
-				attributeHolder.setParsedAttributeValue(element.getKey(),
-						valueString);
-			}
-		} catch (AttributeParseException e) {
-			throw new CvsParseException("error parsing csv file", e);
-		}
+    private ImmutableAttributeHolder parseLine(String[] nextLine)
+            throws CvsParseException {
 
-		return attributeHolder;
-	}
+        AttributeHolder attributeHolder = new AttributeHolder();
 
-	private void readHeader() throws IOException, CvsParseException {
+        try {
+            for (Entry<AttributeKey<?>, Integer> element : _attribute2column
+                    .entrySet()) {
+                String valueString = nextLine[element.getValue()].trim();
 
-		_attribute2column = new HashMap<>();
+                attributeHolder.setParsedAttributeValue(element.getKey(),
+                        valueString);
+            }
+        } catch (AttributeParseException e) {
+            throw new CvsParseException("error parsing csv file", e);
+        }
 
-		List<String> line = Arrays.asList(_reader.readNext());
+        return attributeHolder;
+    }
 
-		for (AttributeKey<?> attribute : _attributes.keySet()) {
+    private void readHeader() throws IOException, CvsParseException {
 
-			int index = line.indexOf(attribute.getName());
+        _attribute2column = new HashMap<>();
 
-			if (index >= 0) {
-				_attribute2column.put(attribute, index);
-			} else if (isMandatory(attribute)) {
+        List<String> line = Arrays.asList(_reader.readNext());
 
-				throw new CvsParseException("error parsing csv file",
-						new Throwable("Mandatory column " + attribute.getName()
-								+ " not found"));
-			}
-		}
-	}
+        for (AttributeKey<?> attribute : _attributes.keySet()) {
 
-	private boolean isMandatory(AttributeKey<?> attribute) {
-		return _attributes.get(attribute);
-	}
+            int index = indexOf(line, attribute.getName());
 
-	public static class CvsParseException extends Exception {
+            if (index >= 0) {
+                _attribute2column.put(attribute, index);
+            } else if (isMandatory(attribute)) {
 
-		private static final long serialVersionUID = 1L;
+                throw new CvsParseException("error parsing csv file",
+                        new Throwable("Mandatory column " + attribute.getName()
+                                + " not found"));
+            }
+        }
+    }
 
-		public CvsParseException(String str, Throwable cause) {
-			super(str, cause);
-		}
+    private int indexOf(List<String> row, String string) {
 
-	}
+        int index = 0;
+        for (String cell : row) {
+            if (cell.trim().equalsIgnoreCase(string)) {
+                return index;
+            }
+            index++;
+        }
+
+        return -1;
+    }
+
+    private boolean isMandatory(AttributeKey<?> attribute) {
+        return _attributes.get(attribute);
+    }
+
+    public static class CvsParseException extends Exception {
+
+        private static final long serialVersionUID = 1L;
+
+        public CvsParseException(String str, Throwable cause) {
+            super(str, cause);
+        }
+
+    }
 
 }
