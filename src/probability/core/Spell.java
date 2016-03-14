@@ -4,55 +4,56 @@ import java.util.Objects;
 
 public class Spell implements Card {
 
-	private final String _name;
-	private final ManaCost _cost;
+    private final String _name;
 
-	public Spell(String name, ManaCost cost) {
-		_name = name;
-		_cost = cost;
-	}
+    private final ManaCost _cost;
 
-	@Override
-	public String getName() {
-		return _name;
-	}
+    public Spell(String name, ManaCost cost) {
+        _name = name;
+        _cost = cost;
+    }
 
-	@Override
-	public CardType getCardType() {
-		return CardType.Spell;
-	}
+    @Override
+    public String getName() {
+        return _name;
+    }
 
-	public ManaCost getCost() {
-		return _cost;
-	}
+    @Override
+    public CardType getCardType() {
+        return CardType.Spell;
+    }
 
-	public int getCMC() {
-		return _cost.getConverted();
-	}
+    public ManaCost getCost() {
+        return _cost;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(_name, _cost);
-	}
+    public int getCMC() {
+        return _cost.getConverted();
+    }
 
-	@Override
-	public boolean equals(Object obj) {
+    @Override
+    public int hashCode() {
+        return Objects.hash(_name, _cost);
+    }
 
-		if (obj == this) {
-			return true;
-		}
-		if (!(obj instanceof Spell)) {
-			return false;
-		}
+    @Override
+    public final boolean equals(Object obj) {
 
-		Spell other = (Spell) obj;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Spell)) {
+            return false;
+        }
 
-		return Objects.equals(_name, other._name)
-				&& Objects.equals(_cost, other._cost);
-	}
+        Spell other = (Spell) obj;
 
-	@Override
-	public String toString() {
-		return _name + ":" + _cost;
-	}
+        return Objects.equals(_name, other._name)
+                && Objects.equals(_cost, other._cost);
+    }
+
+    @Override
+    public String toString() {
+        return _name + ":" + _cost;
+    }
 }

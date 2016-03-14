@@ -3,7 +3,7 @@ package probability.core;
 import java.util.EnumMap;
 import java.util.Objects;
 
-public class EnumCount<K extends Enum<K>> {
+public final class EnumCount<K extends Enum<K>> {
 
     private final EnumMap<K, MutableInteger> map;
 
