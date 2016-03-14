@@ -1,19 +1,19 @@
 package probability.core.land;
 
-import java.util.Set;
-
 import probability.core.Board;
 import probability.core.Card;
 import probability.core.Color;
 
+import java.util.Set;
+
 public interface Land extends Card {
 
-	Set<Color> colors();
+    Set<Color> colors();
 
-	boolean comesIntoPlayTapped(Board board);
+    boolean comesIntoPlayTapped(Board board);
 
-	Set<Color> producibleColors();
+    Set<Color> producibleColors();
 
-	Set<Color> producesColors(Board board);
+    Set<Color> producesColors(Board board);
 
 }

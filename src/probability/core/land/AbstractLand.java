@@ -1,23 +1,26 @@
 package probability.core.land;
 
-import java.util.Objects;
-import java.util.Set;
-
 import probability.core.Board;
 import probability.core.Color;
 import probability.core.Colors;
 
+import java.util.Objects;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 abstract class AbstractLand implements Land {
 
-    final private String _name;
+    private final String _name;
 
-    final private Colors _colors;
+    private final Colors _colors;
 
     private volatile int _hashCode;
 
     AbstractLand(String name, Colors colors) {
-        _name = name;
-        _colors = colors;
+
+        _name = checkNotNull(name);
+        _colors = checkNotNull(colors);
     }
 
     @Override
@@ -47,18 +50,16 @@ abstract class AbstractLand implements Land {
 
     @Override
     public boolean equals(Object obj) {
+
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof AbstractLand)) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
         AbstractLand other = (AbstractLand) obj;
-
-        // comparing getClass is bad this should go in each super class
-        return Objects.equals(getClass(), other.getClass())
-                && Objects.equals(_name, other._name)
+        return Objects.equals(_name, other._name)
                 && Objects.equals(_colors, other._colors);
     }
 
@@ -68,7 +69,7 @@ abstract class AbstractLand implements Land {
         int result = _hashCode;
 
         if (result == 0) {
-            result = Objects.hash(getClass(), _name, _colors);
+            result = Objects.hash(_name, _colors);
             _hashCode = result;
         }
 
