@@ -26,7 +26,8 @@ public enum Color {
     public static Color getColor(char c) {
 
         if (!_codeToColor.containsKey(c)) {
-            throw new IllegalArgumentException(c + " is not a valid color code");
+            throw new IllegalArgumentException("illegal character '" + c
+                    + "' is not a valid mana letter " + _codeToColor.keySet());
         }
 
         return _codeToColor.get(c);

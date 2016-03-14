@@ -7,27 +7,26 @@ import probability.core.Colors;
 
 public class ColorsAttributeKey extends AttributeKey<Colors> {
 
-	public ColorsAttributeKey(String name, Predicate<Colors> validator) {
-		super(name, Colors.class, new Colors(Color.Colorless), validator);
-	}
+    public ColorsAttributeKey(String name, Predicate<Colors> validator) {
+        super(name, Colors.class, new Colors(Color.Colorless), validator);
+    }
 
-	public ColorsAttributeKey(String name) {
-		this(name, s -> true);
-	}
+    public ColorsAttributeKey(String name) {
+        this(name, s -> true);
+    }
 
-	@Override
-	public Colors parseValue(String valueString)
-			throws AttributeParseException {
+    @Override
+    public Colors parseValue(String valueString)
+            throws AttributeParseException {
 
-		Colors result;
+        Colors result;
 
-		try {
-			result = Colors.valueOf(valueString);
-		} catch (IllegalArgumentException e) {
-			throw new AttributeParseException(valueString
-					+ " is not a valid string", this);
-		}
+        try {
+            result = Colors.valueOf(valueString);
+        } catch (IllegalArgumentException e) {
+            throw new AttributeParseException("invalid color string, " + e.getMessage(), this);
+        }
 
-		return result;
-	}
+        return result;
+    }
 }

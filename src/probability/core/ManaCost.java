@@ -28,7 +28,7 @@ public final class ManaCost {
             if (Character.isDigit(c)) {
 
                 if (genericSet) {
-                    throw new IllegalArgumentException("Only one dict generic mana costs allowed");
+                    throw new IllegalArgumentException("Only one digit generic mana cost allowed");
                 }
 
                 _genericMana = Character.getNumericValue(c);
@@ -36,9 +36,6 @@ public final class ManaCost {
             } else {
 
                 Color color = Color.getColor(c);
-                if (color == null) {
-                    throw new IllegalArgumentException(c + " is not a valid color code");
-                }
 
                 _colorCounts.increase(color);
             }
