@@ -1,22 +1,26 @@
 package probability.core.land;
 
-import java.util.Set;
-
 import com.google.common.collect.Sets;
-
 import probability.core.Board;
 import probability.core.Color;
 import probability.core.Colors;
 
-public class ReflectingLand extends NonBasicLand {
+import java.util.Set;
 
-	public ReflectingLand(String name, Colors colors) {
-		super(name, colors);
-	}
+public final class ReflectingLand extends AbstractLand {
 
-	@Override
-	public Set<Color> producesColors(Board board) {
-		return Sets.intersection(board.getPlayedLandProducibleColors(), colors());
-	}
+    public ReflectingLand(String name, Colors colors) {
+        super(name, colors);
+    }
+
+    @Override
+    public Set<Color> producesColors(Board board) {
+        return Sets.intersection(board.getPlayedLandProducibleColors(), colors());
+    }
+
+    @Override
+    public boolean comesIntoPlayTapped(Board board) {
+        return false;
+    }
 
 }
