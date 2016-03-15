@@ -15,12 +15,15 @@ abstract class AbstractLand implements Land {
 
     private final Colors _colors;
 
-    private volatile int _hashCode;
+    // the object is immutable and only used in hash based collections
+    private final int _hashCode;
 
     AbstractLand(String name, Colors colors) {
 
         _name = checkNotNull(name);
         _colors = checkNotNull(colors);
+
+        _hashCode = Objects.hash(_name, _colors);
     }
 
     @Override
@@ -65,15 +68,7 @@ abstract class AbstractLand implements Land {
 
     @Override
     public int hashCode() {
-
-        int result = _hashCode;
-
-        if (result == 0) {
-            result = Objects.hash(_name, _colors);
-            _hashCode = result;
-        }
-
-        return result;
+        return _hashCode;
     }
 
     @Override

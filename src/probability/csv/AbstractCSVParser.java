@@ -1,21 +1,15 @@
 package probability.csv;
 
 import com.opencsv.CSVReader;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import probability.attr.AttributeHolder;
 import probability.attr.AttributeKey;
 import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.util.*;
+import java.util.Map.Entry;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -113,8 +107,8 @@ public abstract class AbstractCSVParser<T> {
             } else if (isMandatory(attribute)) {
 
                 throw new CvsParseException("error parsing csv file",
-                        new Throwable("Mandatory column " + attribute.getName()
-                                + " not found"));
+                        new Throwable("Mandatory column \"" + attribute.getName()
+                                + "\" not found"));
             }
         }
     }

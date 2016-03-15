@@ -14,7 +14,7 @@ public class IntegerAttributeKey extends AttributeKey<Integer> {
 	}
 
 	public IntegerAttributeKey(String name) {
-		super(name, Integer.class, 0);
+		this(name, 0);
 	}
 
 	@Override
