@@ -2,15 +2,23 @@ package probability.core;
 
 import java.util.Objects;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class Spell implements Card {
 
     private final String _name;
 
     private final ManaCost _cost;
 
+    // the object is immutable and only used in hash based collections
+    private final int _hashCode;
+
     public Spell(String name, ManaCost cost) {
-        _name = name;
-        _cost = cost;
+
+        _name = checkNotNull(name);
+        _cost = checkNotNull(cost);
+
+        _hashCode = Objects.hash(_name, _cost);
     }
 
     @Override
@@ -32,24 +40,23 @@ public class Spell implements Card {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(_name, _cost);
-    }
+    public boolean equals(Object obj) {
 
-    @Override
-    public final boolean equals(Object obj) {
-
-        if (obj == this) {
+        if (this == obj) {
             return true;
         }
-        if (!(obj instanceof Spell)) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
         Spell other = (Spell) obj;
-
         return Objects.equals(_name, other._name)
                 && Objects.equals(_cost, other._cost);
+    }
+
+    @Override
+    public int hashCode() {
+        return _hashCode;
     }
 
     @Override

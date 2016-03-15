@@ -32,10 +32,9 @@ public class AttributeHolder implements ImmutableAttributeHolder {
     T value = attribute.parseValue(valueString);
 
     if (!attribute.isValid(value)) {
-      throw new AttributeParseException(value + " is not a valid value", attribute);
+      throw new AttributeParseException(value + " is not a valid value for attribute "
+              + attribute.getName(), attribute);
     }
-
-    attribute.checkValid(value);
 
     _map.put(attribute, value);
   }
