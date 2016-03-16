@@ -34,9 +34,9 @@ public abstract class AbstractCSVParser<T> {
 
         checkNotNull(attribute);
         checkArgument(!_attributes.containsKey(attribute), "attribute already added");
-        checkArgument(attribute.getName().startsWith(" "),
+        checkArgument(!attribute.getName().startsWith(" "),
                 " attribute name must not start with a space");
-        checkArgument(attribute.getName().endsWith(" "),
+        checkArgument(!attribute.getName().endsWith(" "),
                 " attribute name must not end with a space");
 
         _attributes.put(attribute, mandatory);
