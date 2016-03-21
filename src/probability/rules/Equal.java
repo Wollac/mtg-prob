@@ -13,12 +13,6 @@ class Equal extends VariableValueOperator {
     }
 
     @Override
-    public Equal getInstance() {
-
-        return new Equal();
-    }
-
-    @Override
     public boolean interpret(ImmutableAttributeHolder bindings) {
 
         return _variable.equals(_value, bindings);

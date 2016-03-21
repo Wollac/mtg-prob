@@ -16,9 +16,4 @@ interface Operator extends Token {
      */
     String getSymbol();
 
-    /**
-     * Returns an instance of the operator.
-     */
-    Operator getInstance();
-
 }

@@ -11,12 +11,6 @@ class Not extends UnaryOperator {
     }
 
     @Override
-    public Operator getInstance() {
-
-        return new Not();
-    }
-
-    @Override
     public boolean interpret(ImmutableAttributeHolder bindings) {
 
         return !_operand.interpret(bindings);
