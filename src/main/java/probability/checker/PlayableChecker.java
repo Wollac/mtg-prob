@@ -41,6 +41,7 @@ public class PlayableChecker {
     }
 
     private void initializeFetchLands(int turn) {
+
         Collection<Land> lands = _hand.getLandsUntilTurn(turn);
         new FetchableColorComputer(getRemainingCards()).initializeFetchLands(lands);
     }
