@@ -10,6 +10,7 @@ import probability.core.Card;
 import probability.core.CardUtils;
 import probability.core.Color;
 import probability.core.Colors;
+import probability.core.land.BasicLand;
 import probability.core.land.FetchLand;
 import probability.core.land.Land;
 
@@ -18,12 +19,27 @@ class FetchableColorComputer {
 
     private final EnumMap<Color, Colors> _fetchableColors;
 
-    private final Collection<Land> _landsToFetch;
+    private final Collection<Card> _cardsToFetch;
+
+    private Set<BasicLand> _landsToFetch;
 
     public FetchableColorComputer(Collection<Card> cardsToFetch) {
 
         _fetchableColors = new EnumMap<>(Color.class);
-        _landsToFetch = CardUtils.retainAllLandsToArrayList(cardsToFetch);
+        _cardsToFetch = cardsToFetch;
+    }
+
+    private Set<BasicLand> computeBasicLandTypesToFetch(Collection<Card> cardsToFetch) {
+
+        Set<BasicLand> result = new HashSet<>();
+
+        for (Card card : cardsToFetch) {
+            if (card instanceof BasicLand) {
+                result.add((BasicLand) card);
+            }
+        }
+
+        return result;
     }
 
 
@@ -40,13 +56,14 @@ class FetchableColorComputer {
 
     private Set<Color> getFetchableColors(Set<Color> colors) {
 
+        if (_landsToFetch == null) {
+            _landsToFetch = computeBasicLandTypesToFetch(_cardsToFetch);
+        }
 
         Set<Color> fetchableColors = Color.emptyEnumSet();
-
         for (Color color : colors) {
 
             Colors currentFetchableColors = _fetchableColors.computeIfAbsent(color, this::computeFetchableColors);
-
             fetchableColors.addAll(currentFetchableColors.getColors());
         }
 
@@ -55,13 +72,10 @@ class FetchableColorComputer {
 
     private Colors computeFetchableColors(Color color) {
 
-
-        Set<Land> remainingLandTypes = new HashSet<>(_landsToFetch);
-
         Set<Color> colors = Color.emptyEnumSet();
 
-        for (Land land : remainingLandTypes) {
-            if (CardUtils.isBasicLand(land) && land.colors().contains(color)) {
+        for (BasicLand land : _landsToFetch) {
+            if (land.colors().contains(color)) {
                 colors.addAll(land.producibleColors());
             }
         }
