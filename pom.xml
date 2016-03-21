@@ -1,137 +1,148 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.wollac.mtg</groupId>
-	<artifactId>probability</artifactId>
-	<version>0.9.1-SNAPSHOT</version>
-	<name>MTG Cast Probablity</name>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.wollac.mtg</groupId>
+    <artifactId>probability</artifactId>
+    <version>0.9.1-SNAPSHOT</version>
+    <name>MTG Cast Probablity</name>
 
-	<prerequisites>
-		<maven>3.0</maven>
-	</prerequisites>
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
 
-	<properties>
-		<jdk.version>1.8</jdk.version>
-		<guava.version>18.0</guava.version>
-		<opencsv.version>3.3</opencsv.version>
-		<json.version>20141113</json.version>
-	</properties>
+    <properties>
+        <jdk.version>1.8</jdk.version>
+        <guava.version>18.0</guava.version>
+        <opencsv.version>3.3</opencsv.version>
+        <json.version>20141113</json.version>
+        <junit.version>4.11</junit.version>
+    </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>${guava.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>${opencsv.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>${json.version}</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>${opencsv.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>${json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-	<build>
-		<sourceDirectory>src</sourceDirectory>
+    <build>
+        <sourceDirectory>src/main/java/</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
 
-		<plugins>
+        <plugins>
 
-			<!-- Set a compile level -->
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
-				<configuration>
-					<source>${jdk.version}</source>
-					<target>${jdk.version}</target>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
+            <!-- Set a compile level -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
 
-			<!-- Create jar-file with correct manifest -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>probability.main.Main</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
+            <!-- Create jar-file with correct manifest -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>probability.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
 
-			<!-- Use ProGuard to Obfuscate and package -->
-			<plugin>
-				<groupId>com.github.wvengen</groupId>
-				<artifactId>proguard-maven-plugin</artifactId>
-				<version>2.0.11</version>
-				<dependencies>
-					<dependency>
-						<groupId>net.sf.proguard</groupId>
-						<artifactId>proguard-base</artifactId>
-						<version>5.2.1</version>
-						<scope>runtime</scope>
-					</dependency>
-				</dependencies>
+            <!-- Use ProGuard to Obfuscate and package probability.-->
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>2.0.11</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.sf.proguard</groupId>
+                        <artifactId>proguard-base</artifactId>
+                        <version>5.2.1</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
 
-				<executions>
+                <executions>
 
-					<execution>
-						<id>obfuscate</id>
-						<phase>package</phase>
-						<goals>
-							<goal>proguard</goal>
-						</goals>
-						<configuration>
-							<proguardInclude>${basedir}/proguard.conf</proguardInclude>
-							<options>
-								<option>-printusage ${project.build.directory}/proguard_usage.txt</option>
-								<!-- <option>-verbose</option> -->
-							</options>
-							<libs>
-								<lib>${java.home}/lib/rt.jar</lib>
-							</libs>
-						</configuration>
-					</execution>
+                    <execution>
+                        <id>obfuscate</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                        <configuration>
+                            <proguardInclude>${basedir}/proguard.conf</proguardInclude>
+                            <options>
+                                <option>-printusage ${project.build.directory}/proguard_usage.txt
+                                </option>
+                                <!-- <option>-verbose</option> -->
+                            </options>
+                            <libs>
+                                <lib>${java.home}/lib/rt.jar</lib>
+                            </libs>
+                        </configuration>
+                    </execution>
 
-					<execution>
-						<id>package</id>
-						<phase>package</phase>
-						<goals>
-							<goal>proguard</goal>
-						</goals>
-						<configuration>
-							<includeDependency>true</includeDependency>
-							<includeDependencyInjar>true</includeDependencyInjar>
-							<proguardInclude>${basedir}/proguard.conf</proguardInclude>
-							
-							<options>
-								<option>-dontoptimize</option>
-								<option>-dontobfuscate</option>
-								<option>-dontnote</option>
-								<option>-dontwarn javax.annotation.**</option>
-								<option>-dontwarn javax.inject.**</option>
-								<option>-dontwarn sun.misc.Unsafe</option>
-								<option>-dontwarn com.google.common.collect.MinMaxPriorityQueue</option>
-								<!-- <option>-verbose</option> -->
-							</options>
+                    <execution>
+                        <id>package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                        <configuration>
+                            <includeDependency>true</includeDependency>
+                            <includeDependencyInjar>true</includeDependencyInjar>
+                            <proguardInclude>${basedir}/proguard.conf</proguardInclude>
 
-							<libs>
-								<lib>${java.home}/lib/rt.jar</lib>
-							</libs>
+                            <options>
+                                <option>-dontoptimize</option>
+                                <option>-dontobfuscate</option>
+                                <option>-dontnote</option>
+                                <option>-dontwarn javax.annotation.**</option>
+                                <option>-dontwarn javax.inject.**</option>
+                                <option>-dontwarn sun.misc.Unsafe</option>
+                                <option>-dontwarn com.google.common.collect.MinMaxPriorityQueue
+                                </option>
+                                <!-- <option>-verbose</option> -->
+                            </options>
 
-						</configuration>
-					</execution>
+                            <libs>
+                                <lib>${java.home}/lib/rt.jar</lib>
+                            </libs>
 
-				</executions>
-			</plugin>
-		</plugins>
+                        </configuration>
+                    </execution>
 
-	</build>
+                </executions>
+            </plugin>
+        </plugins>
+
+    </build>
 
 </project>
