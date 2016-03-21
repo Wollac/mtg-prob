@@ -38,13 +38,13 @@ class PlayableChecker {
 
     public boolean isPlayable(int turn) {
 
-        Collection<Spell> spells = CardUtils.retainAllSpellsToArrayList(_hand.getCardsUntilTurn(turn));
+        Set<Spell> spells = _hand.getSpellTypesUntilTurn(turn);
 
         if (spells.isEmpty()) {
             return true;
         }
 
-        Collection<Land> lands = CardUtils.retainAllLandsToArrayList(_hand.getCardsUntilTurn(turn));
+        Collection<Land> lands = _hand.getLandsUntilTurn(turn);
 
         initializeFetchLands(lands);
 
@@ -75,17 +75,12 @@ class PlayableChecker {
 
     private Set<Color> getFetchableColors(Set<Color> colors) {
 
+
         Set<Color> fetchableColors = Color.emptyEnumSet();
 
         for (Color color : colors) {
 
-            Colors currentFetchableColors = _fetchableColors.get(color);
-
-            if (currentFetchableColors == null) {
-
-                currentFetchableColors = computeFetchableColors(color);
-                _fetchableColors.put(color, currentFetchableColors);
-            }
+            Colors currentFetchableColors = _fetchableColors.computeIfAbsent(color, c -> computeFetchableColors(c));
 
             fetchableColors.addAll(currentFetchableColors.getColors());
         }
@@ -195,13 +190,10 @@ class PlayableChecker {
 
         private final int _maxTurn;
 
-        private Map<Integer, Set<Land>> _cachedLandTypes;
-
         public PlayableRecursion(Spell spell, Hand hand, int maxTurn) {
             _spell = spell;
             _hand = hand;
             _maxTurn = maxTurn;
-            _cachedLandTypes = new HashMap<>(maxTurn);
         }
 
         public boolean check() {
@@ -229,13 +221,15 @@ class PlayableChecker {
                 }
             }
 
-            Set<Land> availableLandTypes = getAvailableLandTypes(turn);
+            Set<Hand.Frame> availableLandTypes = _hand.getFramesUtilTurn(turn);
 
-            for (Land land : availableLandTypes) {
+            for (Hand.Frame frame : availableLandTypes) {
+
+                Land land = frame.getCard();
 
                 final boolean tapped = land.comesIntoPlayTapped(board);
 
-                board.playLand(land);
+                board.playLand(frame);
 
                 for (Color color : land.producesColors(board)) {
 
@@ -277,22 +271,6 @@ class PlayableChecker {
             return recursion(board, null, remainingCost, turn + 1);
         }
 
-        private Set<Land> computeAvailableLandTypes(int turn) {
-            Set<Land> result = new HashSet<>();
-
-            for (Card card : _hand.getCardsUntilTurn(turn)) {
-                if (card instanceof Land) {
-                    result.add((Land) card);
-                }
-            }
-
-            return result;
-        }
-
-        private Set<Land> getAvailableLandTypes(int turn) {
-
-            return _cachedLandTypes.computeIfAbsent(turn, this::computeAvailableLandTypes);
-        }
     }
 
 }
