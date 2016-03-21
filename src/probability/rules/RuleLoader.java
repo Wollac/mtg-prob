@@ -2,6 +2,11 @@ package probability.rules;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import probability.rules.Parentheses.CloseParenthesis;
+import probability.rules.Parentheses.OpenParenthesis;
+import probability.rules.StringTokenizer.StringTokenType;
+import probability.rules.Token.RulesTokenException;
+import probability.rules.Value.StringValue;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,12 +15,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-
-import probability.rules.Parentheses.CloseParenthesis;
-import probability.rules.Parentheses.OpenParenthesis;
-import probability.rules.StringTokenizer.StringTokenType;
-import probability.rules.Token.RulesTokenException;
-import probability.rules.Value.StringValue;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -138,10 +137,10 @@ public class RuleLoader {
                     lineToken.add(new StringValue(tokenizer.tokenValue()));
                     break;
                 case OPEN_PARENTHESIS:
-                    lineToken.add(OpenParenthesis.INSTANCE);
+                    lineToken.add(OpenParenthesis.getInstance());
                     break;
                 case CLOSE_PARENTHESIS:
-                    lineToken.add(CloseParenthesis.INSTANCE);
+                    lineToken.add(CloseParenthesis.getInstance());
                     break;
                 case INVALID:
                     throw new RulesParseException("Invalid character " + tokenizer.tokenValue(),
@@ -158,7 +157,7 @@ public class RuleLoader {
 
         Operation op = Operation.getOperationFromSymbol(tokenValue);
         if (op != null) {
-            return op.getOperatorInstance();
+            return op.newInstance();
         }
 
         if (_variables.isRegistered(tokenValue)) {

@@ -12,11 +12,6 @@ class And extends BinaryOperator {
     }
 
     @Override
-    public And getInstance() {
-        return new And();
-    }
-
-    @Override
     public boolean interpret(ImmutableAttributeHolder bindings) {
 
         return _leftOperand.interpret(bindings) && _rightOperand.interpret(bindings);

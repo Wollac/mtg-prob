@@ -13,12 +13,6 @@ class NotEqual extends VariableValueOperator {
     }
 
     @Override
-    public NotEqual getInstance() {
-
-        return new NotEqual();
-    }
-
-    @Override
     public boolean interpret(ImmutableAttributeHolder bindings) {
 
         return _variable.equals(_value, bindings);

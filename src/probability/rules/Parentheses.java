@@ -22,8 +22,7 @@ interface Parentheses extends Operator {
     enum OpenParenthesis implements Parentheses {
         INSTANCE;
 
-        @Override
-        public Operator getInstance() {
+        public static Operator getInstance() {
             return INSTANCE;
         }
 
@@ -56,8 +55,7 @@ interface Parentheses extends Operator {
     enum CloseParenthesis implements Parentheses {
         INSTANCE;
 
-        @Override
-        public Operator getInstance() {
+        public static Operator getInstance() {
             return INSTANCE;
         }
 

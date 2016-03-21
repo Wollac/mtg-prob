@@ -66,8 +66,8 @@ class StringTokenizer {
     private static Set<Character> getOperationsCharacters() {
 
         Set<Character> result = new HashSet<>();
-        for (Operation op : Operation.values()) {
-            result.addAll(Chars.asList(op.getSymbol().toCharArray()));
+        for (String symbol : Operation.getAllOperatorSymbols()) {
+            result.addAll(Chars.asList(symbol.toCharArray()));
         }
 
         return result;

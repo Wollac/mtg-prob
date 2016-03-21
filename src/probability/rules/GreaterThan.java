@@ -13,12 +13,6 @@ class GreaterThan extends RelationalOperator {
     }
 
     @Override
-    public GreaterThan getInstance() {
-
-        return new GreaterThan();
-    }
-
-    @Override
     public boolean interpret(ImmutableAttributeHolder bindings) {
 
         return _variable.compareTo(_value, bindings) > 0;
