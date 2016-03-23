@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import probability.checker.Hand;
 import probability.checker.PlayableChecker;
 import probability.config.Config;
 import probability.config.Settings;
@@ -46,9 +45,11 @@ public class Main {
 
         System.out.println("Calculating the combined failure probability for" + " the given spells:");
 
+        PlayableChecker checker = new PlayableChecker(deck, mulliganRule);
+
         for (int turn = minCmc; turn <= maxCmc + 3; turn++) {
 
-            int playable = countPlayable(deck, mulliganRule, turn, Settings.config);
+            int playable = checker.countPlayable(turn);
             double factor = 1.0 - (double) playable / Settings.config.sampleSize();
 
             System.out.printf("Turn %02d: %4.1f%%%n", turn, factor * 100.0);
@@ -110,41 +111,6 @@ public class Main {
         } catch (CvsParseException e) {
             System.err.println("Error parsing csv file: " + e.getCause());
         }
-    }
-
-    private static int countPlayable(Deck deck, MulliganRule mulliganRule, int turn, Config config) {
-
-        int good = 0;
-        for (int i = 0; i < config.sampleSize(); i++) {
-
-            Hand hand = getStartingHand(deck, mulliganRule, turn, config);
-
-            PlayableChecker checker = new PlayableChecker(deck, hand);
-
-            if (checker.isPlayable(turn)) {
-                good++;
-            }
-        }
-
-        return good;
-    }
-
-    private static Hand getStartingHand(Deck deck, MulliganRule mulliganRule, int turn, Config config) {
-
-        Hand hand = null;
-        for (int mulligan = 0; mulligan < config.initialHandSize(); mulligan++) {
-
-            deck.shuffle();
-            hand = deck.draw(turn, mulligan);
-
-            if (!mulliganRule.takeMulligan(hand.getStartingHand())) {
-                break;
-            }
-
-            mulligan++;
-        }
-
-        return hand;
     }
 
 }

@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import probability.checker.Hand;
 import probability.config.Config;
 import probability.core.Card.CardType;
 
@@ -74,35 +73,6 @@ public class Deck {
     public boolean isEmpty() {
 
         return _cards.isEmpty();
-    }
-
-    public void shuffle() {
-        java.util.Collections.shuffle(_cards);
-    }
-
-    public Hand draw(int turn) {
-        return draw(turn, 0);
-    }
-
-    public Hand draw(int turn, int mulligan) {
-
-        int handSize = _config.initialHandSize();
-
-        if (_config.drawOnTurn()) {
-            handSize++;
-        }
-
-        handSize -= mulligan;
-
-        Collection<Card> startingHand = Collections.unmodifiableList(_cards
-                .subList(0, handSize));
-
-        int totalSize = handSize + turn - 1;
-
-        Collection<Card> drawnCards = Collections.unmodifiableList(_cards
-                .subList(handSize, totalSize));
-
-        return new Hand(startingHand, drawnCards);
     }
 
     public String toFormattedString() {
