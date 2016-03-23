@@ -4,7 +4,7 @@ import java.io.File;
 
 public class Settings {
 
-    private static final String CONFIG_FILE_NAME = "mtg.conf";
+    private static final String CONFIG_FILE_NAME = "mtg.config";
 
     public static final Config config;
 
