@@ -3,6 +3,8 @@ package probability.core;
 import java.util.Objects;
 import java.util.Set;
 
+import probability.checker.Board;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ManaDork extends Spell {
