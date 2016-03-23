@@ -11,7 +11,7 @@ import java.util.Set;
 import probability.checker.Hand;
 import probability.checker.PlayableChecker;
 import probability.config.Config;
-import probability.config.ConfigLoader;
+import probability.config.Settings;
 import probability.core.Card;
 import probability.core.Deck;
 import probability.core.MulliganRule;
@@ -24,9 +24,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Config config = getConfig();
-
-        Deck deck = buildDeck(config);
+        Deck deck = buildDeck(Settings.config);
 
         if (deck == null) {
             System.err.println("No deck has been loaded.");
@@ -50,18 +48,12 @@ public class Main {
 
         for (int turn = minCmc; turn <= maxCmc + 3; turn++) {
 
-            int playable = countPlayable(deck, mulliganRule, turn, config);
-            double factor = 1.0 - (double) playable / config.sampleSize();
+            int playable = countPlayable(deck, mulliganRule, turn, Settings.config);
+            double factor = 1.0 - (double) playable / Settings.config.sampleSize();
 
             System.out.printf("Turn %02d: %4.1f%%%n", turn, factor * 100.0);
         }
 
-    }
-
-    private static Config getConfig() {
-
-        ConfigLoader loader = new ConfigLoader();
-        return loader.load(new File("mtg.config"));
     }
 
     private static Set<Integer> getConvertedManaCosts(Deck deck) {
