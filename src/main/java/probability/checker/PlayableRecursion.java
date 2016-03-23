@@ -2,38 +2,40 @@ package probability.checker;
 
 import java.util.Set;
 
+import probability.core.Board;
 import probability.core.Color;
 import probability.core.EnumCount;
 import probability.core.ManaCost;
-import probability.core.Spell;
 import probability.core.land.Land;
 
 class PlayableRecursion {
-
-    private final Spell _spell;
 
     private final Hand _hand;
 
     private final int _maxTurn;
 
-    public PlayableRecursion(Spell spell, Hand hand, int maxTurn) {
-        _spell = spell;
+    private final RemainingManaCost remainingCost;
+
+    private final Board board;
+
+    public PlayableRecursion(Hand hand, int maxTurn, ManaCost spellCost) {
+
         _hand = hand;
         _maxTurn = maxTurn;
+
+        remainingCost = new RemainingManaCost(spellCost);
+        board = new Board();
     }
 
     public boolean check() {
 
-        Board board = new Board();
-        RemainingManaCost cost = new RemainingManaCost(_spell.getCost());
         final Color tappedColor = null;
         final int turn = 1;
 
-        return recursion(board, tappedColor, cost, turn);
+        return recursion(tappedColor, turn);
     }
 
-    private boolean recursion(Board board, Color tappedColor,
-                              RemainingManaCost remainingCost, int turn) {
+    private boolean recursion(Color tappedColor, int turn) {
 
         if (turn > _maxTurn) {
             return false;
@@ -47,16 +49,16 @@ class PlayableRecursion {
             }
         }
 
-        Set<PlayableLand> availableLandTypes = _hand.getPlayableLandTypesUtilTurn(turn);
+        Set<CardObject> availableLandTypes = _hand.getUnplayedLandTypesUntilTurn(turn);
 
-        for (PlayableLand frame : availableLandTypes) {
+        for (CardObject frame : availableLandTypes) {
 
-            Land land = frame.getLand();
-
+            final Land land = (Land) frame.get();
             final boolean tapped = land.comesIntoPlayTapped(board);
 
             Set<Color> colors = land.producesColors(board);
-            board.playLand(frame);
+            board.playLand(land);
+            frame.markPlayed();
 
             for (Color color : colors) {
 
@@ -70,7 +72,7 @@ class PlayableRecursion {
 
                         tappedColor = color;
 
-                        if (recursion(board, tappedColor, remainingCost, turn + 1)) {
+                        if (recursion(tappedColor, turn + 1)) {
                             return true;
                         }
                         remainingCost.freeMana(tappedColor);
@@ -82,7 +84,7 @@ class PlayableRecursion {
                         return true;
                     }
 
-                    if (recursion(board, null, remainingCost, turn + 1)) {
+                    if (recursion(null, turn + 1)) {
                         return true;
                     }
                     remainingCost.freeMana(color);
@@ -91,12 +93,13 @@ class PlayableRecursion {
             }
 
             board.popLand();
+            frame.markNotPlayed();
         }
 
-        return recursion(board, null, remainingCost, turn + 1);
+        return recursion(null, turn + 1);
     }
 
-    private static class RemainingManaCost {
+    private static final class RemainingManaCost {
 
         private final ManaCost _originalCost;
 

@@ -7,13 +7,11 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 
-import probability.core.Color;
 import probability.core.Colors;
 import probability.core.ManaCost;
 import probability.core.Spell;
 import probability.core.land.BasicLand;
 import probability.core.land.Land;
-import probability.core.land.ReflectingLand;
 import probability.core.land.TapLand;
 
 public class PlayableRecursionTest {
@@ -27,7 +25,7 @@ public class PlayableRecursionTest {
     }
 
     private Hand createDrawingHand(Land... lands) {
-        return new Hand(Collections.emptySet(), Arrays.asList(lands));
+        return new Hand(0, Arrays.asList(lands));
     }
 
     private Land createBasicLand(String colorString) {
@@ -38,17 +36,13 @@ public class PlayableRecursionTest {
         return new TapLand("", Colors.valueOf(colorString));
     }
 
-    private Land createReflectingLand() {
-        return new ReflectingLand("", new Colors(Color.values()));
-    }
-
     @Test
     public void testEmpty() {
 
         Spell spell = createSpell("1");
         Hand hand = createEmptyHand();
 
-        PlayableRecursion checker = new PlayableRecursion(spell, hand, 8);
+        PlayableRecursion checker = new PlayableRecursion(hand, 8, spell.getCost());
         boolean playable = checker.check();
 
         Assert.assertFalse(playable);
@@ -62,7 +56,7 @@ public class PlayableRecursionTest {
 
         Hand hand = createDrawingHand(basic);
 
-        PlayableRecursion checker = new PlayableRecursion(spell, hand, 1);
+        PlayableRecursion checker = new PlayableRecursion(hand, 1, spell.getCost());
         boolean playable = checker.check();
 
         Assert.assertFalse(playable);
@@ -76,7 +70,7 @@ public class PlayableRecursionTest {
 
         Hand hand = createDrawingHand(basic);
 
-        PlayableRecursion checker = new PlayableRecursion(spell, hand, 2);
+        PlayableRecursion checker = new PlayableRecursion(hand, 2, spell.getCost());
         boolean playable = checker.check();
 
         Assert.assertTrue(playable);
@@ -88,7 +82,7 @@ public class PlayableRecursionTest {
         Spell spell = createSpell("W");
         Hand hand = createDrawingHand(createBasicLand("B"));
 
-        PlayableRecursion checker = new PlayableRecursion(spell, hand, 8);
+        PlayableRecursion checker = new PlayableRecursion(hand, 8, spell.getCost());
         boolean playable = checker.check();
 
         Assert.assertFalse(playable);
@@ -100,7 +94,7 @@ public class PlayableRecursionTest {
         Spell spell = createSpell("WW");
         Hand hand = createDrawingHand(createBasicLand("W"), createBasicLand("B"));
 
-        PlayableRecursion checker = new PlayableRecursion(spell, hand, 8);
+        PlayableRecursion checker = new PlayableRecursion(hand, 8, spell.getCost());
         boolean playable = checker.check();
 
         Assert.assertFalse(playable);
@@ -112,7 +106,7 @@ public class PlayableRecursionTest {
         Spell spell = createSpell("WW");
         Hand hand = createDrawingHand(createBasicLand("W"), createBasicLand("W"));
 
-        PlayableRecursion checker = new PlayableRecursion(spell, hand, 3);
+        PlayableRecursion checker = new PlayableRecursion(hand, 3, spell.getCost());
         boolean playable = checker.check();
 
         Assert.assertTrue(playable);
@@ -127,7 +121,7 @@ public class PlayableRecursionTest {
 
         Hand hand = createDrawingHand(basic);
 
-        PlayableRecursion checker = new PlayableRecursion(spell, hand, 2);
+        PlayableRecursion checker = new PlayableRecursion(hand, 2, spell.getCost());
         boolean playable = checker.check();
 
         Assert.assertFalse(playable);
@@ -141,7 +135,7 @@ public class PlayableRecursionTest {
 
         Hand hand = createDrawingHand(basic);
 
-        PlayableRecursion checker = new PlayableRecursion(spell, hand, 3);
+        PlayableRecursion checker = new PlayableRecursion(hand, 3, spell.getCost());
         boolean playable = checker.check();
 
         Assert.assertTrue(playable);

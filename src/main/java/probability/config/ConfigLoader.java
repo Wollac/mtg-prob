@@ -7,7 +7,7 @@ import probability.attr.AttributeKey;
 import probability.attr.BooleanAttributeKey;
 import probability.attr.IntegerAttributeKey;
 
-public class ConfigLoader {
+class ConfigLoader {
 
     private final GenericJsonIO configIO;
 
