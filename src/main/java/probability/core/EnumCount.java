@@ -1,6 +1,7 @@
 package probability.core;
 
 import java.util.EnumMap;
+import java.util.Map;
 import java.util.Objects;
 
 public final class EnumCount<K extends Enum<K>> {
@@ -13,32 +14,59 @@ public final class EnumCount<K extends Enum<K>> {
         map = new EnumMap<>(keyType);
     }
 
-    public EnumCount(EnumCount<K> c) {
+    public EnumCount(Class<K> keyType, EnumCount<K> c) {
 
-        map = new EnumMap<>(c.map);
-        totalCount = c.totalCount;
+        this(keyType);
+
+        for (Map.Entry<K, MutableInteger> entry : c.map.entrySet()) {
+            increase(entry.getKey(), entry.getValue().get());
+        }
     }
 
     /**
-     * Increases the count for {@code key} and returns the new value.
+     * Increases the count for {@code key} by one and returns the new value.
      *
      * @param key the key whose count should be increased
      * @return the count after the value has been increased
      */
     public int increase(K key) {
+        return increase(key, 1);
+    }
+
+    /**
+     * Increases the count for {@code key} by the specified amount and returns
+     * the new total value.
+     *
+     * @param key the key whose count should be increased
+     * @param val the amount by which the key should be increased
+     * @return the count after the value has been increased
+     */
+    private int increase(K key, int val) {
 
         MutableInteger entry = map.get(key);
 
         if (entry == null) {
 
-            map.put(key, new MutableInteger(1));
+            map.put(key, new MutableInteger(val));
             totalCount++;
 
-            return 1;
+            return val;
         }
 
-        totalCount++;
+        totalCount += val;
         return entry.inc();
+    }
+
+    /**
+     * Increases the count for each key in {@code keys} by one.
+     *
+     * @param keys the keys whose counts should be increased
+     */
+    public void increaseEach(Iterable<K> keys) {
+
+        for (K key : keys) {
+            increase(key);
+        }
     }
 
     /**
