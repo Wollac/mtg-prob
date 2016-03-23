@@ -1,4 +1,4 @@
-package probability.core;
+package probability.checker;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.Stack;
 
 import probability.checker.PlayableLand;
+import probability.core.CardUtils;
+import probability.core.Color;
 
 public class Board {
 

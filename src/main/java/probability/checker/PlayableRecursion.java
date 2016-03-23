@@ -2,7 +2,6 @@ package probability.checker;
 
 import java.util.Set;
 
-import probability.core.Board;
 import probability.core.Color;
 import probability.core.EnumCount;
 import probability.core.ManaCost;

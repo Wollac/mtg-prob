@@ -1,6 +1,6 @@
 package probability.core.land;
 
-import probability.core.Board;
+import probability.checker.Board;
 import probability.core.Colors;
 
 public final class NonBasicLand extends AbstractLand {
