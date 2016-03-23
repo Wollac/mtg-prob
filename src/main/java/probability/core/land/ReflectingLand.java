@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 
 import java.util.Set;
 
-import probability.checker.Board;
+import probability.core.Board;
 import probability.core.Color;
 import probability.core.Colors;
 

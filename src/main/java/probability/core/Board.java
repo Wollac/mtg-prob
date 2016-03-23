@@ -1,29 +1,26 @@
-package probability.checker;
+package probability.core;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
-import probability.checker.PlayableLand;
-import probability.core.CardUtils;
-import probability.core.Color;
+import probability.core.land.Land;
 
 public class Board {
 
-    private final Stack<PlayableLand> _playedLands;
+    private final Stack<Land> _playedLands;
 
     public Board() {
         _playedLands = new Stack<>();
     }
 
-    public void playLand(PlayableLand frame) {
-        frame.markPlayed();
-        _playedLands.push(frame);
+    public void playLand(Land land) {
+        _playedLands.push(land);
     }
 
     public void popLand() {
-        _playedLands.pop().markNotPlayed();
+        _playedLands.pop();
     }
 
     public int getNumPlayedLands() {
@@ -33,8 +30,8 @@ public class Board {
     public Set<Color> getPlayedLandProducibleColors() {
         Set<Color> colors = new HashSet<>();
 
-        for (PlayableLand frame : _playedLands) {
-            colors.addAll(frame.getLand().producibleColors());
+        for (Land land : _playedLands) {
+            colors.addAll(land.producibleColors());
         }
 
         return colors;
@@ -48,9 +45,9 @@ public class Board {
 
         Set<Color> colors = Color.emptyEnumSet();
 
-        for (PlayableLand frame : _playedLands) {
-            if (CardUtils.isBasicLand(frame.getLand())) {
-                colors.addAll(frame.getLand().colors());
+        for (Land land : _playedLands) {
+            if (CardUtils.isBasicLand(land)) {
+                colors.addAll(land.colors());
             }
         }
 
