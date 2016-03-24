@@ -1,7 +1,5 @@
 package probability.checker;
 
-import java.util.Set;
-
 import probability.core.Board;
 import probability.core.Color;
 import probability.core.EnumCount;
@@ -49,47 +47,27 @@ class PlayableRecursion {
             }
         }
 
-        Set<CardObject> availableLandTypes = _hand.getUnplayedLandTypesUntilTurn(turn);
-
-        for (CardObject frame : availableLandTypes) {
+        for (CardObject frame : _hand.getUnplayedLandTypesUntilTurn(turn)) {
 
             final Land land = (Land) frame.get();
             final boolean tapped = land.comesIntoPlayTapped(board);
 
-            Set<Color> colors = land.producesColors(board);
+            Iterable<Color> colors = land.producesColors(board);
+
             board.playLand(land);
             frame.markPlayed();
 
             for (Color color : colors) {
 
-                if (!remainingCost.contains(color)) {
-                    continue;
+                if (remainingCost.contains(color)) {
+
+                    if (tapped) {
+                        if (testColor(color, turn)) return true;
+                    } else {
+                        if (testTappedColor(color, turn)) return true;
+                    }
                 }
 
-                if (tapped) {
-
-                    if (turn < _maxTurn) {
-
-                        tappedColor = color;
-
-                        if (recursion(tappedColor, turn + 1)) {
-                            return true;
-                        }
-                        remainingCost.freeMana(tappedColor);
-                    }
-                } else {
-
-                    remainingCost.payMana(color);
-                    if (remainingCost.allPaid()) {
-                        return true;
-                    }
-
-                    if (recursion(null, turn + 1)) {
-                        return true;
-                    }
-                    remainingCost.freeMana(color);
-
-                }
             }
 
             board.popLand();
@@ -97,6 +75,36 @@ class PlayableRecursion {
         }
 
         return recursion(null, turn + 1);
+    }
+
+    private boolean testTappedColor(Color color, int currentTurn) {
+
+        remainingCost.payMana(color);
+        if (remainingCost.allPaid()) {
+            return true;
+        }
+
+        if (currentTurn < _maxTurn && recursion(null, currentTurn + 1)) {
+            return true;
+        }
+        remainingCost.freeMana(color);
+
+        return false;
+    }
+
+    private boolean testColor(Color color, int currentTurn) {
+
+        if (currentTurn < _maxTurn) {
+
+            if (recursion(color, currentTurn + 1)) {
+                return true;
+            }
+
+            // color has only been considered in the remaining cost if there was time to spend it
+            remainingCost.freeMana(color);
+        }
+
+        return false;
     }
 
     private static final class RemainingManaCost {
