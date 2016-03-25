@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import probability.core.Card;
 import probability.core.Spell;
@@ -21,10 +20,10 @@ import probability.core.land.Land;
 class Hand {
 
     private final int _startingHandSize;
-    private final List<CardObject> _cards;
-    private final Map<Integer, List<CardObject>> _landObjectCache = new HashMap<>();
+    private final List<IdentifiedCardObject> _cards;
+    private final Map<Integer, List<IdentifiedCardObject>> _landObjectCache = new HashMap<>();
 
-    public Hand(Collection<CardObject> startingHand, Collection<CardObject> draws) {
+    public Hand(Collection<IdentifiedCardObject> startingHand, Collection<IdentifiedCardObject> draws) {
 
         _startingHandSize = startingHand.size();
 
@@ -33,18 +32,17 @@ class Hand {
         _cards.addAll(draws);
     }
 
-    Hand(int startingHandSize, Collection<Card> draws) {
+    Hand(int startingHandSize, Collection<? extends Card> cards) {
 
-        Preconditions.checkArgument(draws.size() >= startingHandSize);
+        Preconditions.checkArgument(cards.size() >= startingHandSize);
 
         _startingHandSize = startingHandSize;
-
-        _cards = draws.stream().map(CardObject::new).collect(Collectors.toList());
+        _cards = IdentifiedCardObject.toCardObjects(cards);
     }
 
-    public void markAllUnplayed() {
+    public void markAllInHand() {
 
-        _cards.stream().forEach(CardObject::markNotPlayed);
+        _cards.stream().forEach(IdentifiedCardObject::markNotPlayed);
     }
 
     public Set<Spell> getSpellTypesUntilTurn(int turn) {
@@ -62,32 +60,34 @@ class Hand {
 
     public List<Land> getLandCardsUntilTurn(int turn) {
 
-        List<CardObject> landObjects = getCachedLandObjectsUntilTurn(turn);
+        List<IdentifiedCardObject> landObjects = getCachedLandObjectsUntilTurn(turn);
 
         if (landObjects.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<Land> result = new ArrayList<>(landObjects.size());
-        for (CardObject cardObject : landObjects) {
+        for (IdentifiedCardObject cardObject : landObjects) {
             result.add((Land) cardObject.get());
         }
 
         return result;
     }
 
-    public Set<CardObject> getUnplayedLandTypesUntilTurn(int turn) {
+    public Collection<IdentifiedCardObject> getLandTypesInHandUntilTurn(int turn) {
 
-        List<CardObject> landObjects = getCachedLandObjectsUntilTurn(turn);
+        List<IdentifiedCardObject> landObjects = getCachedLandObjectsUntilTurn(turn);
 
         if (landObjects.isEmpty()) {
             return Collections.emptySet();
         }
 
-        Set<CardObject> result = new HashSet<>(landObjects.size());
-        for (CardObject cardObject : landObjects) {
+        Set<Card> cardTypes = new HashSet<>(landObjects.size());
 
-            if (!cardObject.isPlayed()) {
+        Collection<IdentifiedCardObject> result = new ArrayList<>(landObjects.size());
+        for (IdentifiedCardObject cardObject : landObjects) {
+
+            if (!cardObject.isPlayed() && cardTypes.add(cardObject.get())) {
                 result.add(cardObject);
             }
         }
@@ -95,14 +95,14 @@ class Hand {
         return result;
     }
 
-    private Iterable<CardObject> getCardsUntilTurn(int turn) {
+    private Iterable<IdentifiedCardObject> getCardsUntilTurn(int turn) {
         return Iterables.limit(_cards, _startingHandSize + turn - 1);
     }
 
-    private List<CardObject> computeLandObjectsUntilTurn(int turn) {
+    private List<IdentifiedCardObject> computeLandObjectsUntilTurn(int turn) {
 
-        List<CardObject> result = new ArrayList<>();
-        for (CardObject cardObject : getCardsUntilTurn(turn)) {
+        List<IdentifiedCardObject> result = new ArrayList<>();
+        for (IdentifiedCardObject cardObject : getCardsUntilTurn(turn)) {
 
             if (cardObject.get() instanceof Land) {
                 result.add(cardObject);
@@ -112,7 +112,7 @@ class Hand {
         return result;
     }
 
-    private List<CardObject> getCachedLandObjectsUntilTurn(int turn) {
+    private List<IdentifiedCardObject> getCachedLandObjectsUntilTurn(int turn) {
 
         turn = Math.min(turn, _cards.size() - _startingHandSize + 1);
 

@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import probability.config.Settings;
 import probability.core.Card;
@@ -22,13 +21,14 @@ import probability.core.land.Land;
 
 public class PlayableChecker {
 
-    private final List<CardObject> _cards;
+    private final List<IdentifiedCardObject> _cards;
 
     private final MulliganRule _mulliganRule;
 
     public PlayableChecker(Deck deck, MulliganRule mulliganRule) {
 
-        _cards = deck.cards().stream().map(CardObject::new).collect(Collectors.toList());
+        _cards = IdentifiedCardObject.toCardObjects(deck.cards());
+
         _mulliganRule = mulliganRule;
     }
 
@@ -44,14 +44,14 @@ public class PlayableChecker {
         return Settings.config.initialHandSize();
     }
 
-    private static boolean spellIsPlayable(ManaCost spellCost, EnumCount<Color> producableColors, int maxCMC) {
+    private static boolean spellIsPlayable(ManaCost spellCost, EnumCount<Color> maxColorCount, int maxCMC) {
 
         if (spellCost.getConverted() > maxCMC) {
             return false;
         }
 
         for (Color color : Color.values()) {
-            if (spellCost.count(color) > producableColors.count(color)) {
+            if (spellCost.count(color) > maxColorCount.count(color)) {
                 return false;
             }
         }
@@ -70,7 +70,7 @@ public class PlayableChecker {
                 good++;
             }
 
-            hand.markAllUnplayed();
+            hand.markAllInHand();
         }
 
         return good;
@@ -101,7 +101,7 @@ public class PlayableChecker {
     private List<Card> getStartingCards(int handSize) {
 
         List<Card> startingHand = new ArrayList<>(handSize);
-        for (CardObject cardObject : Iterables.limit(_cards, handSize)) {
+        for (IdentifiedCardObject cardObject : Iterables.limit(_cards, handSize)) {
             startingHand.add(cardObject.get());
         }
 
@@ -147,9 +147,9 @@ public class PlayableChecker {
             return Collections.emptySet();
         }
 
-        EnumCount<Color> producableColors = new EnumCount<>(Color.class);
+        EnumCount<Color> maxColorCount = new EnumCount<>(Color.class);
         for (Land land : lands) {
-            producableColors.increaseEach(land.producibleColors());
+            maxColorCount.increaseEach(land.producibleColors());
         }
 
         final int maxConverted = Math.min(lands.size(), turn);
@@ -157,7 +157,7 @@ public class PlayableChecker {
         for (Iterator<Spell> iterator = spells.iterator(); iterator.hasNext(); ) {
             Spell spell = iterator.next();
 
-            if (!spellIsPlayable(spell.getCost(), producableColors, maxConverted)) {
+            if (!spellIsPlayable(spell.getCost(), maxColorCount, maxConverted)) {
                 iterator.remove();
             }
         }

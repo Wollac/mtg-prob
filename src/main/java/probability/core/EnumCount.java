@@ -41,7 +41,7 @@ public final class EnumCount<K extends Enum<K>> {
      * @param val the amount by which the key should be increased
      * @return the count after the value has been increased
      */
-    private int increase(K key, int val) {
+    public int increase(K key, int val) {
 
         MutableInteger entry = map.get(key);
 
@@ -159,6 +159,10 @@ public final class EnumCount<K extends Enum<K>> {
             return obj instanceof MutableInteger && ((MutableInteger) obj)._val == _val;
         }
 
+        @Override
+        public String toString() {
+            return Integer.toString(_val);
+        }
     }
 
 }

@@ -12,6 +12,8 @@ class PlayableRecursion {
 
     private final int _maxTurn;
 
+    private final PlayableCache _cache;
+
     private final RemainingManaCost remainingCost;
 
     private final Board board;
@@ -20,6 +22,7 @@ class PlayableRecursion {
 
         _hand = hand;
         _maxTurn = maxTurn;
+        _cache = new PlayableCache(maxTurn + 1);
 
         remainingCost = new RemainingManaCost(spellCost);
         board = new Board();
@@ -47,15 +50,18 @@ class PlayableRecursion {
             }
         }
 
-        for (CardObject frame : _hand.getUnplayedLandTypesUntilTurn(turn)) {
+        if (isUselessSituation(turn)) {
+            return false;
+        }
+
+        for (IdentifiedCardObject frame : _hand.getLandTypesInHandUntilTurn(turn)) {
 
             final Land land = (Land) frame.get();
             final boolean tapped = land.comesIntoPlayTapped(board);
 
             Iterable<Color> colors = land.producesColors(board);
 
-            board.playLand(land);
-            frame.markPlayed();
+            playLandObject(frame);
 
             for (Color color : colors) {
 
@@ -70,11 +76,14 @@ class PlayableRecursion {
 
             }
 
-            board.popLand();
-            frame.markNotPlayed();
+            removeLandObject(frame);
         }
 
-        return recursion(null, turn + 1);
+        if (recursion(null, turn + 1)) return true;
+
+        cacheUselessSituation(turn);
+
+        return false;
     }
 
     private boolean testTappedColor(Color color, int currentTurn) {
@@ -105,6 +114,31 @@ class PlayableRecursion {
         }
 
         return false;
+    }
+
+    private void playLandObject(IdentifiedCardObject landObject) {
+
+        board.playLand((Land) landObject.get());
+        landObject.markPlayed();
+    }
+
+    private void removeLandObject(IdentifiedCardObject landObject) {
+
+        landObject.markNotPlayed();
+        Land popLand = board.popLand();
+
+        // the popped Land should always be the one from the IdentifiedCardObject
+        if (landObject.get() != popLand) {
+            throw new IllegalStateException();
+        }
+    }
+
+    private boolean isUselessSituation(int turn) {
+        return _cache.contains(board, _maxTurn - turn);
+    }
+
+    private void cacheUselessSituation(int turn) {
+        _cache.add(board, _maxTurn - turn);
     }
 
     private static final class RemainingManaCost {
@@ -160,6 +194,21 @@ class PlayableRecursion {
             final int remainingGeneric = _originalCost.genericCount() - _spentGenericMana;
 
             return remainingGeneric > 0 || _originalCost.count(color) > _manaPool.count(color);
+        }
+
+        public ManaCost computeRemainingManaCost() {
+
+            EnumCount<Color> remainingColors = new EnumCount<>(Color.class);
+            for (Color c : Color.values()) {
+                remainingColors.increase(c, _originalCost.count(c) - _manaPool.count(c));
+            }
+
+            return new ManaCost(remainingColors, _originalCost.genericCount() - _spentGenericMana);
+        }
+
+        @Override
+        public String toString() {
+            return computeRemainingManaCost().toString();
         }
     }
 

@@ -17,6 +17,12 @@ public final class ManaCost {
         _genericMana = 0;
     }
 
+    public ManaCost(EnumCount<Color> colorCounts, int genericMana) {
+
+        _colorCounts = new EnumCount<>(Color.class, colorCounts);
+        _genericMana = genericMana;
+    }
+
     public ManaCost(String costString) throws IllegalArgumentException {
 
         this();
@@ -41,7 +47,6 @@ public final class ManaCost {
             }
         }
     }
-
 
     public boolean contains(Color color) {
 
