@@ -22,10 +22,6 @@ interface Parentheses extends Operator {
     enum OpenParenthesis implements Parentheses {
         INSTANCE;
 
-        public static Operator getInstance() {
-            return INSTANCE;
-        }
-
         @Override
         public String getSymbol() {
             return String.valueOf(OPEN_PARENTHESIS_CHAR);
@@ -54,10 +50,6 @@ interface Parentheses extends Operator {
      */
     enum CloseParenthesis implements Parentheses {
         INSTANCE;
-
-        public static Operator getInstance() {
-            return INSTANCE;
-        }
 
         @Override
         public String getSymbol() {

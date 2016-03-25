@@ -10,17 +10,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import probability.config.Config;
+import probability.config.Settings;
 import probability.core.Card.CardType;
 
 public class Deck {
 
-    private final Config _config;
-
     private final ArrayList<Card> _cards;
 
-    public Deck(Config config) {
-        _config = config;
+    public Deck() {
         _cards = new ArrayList<>();
     }
 
@@ -59,13 +56,13 @@ public class Deck {
     }
 
     public void fillWithDummies() {
-        if (_cards.size() > _config.numberOfCards()) {
+        if (_cards.size() > Settings.config.numberOfCards()) {
             throw new IllegalStateException(
                     "The predefined deck consists of more than "
-                            + _config.numberOfCards() + " cards");
+                            + Settings.config.numberOfCards() + " cards");
         }
 
-        for (int i = _cards.size(); i < _config.numberOfCards(); i++) {
+        for (int i = _cards.size(); i < Settings.config.numberOfCards(); i++) {
             _cards.add(CardUtils.getDummyCard());
         }
     }
