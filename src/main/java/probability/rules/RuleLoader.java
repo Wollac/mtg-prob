@@ -138,10 +138,10 @@ public class RuleLoader {
                     lineToken.add(new StringValue(tokenizer.tokenValue()));
                     break;
                 case OPEN_PARENTHESIS:
-                    lineToken.add(OpenParenthesis.getInstance());
+                    lineToken.add(OpenParenthesis.INSTANCE);
                     break;
                 case CLOSE_PARENTHESIS:
-                    lineToken.add(CloseParenthesis.getInstance());
+                    lineToken.add(CloseParenthesis.INSTANCE);
                     break;
                 case INVALID:
                     throw new RulesParseException("Invalid character " + tokenizer.tokenValue(),

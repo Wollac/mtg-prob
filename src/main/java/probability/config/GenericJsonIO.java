@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,9 +41,23 @@ class GenericJsonIO {
     public final void load(File file) throws IOException,
             JsonIOException {
 
+        parse(Files.toString(file, Charsets.UTF_8));
+    }
+
+    public final void writeDefaultValues(File file) throws IOException {
+
+        JSONObject obj = new JSONObject();
+
+        for (AttributeKey<?> attribute : _attributes) {
+            obj.put(attribute.getName(), attribute.getDefaultValue());
+        }
+
+        Files.write(obj.toString(2), file, Charsets.UTF_8);
+    }
+
+    public void parse(String string) throws JsonIOException {
         try {
-            JSONObject obj = new JSONObject(Files.toString(file,
-                    Charsets.UTF_8));
+            JSONObject obj = new JSONObject(string);
 
             Set<String> propertyNames = obj.keySet();
 
@@ -57,26 +72,18 @@ class GenericJsonIO {
                 }
             }
         } catch (JSONException | AttributeParseException e) {
-            throw new JsonIOException("error parsing file "
-                    + file.getName(), e);
+            throw new JsonIOException(e);
         }
-    }
-
-    public final void writeDefaultValues(File file) throws IOException {
-
-        JSONObject obj = new JSONObject();
-
-        for (AttributeKey<?> attribute : _attributes) {
-            obj.put(attribute.getName(), attribute.getDefaultValue());
-        }
-
-        Files.write(obj.toString(2), file, Charsets.UTF_8);
     }
 
 
     public static class JsonIOException extends Exception {
 
         private static final long serialVersionUID = 1L;
+
+        public JsonIOException(Throwable cause) {
+            super(cause);
+        }
 
         public JsonIOException(String str, Throwable cause) {
             super(str, cause);

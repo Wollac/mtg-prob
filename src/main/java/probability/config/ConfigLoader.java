@@ -1,7 +1,11 @@
 package probability.config;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import probability.attr.AttributeKey;
 import probability.attr.BooleanAttributeKey;
@@ -16,7 +20,32 @@ class ConfigLoader {
         configIO = new GenericJsonIO(ATTR.NUMBER_OF_CARDS, ATTR.INITIAL_HAND_SIZE, ATTR.DRAW_ON_TURN, ATTR.SAMPLE_SIZE);
     }
 
-    public Config load(File configFile) {
+    static Config getDefaultConfig() {
+
+        return new Config() {
+            @Override
+            public int numberOfCards() {
+                return ATTR.NUMBER_OF_CARDS.getDefaultValue();
+            }
+
+            @Override
+            public int initialHandSize() {
+                return ATTR.INITIAL_HAND_SIZE.getDefaultValue();
+            }
+
+            @Override
+            public boolean drawOnTurn() {
+                return ATTR.DRAW_ON_TURN.getDefaultValue();
+            }
+
+            @Override
+            public int sampleSize() {
+                return ATTR.SAMPLE_SIZE.getDefaultValue();
+            }
+        };
+    }
+
+    public Config loadFromFileOrWriteDefault(File configFile) {
 
         if (!configFile.exists()) {
             writeDefaultConfigFile(configFile);
@@ -24,6 +53,10 @@ class ConfigLoader {
             loadConfigFile(configFile);
         }
 
+        return getConfig();
+    }
+
+    private Config getConfig() {
         return new Config() {
             @Override
             public int numberOfCards() {
@@ -58,7 +91,6 @@ class ConfigLoader {
         }
     }
 
-
     private void loadConfigFile(File configFile) {
 
         try {
@@ -67,6 +99,18 @@ class ConfigLoader {
             System.err.println("Could not parse config file, using defaults: " + e.getMessage());
         }
     }
+
+    public Config loadFromResource(URL url) {
+        try {
+            configIO.parse(Resources.toString(url, Charsets.UTF_8));
+        } catch (IOException | GenericJsonIO.JsonIOException e) {
+            System.err.println("Could not parse resource +" + url
+                    + ": " + e.getMessage());
+        }
+
+        return getConfig();
+    }
+
 
     private <T> T getConfigValue(AttributeKey<T> attribute) {
 

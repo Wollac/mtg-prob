@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import probability.checker.PlayableChecker;
-import probability.config.Config;
 import probability.config.Settings;
 import probability.core.Card;
 import probability.core.Deck;
@@ -23,7 +22,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Deck deck = buildDeck(Settings.config);
+        Deck deck = buildDeck();
 
         if (deck == null) {
             System.err.println("No deck has been loaded.");
@@ -71,9 +70,9 @@ public class Main {
         return result;
     }
 
-    private static Deck buildDeck(Config config) {
+    private static Deck buildDeck() {
 
-        Deck deck = new Deck(config);
+        Deck deck = new Deck();
 
         addLands(deck);
         addSpells(deck);
