@@ -128,9 +128,7 @@ class PlayableRecursion {
         Land popLand = board.popLand();
 
         // the popped Land should always be the one from the IdentifiedCardObject
-        if (landObject.get() != popLand) {
-            throw new IllegalStateException();
-        }
+        assert landObject.get() == popLand;
     }
 
     private boolean isUselessSituation(int turn) {
@@ -165,9 +163,7 @@ class PlayableRecursion {
             }
 
             // we will never pay more than we could
-            if (_spentGenericMana > _originalCost.genericCount()) {
-                throw new IllegalStateException();
-            }
+            assert _spentGenericMana <= _originalCost.genericCount();
         }
 
         public void freeMana(Color color) {
@@ -179,9 +175,7 @@ class PlayableRecursion {
             }
 
             // we will never free mana that has not been paid
-            if (oldCount == 0) {
-                throw new IllegalStateException();
-            }
+            assert oldCount > 0;
         }
 
         public boolean allPaid() {
