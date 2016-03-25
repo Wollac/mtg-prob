@@ -1,12 +1,20 @@
 package probability.checker;
 
 
+import com.google.common.base.Strings;
+
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 
+import probability.config.Settings;
+import probability.core.Color;
 import probability.core.Colors;
 import probability.core.ManaCost;
 import probability.core.Spell;
@@ -21,7 +29,7 @@ public class PlayableRecursionTest {
         PlayableRecursion checker = new PlayableRecursion(hand, turn, spell.getCost());
         boolean playable = checker.check();
 
-        hand.markAllUnplayed();
+        hand.markAllInHand();
 
         return playable;
     }
@@ -35,15 +43,29 @@ public class PlayableRecursionTest {
     }
 
     private Hand createDrawingHand(Land... lands) {
-        return new Hand(0, Arrays.asList(lands));
+        return createDrawingHand(Arrays.asList(lands));
+    }
+
+    private Hand createDrawingHand(Collection<Land> lands) {
+        return new Hand(0, lands);
     }
 
     private Hand createStartingHand(Land... lands) {
-        return new Hand(lands.length, Arrays.asList(lands));
+        return createStartingHand(Arrays.asList(lands));
+    }
+
+    private Hand createStartingHand(Collection<Land> lands) {
+        return new Hand(lands.size(), lands);
     }
 
     private Land createBasicLand(String colorString) {
-        return new BasicLand("", Colors.valueOf(colorString));
+        return new BasicLand(colorString, Colors.valueOf(colorString));
+    }
+
+    private Land createBasicLand(Color... colors) {
+
+        Colors landColors = new Colors(colors);
+        return new BasicLand(landColors.toString(), landColors);
     }
 
     private Land createTapLand(String colorString) {
@@ -110,6 +132,26 @@ public class PlayableRecursionTest {
         Hand hand = createDrawingHand(createBasicLand("W"), createBasicLand("W"));
 
         Assert.assertTrue(isPlayable(spell, 3, hand));
+    }
+
+    @Test
+    public void testManyLands() {
+
+        final Color SPELL_COLOR = Color.Green;
+        final int COUNT = 4;
+
+        String costString = Strings.repeat(Character.toString(SPELL_COLOR.getLetterCode()), COUNT);
+        Spell spell = createSpell(costString);
+
+        Set<Color> unnecessaryColors = EnumSet.complementOf(EnumSet.of(SPELL_COLOR));
+
+        Collection<Land> lands = new ArrayList<>();
+        unnecessaryColors.stream().forEach(c -> lands.add(createBasicLand(c)));
+        lands.addAll(Collections.nCopies(COUNT, createBasicLand(SPELL_COLOR)));
+
+        Hand hand = createStartingHand(lands);
+
+        Assert.assertTrue(isPlayable(spell, COUNT, hand));
     }
 
     @Test
