@@ -15,12 +15,16 @@ public class Board {
         _playedLands = new Stack<>();
     }
 
+    public Stack<Land> getPlayedLands() {
+        return _playedLands;
+    }
+
     public void playLand(Land land) {
         _playedLands.push(land);
     }
 
-    public void popLand() {
-        _playedLands.pop();
+    public Land popLand() {
+        return _playedLands.pop();
     }
 
     public int getNumPlayedLands() {
