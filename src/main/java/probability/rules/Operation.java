@@ -11,7 +11,7 @@ import java.util.Map;
 enum Operation {
 
     NOT(Not.class), AND(And.class), OR(Or.class), EQUAL(Equal.class), NOT_EQUAL(NotEqual.class),
-    LESS_THAN(LessThan.class), GREATER_THAN(GreaterThan.class);
+    LESS_THAN(LessThan.class), GREATER_THAN(GreaterThan.class), CONTAINS(Contains.class);
 
     private static final Map<String, Operation> OPERATIONS_BY_SYMBOL;
 

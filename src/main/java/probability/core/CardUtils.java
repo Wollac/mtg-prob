@@ -3,6 +3,7 @@ package probability.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
@@ -12,7 +13,6 @@ import java.util.function.Predicate;
 import probability.core.land.BasicLand;
 import probability.core.land.FetchLand;
 import probability.core.land.Land;
-import probability.core.land.ReflectingLand;
 
 public final class CardUtils {
 
@@ -43,15 +43,15 @@ public final class CardUtils {
     }
 
     public static boolean isSpell(Card card) {
-        return (card instanceof Spell);
+        return (!isDummy(card) && card instanceof Spell);
     }
 
     public static boolean isLand(Card card) {
-        return (card instanceof Land);
+        return (!isDummy(card) && card instanceof Land);
     }
 
     public static boolean isDummy(Card card) {
-        return card.equals(DUMMY_CARD);
+        return card == DUMMY_CARD;
     }
 
     public static boolean isBasicLand(Card card) {
@@ -60,10 +60,6 @@ public final class CardUtils {
 
     public static boolean isFetchLand(Card card) {
         return (card instanceof FetchLand);
-    }
-
-    public static boolean isChangingLand(Card card) {
-        return card instanceof ReflectingLand;
     }
 
     public static void retainAllLands(Collection<Card> cards) {
@@ -76,7 +72,7 @@ public final class CardUtils {
         Collection<Land> lands = new ArrayList<>(cards.size());
 
         for (Card card : cards) {
-            if (card instanceof Land) {
+            if (isLand(card)) {
                 lands.add((Land) card);
             }
         }
@@ -94,7 +90,7 @@ public final class CardUtils {
         Collection<Spell> spells = new ArrayList<>(cards.size());
 
         for (Card card : cards) {
-            if (card instanceof Spell) {
+            if (isSpell(card)) {
                 spells.add((Spell) card);
             }
         }
@@ -111,6 +107,19 @@ public final class CardUtils {
         }
 
         return new Colors(colorSet);
+    }
+
+    public static Set<String> getNames(Collection<? extends Card> cards) {
+
+        Set<String> names = new HashSet<>();
+
+        for (Card card : cards) {
+            if (!isDummy(card)) {
+                names.add(card.getName());
+            }
+        }
+
+        return names;
     }
 
     /**

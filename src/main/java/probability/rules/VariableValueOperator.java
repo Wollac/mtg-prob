@@ -44,7 +44,7 @@ abstract class VariableValueOperator extends AbstractOperator implements Operato
         return this;
     }
 
-    private void parse(Variable<?> variable, Token other) throws RulesTokenException {
+    protected void parse(Variable<?> variable, Token other) throws RulesTokenException {
 
         _variable = variable;
 

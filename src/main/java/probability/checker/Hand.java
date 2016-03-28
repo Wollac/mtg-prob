@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import probability.core.Card;
+import probability.core.CardUtils;
 import probability.core.Spell;
 import probability.core.land.Land;
 
@@ -50,7 +51,7 @@ class Hand {
         Set<Spell> result = new HashSet<>();
         for (Supplier<? extends Card> supplier : getCardsUntilTurn(turn)) {
             Card card = supplier.get();
-            if (card instanceof Spell) {
+            if (CardUtils.isSpell(card)) {
                 result.add((Spell) card);
             }
         }
@@ -104,7 +105,7 @@ class Hand {
         List<IdentifiedCardObject> result = new ArrayList<>();
         for (IdentifiedCardObject cardObject : getCardsUntilTurn(turn)) {
 
-            if (cardObject.get() instanceof Land) {
+            if (CardUtils.isLand(cardObject.get())) {
                 result.add(cardObject);
             }
         }
