@@ -1,6 +1,6 @@
 package probability.checker;
 
-import com.google.common.collect.Iterables;
+import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +26,9 @@ public class PlayableChecker {
     private final MulliganRule _mulliganRule;
 
     public PlayableChecker(Deck deck, MulliganRule mulliganRule) {
+
+        Preconditions.checkArgument(deck.cards().size() >= initialHandSize(),
+                "not enough cards in the deck");
 
         _cards = IdentifiedCardObject.toCardObjects(deck.cards());
 
@@ -101,8 +104,10 @@ public class PlayableChecker {
     private List<Card> getStartingCards(int handSize) {
 
         List<Card> startingHand = new ArrayList<>(handSize);
-        for (IdentifiedCardObject cardObject : Iterables.limit(_cards, handSize)) {
-            startingHand.add(cardObject.get());
+
+        Iterator<IdentifiedCardObject> it = _cards.iterator();
+        for (int i = 0; i < handSize; i++) {
+            startingHand.add(it.next().get());
         }
 
         return startingHand;

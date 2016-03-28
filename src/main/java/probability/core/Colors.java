@@ -1,12 +1,14 @@
 package probability.core;
 
+import com.google.common.collect.ForwardingSet;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
-public final class Colors {
+public final class Colors extends ForwardingSet<Color> implements Set<Color> {
 
     private final Set<Color> _colors;
 
@@ -58,6 +60,11 @@ public final class Colors {
     }
 
     public Set<Color> getColors() {
+        return _colors;
+    }
+
+    @Override
+    protected Set<Color> delegate() {
         return _colors;
     }
 

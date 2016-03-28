@@ -6,6 +6,7 @@ import java.util.Collection;
 
 import probability.attr.ColorsAttributeKey;
 import probability.attr.IntegerAttributeKey;
+import probability.attr.StringSetAttributeKey;
 import probability.core.land.Land;
 import probability.rules.Rule;
 import probability.rules.RuleLoader;
@@ -37,7 +38,8 @@ public class MulliganRule {
         _variables.registerVariable(VARIABLES.LANDS);
         _variables.registerVariable(VARIABLES.NONLANDS);
         _variables.registerVariable(VARIABLES.CARDS);
-        _variables.registerVariable(VARIABLES.COLORS);
+        _variables.registerVariable(VARIABLES.LAND_COLORS);
+        _variables.registerVariable(VARIABLES.CARD_NAMES);
     }
 
     private Rule loadFromFile(File file) {
@@ -69,14 +71,16 @@ public class MulliganRule {
         return rule;
     }
 
-    public boolean takeMulligan(Collection<Card> startingHand) {
+    public boolean takeMulligan(final Collection<Card> startingHand) {
 
         Collection<Land> lands = CardUtils.retainAllLandsToArrayList(startingHand);
 
         _variables.assignValue(VARIABLES.LANDS, lands.size());
         _variables.assignValue(VARIABLES.NONLANDS, startingHand.size() - lands.size());
         _variables.assignValue(VARIABLES.CARDS, startingHand.size());
-        _variables.assignSupplier(VARIABLES.COLORS, () -> CardUtils.getColors(lands));
+
+        _variables.assignSupplier(VARIABLES.LAND_COLORS, () -> CardUtils.getColors(lands));
+        _variables.assignSupplier(VARIABLES.CARD_NAMES, () -> CardUtils.getNames(startingHand));
 
         return _rule.evaluate(_variables);
     }
@@ -105,7 +109,9 @@ public class MulliganRule {
 
         IntegerAttributeKey CARDS = new IntegerAttributeKey("CARDS");
 
-        ColorsAttributeKey COLORS = new ColorsAttributeKey("COLORS");
+        ColorsAttributeKey LAND_COLORS = new ColorsAttributeKey("LANDCOLORS");
+
+        StringSetAttributeKey CARD_NAMES = new StringSetAttributeKey("CARDNAMES");
     }
 
 }

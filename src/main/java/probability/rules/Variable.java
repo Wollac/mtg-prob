@@ -46,7 +46,7 @@ class Variable<T> implements Expression, Token {
         }
     }
 
-    private T getValue(ImmutableAttributeHolder bindings) {
+    T getValue(ImmutableAttributeHolder bindings) {
 
         return bindings.getAttributeValue(_key);
     }

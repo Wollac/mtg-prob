@@ -44,4 +44,9 @@ public enum Color {
     public char getLetterCode() {
         return _c;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(getLetterCode());
+    }
 }

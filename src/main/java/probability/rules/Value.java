@@ -3,8 +3,6 @@ package probability.rules;
 import java.util.Objects;
 import java.util.Stack;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * A value is a special {@linkplain Token} representing a constant in the rule.
  *
@@ -62,6 +60,16 @@ class Value<T> implements Token {
             super(value);
         }
 
+        @Override
+        public String toString() {
+
+            String value = getValue();
+
+            if (value.indexOf(' ') >= 0) {
+                return '"' + value + '"';
+            }
+            return value;
+        }
     }
 
 }

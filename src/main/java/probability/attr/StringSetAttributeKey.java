@@ -15,7 +15,7 @@ public class StringSetAttributeKey extends AttributeKey<Set<String>> {
     private static final CSVParser parser = new CSVParser();
 
     public StringSetAttributeKey(String name, Set<String> defaultValue) {
-        super(name, Set.class, defaultValue);
+        super(name, Set.class, defaultValue, s -> s != null);
     }
 
     public StringSetAttributeKey(String name) {
