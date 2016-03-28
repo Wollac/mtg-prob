@@ -14,24 +14,16 @@ class Value<T> implements Token {
 
     private final T _value;
 
-    private final Class<T> _type;
-
-    public Value(T value, Variable<T> variable) {
-        this(value, variable.getType());
+    public Value(T value) {
+        _value = value;
     }
 
-    private Value(T value, Class<T> type) {
-
+    public Value(T value, Variable<T> variable) {
         _value = value;
-        _type = checkNotNull(type);
     }
 
     public T getValue() {
         return _value;
-    }
-
-    public Class<T> getType() {
-        return _type;
     }
 
     @Override
@@ -50,7 +42,7 @@ class Value<T> implements Token {
         }
 
         Value<?> other = (Value<?>) obj;
-        return _type.equals(other._type) && Objects.equals(_value, other._value);
+        return Objects.equals(_value, other._value);
     }
 
     @Override
@@ -67,7 +59,7 @@ class Value<T> implements Token {
     public static class StringValue extends Value<String> {
 
         public StringValue(String value) {
-            super(value, String.class);
+            super(value);
         }
 
     }

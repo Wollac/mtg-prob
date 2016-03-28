@@ -18,8 +18,12 @@ public class EnumAttributeKey<E extends Enum<E>> extends AttributeKey<E> {
     public E parseValue(String valueString) throws AttributeParseException {
         E result;
 
+        // this will only be called, when the type was set to Class<E>
+        @SuppressWarnings("unchecked")
+        Class<E> enumType = (Class<E>) getValueType();
+
         try {
-            result = Enum.valueOf(getValueType(), valueString);
+            result = Enum.valueOf(enumType, valueString);
         } catch (IllegalArgumentException e) {
             throw new AttributeParseException("illegal string \"" + valueString
                     + "\" is not a valid element of "

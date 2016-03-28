@@ -28,14 +28,14 @@ class Variable<T> implements Expression, Token {
         return _key;
     }
 
-    public Class<T> getType() {
+    public Class<? super T> getType() {
 
         return _key.getValueType();
     }
 
     public String getTypeName() {
 
-        return getType().getSimpleName();
+        return _key.getValueType().toString();
     }
 
     T parseValue(Value<String> stringValue) throws RulesTokenException {

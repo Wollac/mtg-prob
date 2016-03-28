@@ -111,7 +111,7 @@ public class VariableHolder {
 
             // the variable holder assures that there are no variables without a value
             Object valueObject = _supplierMap.get(key).get();
-            return key.getValueType().cast(valueObject);
+            return (T) valueObject;
         }
     }
 

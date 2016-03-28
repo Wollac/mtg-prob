@@ -47,7 +47,10 @@ public class AttributeHolder implements ImmutableAttributeHolder {
             return def != null ? def : key.getDefaultValue();
         }
 
-        return key.getValueType().cast(valueObject);
+        @SuppressWarnings("unchecked")
+        T value = (T) valueObject;
+
+        return value;
     }
 
     @Override
