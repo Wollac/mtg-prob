@@ -68,17 +68,17 @@ public class VariableHolder {
 
         if (!NAME_PATTERN.matcher(name).matches()) {
             throw new IllegalArgumentException(
-                    "Invalid variable name: All names must match " + NAME_PATTERN);
+                    "Invalid variable name \"" + name + "\": All names must match " + NAME_PATTERN.pattern());
         }
 
         if (_name2var.containsKey(name)) {
             throw new IllegalArgumentException(
-                    "Invalid variable name: " + name + " has already been registered");
+                    "Invalid variable name \"" + name + "\": already registered");
         }
 
         if (Operation.getOperationFromSymbol(name) != null) {
             throw new IllegalArgumentException(
-                    "Invalid variable name: " + name + " is the name of an operation");
+                    "Invalid variable name \"" + name + "\": name of an operation");
         }
     }
 
@@ -109,9 +109,15 @@ public class VariableHolder {
         @Override
         public <T> T getAttributeValue(AttributeKey<T> key) {
 
-            // the variable holder assures that there are no variables without a value
-            Object valueObject = _supplierMap.get(key).get();
-            return (T) valueObject;
+            Supplier<?> supplier = _supplierMap.get(key);
+
+            // the variable holder assures that there are no variables without a supplier
+            assert supplier != null;
+
+            @SuppressWarnings("unchecked")
+            T value = (T) supplier.get();
+
+            return value;
         }
     }
 
