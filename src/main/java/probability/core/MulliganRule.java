@@ -3,7 +3,10 @@ package probability.core;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
+import probability.attr.AttributeKey;
+import probability.attr.AttributeUtils;
 import probability.attr.ColorsAttributeKey;
 import probability.attr.IntegerAttributeKey;
 import probability.attr.StringSetAttributeKey;
@@ -23,23 +26,22 @@ public class MulliganRule {
     private final VariableHolder _variables = new VariableHolder();
 
     public MulliganRule() {
-        registerVariables();
 
+        registerVariables();
         _rule = getDefaultRule();
     }
 
     public MulliganRule(File file) {
-        registerVariables();
 
+        registerVariables();
         _rule = loadFromFile(file);
     }
 
     private void registerVariables() {
-        _variables.registerVariable(VARIABLES.LANDS);
-        _variables.registerVariable(VARIABLES.NONLANDS);
-        _variables.registerVariable(VARIABLES.CARDS);
-        _variables.registerVariable(VARIABLES.LAND_COLORS);
-        _variables.registerVariable(VARIABLES.CARD_NAMES);
+
+        List<AttributeKey<?>> variableKeys = AttributeUtils.getAttributeKeys(VARIABLES.class);
+
+        _variables.registerVariables(variableKeys);
     }
 
     private Rule loadFromFile(File file) {
