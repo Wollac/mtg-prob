@@ -18,6 +18,13 @@ public class VariableHolder {
 
     private final SuppliedAttributeHolder _bindings = new SuppliedAttributeHolder();
 
+    public void registerVariables(Iterable<? extends AttributeKey<?>> keys) {
+
+        for (AttributeKey<?> key : keys) {
+            registerVariable(key);
+        }
+    }
+
     public <T> void registerVariable(AttributeKey<T> key) {
         registerVariable(key, key.getName());
     }
