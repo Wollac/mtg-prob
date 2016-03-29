@@ -109,9 +109,9 @@ public class MulliganRule {
 
         IntegerAttributeKey CARDS = new IntegerAttributeKey("CARDS");
 
-        ColorsAttributeKey LAND_COLORS = new ColorsAttributeKey("LANDCOLORS");
+        ColorsAttributeKey LAND_COLORS = new ColorsAttributeKey("LAND_COLORS");
 
-        StringSetAttributeKey CARD_NAMES = new StringSetAttributeKey("CARDNAMES");
+        StringSetAttributeKey CARD_NAMES = new StringSetAttributeKey("CARD_NAMES");
     }
 
 }
