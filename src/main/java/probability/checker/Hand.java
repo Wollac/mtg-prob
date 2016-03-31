@@ -1,17 +1,16 @@
 package probability.checker;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import probability.core.Card;
 import probability.core.CardUtils;
@@ -49,8 +48,12 @@ class Hand {
     public Set<Spell> getSpellTypesUntilTurn(int turn) {
 
         Set<Spell> result = new HashSet<>();
-        for (Supplier<? extends Card> supplier : getCardsUntilTurn(turn)) {
-            Card card = supplier.get();
+
+        final int n = getNumberOfCardsUntilTurn(turn);
+
+        Iterator<IdentifiedCardObject> it = _cards.iterator();
+        for (int i = 0; i < n; i++) {
+            Card card = it.next().get();
             if (CardUtils.isSpell(card)) {
                 result.add((Spell) card);
             }
@@ -96,15 +99,17 @@ class Hand {
         return result;
     }
 
-    private Iterable<IdentifiedCardObject> getCardsUntilTurn(int turn) {
-        return Iterables.limit(_cards, _startingHandSize + turn - 1);
+    private int getNumberOfCardsUntilTurn(int turn) {
+        return Math.min(_cards.size(), _startingHandSize + turn - 1);
     }
 
-    private List<IdentifiedCardObject> computeLandObjectsUntilTurn(int turn) {
+    private List<IdentifiedCardObject> getLandObjects(int n) {
 
         List<IdentifiedCardObject> result = new ArrayList<>();
-        for (IdentifiedCardObject cardObject : getCardsUntilTurn(turn)) {
 
+        Iterator<IdentifiedCardObject> it = _cards.iterator();
+        for (int i = 0; i < n; i++) {
+            IdentifiedCardObject cardObject = it.next();
             if (CardUtils.isLand(cardObject.get())) {
                 result.add(cardObject);
             }
@@ -115,9 +120,9 @@ class Hand {
 
     private List<IdentifiedCardObject> getCachedLandObjectsUntilTurn(int turn) {
 
-        turn = Math.min(turn, _cards.size() - _startingHandSize + 1);
+        final int n = getNumberOfCardsUntilTurn(turn);
 
-        return _landObjectCache.computeIfAbsent(turn, this::computeLandObjectsUntilTurn);
+        return _landObjectCache.computeIfAbsent(n, this::getLandObjects);
     }
 
     @Override
