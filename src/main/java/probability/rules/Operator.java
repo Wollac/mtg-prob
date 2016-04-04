@@ -16,4 +16,6 @@ interface Operator extends Token {
      */
     String getSymbol();
 
+    String getProductionRule();
+
 }

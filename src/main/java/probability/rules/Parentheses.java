@@ -2,6 +2,9 @@ package probability.rules;
 
 import java.util.Stack;
 
+import static probability.rules.NamingConventions.ARROW_OPERATOR;
+import static probability.rules.NamingConventions.EXPRESSION;
+
 /**
  * Parentheses are a special {@linkplain Operator} and has the highest possible priority. As
  * Parentheses cannot be evaluated on their own, a singleton is sufficient.
@@ -15,6 +18,10 @@ interface Parentheses extends Operator {
      * Just a dummy value, as it will not be used explicitly.
      */
     int PARENTHESIS_PRECEDENCE = -1;
+
+    static String getProductionRules() {
+        return EXPRESSION + ARROW_OPERATOR + OPEN_PARENTHESIS_CHAR + EXPRESSION + CLOSE_PARENTHESIS_CHAR;
+    }
 
     /**
      * An open Parenthesis.
@@ -38,8 +45,12 @@ interface Parentheses extends Operator {
         }
 
         @Override
-        public Expression parse(Stack<Token> stack) throws RulesTokenException {
+        public Expression parse(Stack<Token> stack) {
+            throw new IllegalStateException();
+        }
 
+        @Override
+        public String getProductionRule() {
             throw new IllegalStateException();
         }
 
@@ -67,10 +78,13 @@ interface Parentheses extends Operator {
         }
 
         @Override
-        public Expression parse(Stack<Token> stack) throws RulesTokenException {
-
+        public Expression parse(Stack<Token> stack) {
             throw new IllegalStateException();
         }
 
+        @Override
+        public String getProductionRule() {
+            throw new IllegalStateException();
+        }
     }
 }

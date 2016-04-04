@@ -73,6 +73,10 @@ enum Operation {
         return newInstance().getSymbol();
     }
 
+    String getProductionRule() {
+        return newInstance().getProductionRule();
+    }
+
     private Class<?> getType() {
         return _op;
     }

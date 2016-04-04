@@ -45,7 +45,7 @@ abstract class SetElementOperator extends VariableValueOperator {
         _variable = getSetVariable(variable);
 
         if (!(other instanceof Value.StringValue)) {
-            throw new RulesTokenException("One operand of " + getSymbol() +
+            throw new RulesTokenException("The RHS of " + getSymbol() +
                     " must be a value");
         }
 

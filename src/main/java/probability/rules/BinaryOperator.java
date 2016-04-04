@@ -2,6 +2,9 @@ package probability.rules;
 
 import java.util.Stack;
 
+import static probability.rules.NamingConventions.ARROW_OPERATOR;
+import static probability.rules.NamingConventions.EXPRESSION;
+
 /**
  * Common functionality for all binary operators.
  */
@@ -39,6 +42,12 @@ abstract class BinaryOperator extends AbstractOperator implements Operator, Expr
 
         Token top = stack.pop();
         return top.parse(stack);
+    }
+
+    @Override
+    public String getProductionRule() {
+
+        return EXPRESSION + ARROW_OPERATOR + EXPRESSION + " " + getSymbol() + " " + EXPRESSION;
     }
 
     @Override
