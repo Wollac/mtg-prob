@@ -2,19 +2,26 @@ package probability.core;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import probability.attr.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.Collection;
+import java.util.List;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import probability.attr.AttributeKey;
+import probability.attr.AttributeUtils;
+import probability.attr.ColorsAttributeKey;
+import probability.attr.IntegerAttributeKey;
+import probability.attr.StringSetAttributeKey;
 import probability.core.land.Land;
 import probability.rules.Rule;
 import probability.rules.RuleLoader;
 import probability.rules.RuleLoader.RulesParseException;
 import probability.rules.VariableHolder;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.List;
-import java.util.ResourceBundle;
 
 public class MulliganRule {
 
@@ -36,6 +43,21 @@ public class MulliganRule {
 
         registerVariables();
         _rule = loadFromFile(file);
+    }
+
+    private static String getDefaultRulesStringFromResources() throws IOException {
+
+        URL url = Resources.getResource(DEFAULT_RULES_RESOURCE_NAME);
+        return Resources.toString(url, Charsets.UTF_8);
+    }
+
+    private static String getVariableDescription(AttributeKey<?> var) {
+
+        try {
+            return var.getName() + ": " + bundle.getString(var.getName());
+        } catch (MissingResourceException e) {
+            return var.getName();
+        }
     }
 
     private void registerVariables() {
@@ -61,12 +83,15 @@ public class MulliganRule {
         return getDefaultRule();
     }
 
-    public void print() {
+    public void printDescription(PrintWriter writer) {
 
+        writer.println("Rule when to take a mulligan");
+        Rule.printGrammar(writer);
+        writer.println();
+        writer.println("The following variables can be used:");
         for (AttributeKey<?> var : AttributeUtils.getAttributeKeys(VARIABLES.class)) {
-            System.out.println(var.getValueType().getSimpleName() + '\t' + var.getName() + ": " + bundle.getString(var.getName()));
+            writer.println("  " + getVariableDescription(var));
         }
-
     }
 
     private Rule getDefaultRule() {
@@ -80,12 +105,6 @@ public class MulliganRule {
         }
 
         return rule;
-    }
-
-    private static String getDefaultRulesStringFromResources() throws IOException {
-
-        URL url = Resources.getResource(DEFAULT_RULES_RESOURCE_NAME);
-        return Resources.toString(url, Charsets.UTF_8);
     }
 
     public boolean takeMulligan(final Collection<Card> startingHand) {

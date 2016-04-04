@@ -1,47 +1,23 @@
 package probability.rules;
 
-import com.google.common.base.Supplier;
-import probability.attr.ImmutableAttributeHolder;
-
-import java.text.MessageFormat;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ResourceBundle;
+
+import probability.attr.ImmutableAttributeHolder;
+import probability.core.Messages;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static probability.rules.NamingConventions.EXPRESSION;
 import static probability.rules.NamingConventions.STRING;
+import static probability.rules.NamingConventions.VARIABLE;
 
 /**
  * A Rule corresponds to multiple {@linkplain Expression} evaluating to true, if at least one
  * expression evaluates to true.
  */
 public class Rule {
-
-    private enum RuleDescriptionMessages implements Supplier<String> {
-        RULE("rules.description.rule"), EXPRESSION("rules.description.expression"), STRING("rules.description.string");
-
-        private String _key;
-
-        RuleDescriptionMessages(String resourceKey) {
-            _key = resourceKey;
-        }
-
-        @Override
-        public String get() {
-            return _key;
-        }
-    }
-
-    public static String formatMessage(RuleDescriptionMessages messageKey,
-                                       Object... arguments) {
-
-        String pattern = bundle.getString(messageKey.get());
-        return MessageFormat.format(pattern, arguments);
-    }
-
-    private static final ResourceBundle bundle = ResourceBundle.getBundle("rules");
 
     private final List<Expression> _expressions;
 
@@ -53,17 +29,20 @@ public class Rule {
         _expressions = checkNotNull(expressions);
     }
 
-    public static void printGrammar() {
+    public static void printGrammar(PrintWriter writer) {
 
-        System.out.println(formatMessage(RuleDescriptionMessages.EXPRESSION, EXPRESSION));
+        writer.println(Messages.formatMessage(RuleMessages.RULE));
+        writer.println(Messages.formatMessage(RuleMessages.EXPRESSION, EXPRESSION));
 
-        System.out.println("  " + Parentheses.getProductionRules());
+        writer.println("  " + Parentheses.getProductionRules());
 
         for (Operation o : Operation.values()) {
-            System.out.println("  " + o.getProductionRule());
+            writer.println("  " + o.getProductionRule());
         }
 
-        System.out.println(formatMessage(RuleDescriptionMessages.STRING, STRING, StringTokenizer.QUOTE_CHAR));
+        writer.println(Messages.formatMessage(RuleMessages.VARIABLE, VARIABLE));
+        writer.println(Messages.formatMessage(RuleMessages.STRING, STRING,
+                StringTokenizer.QUOTE_CHAR));
     }
 
     /**
@@ -109,6 +88,23 @@ public class Rule {
         }
 
         return sb.toString();
+    }
+
+    private enum RuleMessages implements Messages.MessageKey {
+
+        RULE("rules.description.rule"), EXPRESSION("rules.description.expression"),
+        VARIABLE("rules.description.variable"), STRING("rules.description.string");
+
+        private final String _key;
+
+        RuleMessages(String resourceKey) {
+            _key = resourceKey;
+        }
+
+        @Override
+        public String getBundleKey() {
+            return _key;
+        }
     }
 
 }

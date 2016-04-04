@@ -3,6 +3,7 @@ package probability;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.Collections;
 import java.util.HashSet;
@@ -17,7 +18,6 @@ import probability.core.Spell;
 import probability.csv.AbstractCSVParser.CvsParseException;
 import probability.csv.LandCSVParser;
 import probability.csv.SpellCSVParser;
-import probability.rules.Rule;
 
 public class Main {
 
@@ -34,9 +34,6 @@ public class Main {
         System.out.println(deck.toFormattedString());
 
         MulliganRule mulliganRule = new MulliganRule(new File("mulligan.txt"));
-
-        mulliganRule.print();
-        Rule.printGrammar();
 
         System.out.println("Taking a mulligan, if one of the following rules applies:");
         System.out.println(mulliganRule.toFormattedString());
