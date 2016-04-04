@@ -25,11 +25,9 @@ public class VariableHolder {
         }
     }
 
-    public <T> void registerVariable(AttributeKey<T> key) {
-        registerVariable(key, key.getName());
-    }
+    private <T> void registerVariable(AttributeKey<T> key) {
 
-    public <T> void registerVariable(AttributeKey<T> key, String name) {
+        String name = key.getName();
 
         checkName(name);
         if (isRegistered(key)) {
@@ -40,7 +38,7 @@ public class VariableHolder {
         _bindings.putAttributeValue(key, key.getDefaultValue());
     }
 
-    public boolean isRegistered(AttributeKey<?> key) {
+    private boolean isRegistered(AttributeKey<?> key) {
 
         for (Variable<?> var : _name2var.values()) {
             if (var.getAttributeKey().equals(key))
