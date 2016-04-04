@@ -2,6 +2,9 @@ package probability.rules;
 
 import java.util.Stack;
 
+import static probability.rules.NamingConventions.ARROW_OPERATOR;
+import static probability.rules.NamingConventions.EXPRESSION;
+
 /**
  * Common functionality for all unary operators.
  */
@@ -31,6 +34,12 @@ abstract class UnaryOperator extends AbstractOperator implements Operator, Expre
         _operand = top.parse(stack);
 
         return this;
+    }
+
+    @Override
+    public String getProductionRule() {
+
+        return EXPRESSION + ARROW_OPERATOR + getSymbol() + " " + EXPRESSION;
     }
 
     @Override

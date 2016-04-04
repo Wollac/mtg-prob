@@ -1,25 +1,26 @@
 package probability.core;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
-import probability.attr.AttributeKey;
-import probability.attr.AttributeUtils;
-import probability.attr.ColorsAttributeKey;
-import probability.attr.IntegerAttributeKey;
-import probability.attr.StringSetAttributeKey;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+import probability.attr.*;
 import probability.core.land.Land;
 import probability.rules.Rule;
 import probability.rules.RuleLoader;
 import probability.rules.RuleLoader.RulesParseException;
 import probability.rules.VariableHolder;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Collection;
+import java.util.List;
+import java.util.ResourceBundle;
+
 public class MulliganRule {
 
-    private static final String DEFAULT_RULES =
-            "CARDS > 5 AND (LANDS < 2 OR NONLANDS < 2)\n" + "CARDS = 5 AND (LANDS < 1 OR NONLANDS < 1)\n";
+    private static final String DEFAULT_RULES_RESOURCE_NAME = "default_mulligan_rule.txt";
+
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("variables");
 
     private final Rule _rule;
 
@@ -60,17 +61,31 @@ public class MulliganRule {
         return getDefaultRule();
     }
 
+    public void print() {
+
+        for (AttributeKey<?> var : AttributeUtils.getAttributeKeys(VARIABLES.class)) {
+            System.out.println(var.getValueType().getSimpleName() + '\t' + var.getName() + ": " + bundle.getString(var.getName()));
+        }
+
+    }
+
     private Rule getDefaultRule() {
 
         Rule rule;
         try {
             RuleLoader loader = new RuleLoader(_variables);
-            rule = loader.readFromString(DEFAULT_RULES);
+            rule = loader.readFromString(getDefaultRulesStringFromResources());
         } catch (IOException | RulesParseException e) {
             throw new IllegalStateException("Error parsing default rules", e);
         }
 
         return rule;
+    }
+
+    private static String getDefaultRulesStringFromResources() throws IOException {
+
+        URL url = Resources.getResource(DEFAULT_RULES_RESOURCE_NAME);
+        return Resources.toString(url, Charsets.UTF_8);
     }
 
     public boolean takeMulligan(final Collection<Card> startingHand) {

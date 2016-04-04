@@ -2,6 +2,8 @@ package probability.rules;
 
 import java.util.Stack;
 
+import static probability.rules.NamingConventions.*;
+
 /**
  * Common functionality for all operators that have exactly one variable and one value as operands.
  */
@@ -34,10 +36,8 @@ abstract class VariableValueOperator extends AbstractOperator implements Operato
 
         if (left instanceof Variable<?>) {
             parse((Variable<?>) left, right);
-        } else if (right instanceof Variable<?>) {
-            parse((Variable<?>) right, left);
         } else {
-            throw new RulesTokenException("One operand of " + getSymbol() +
+            throw new RulesTokenException("The LHS of " + getSymbol() +
                     " must be a variable");
         }
 
@@ -51,11 +51,16 @@ abstract class VariableValueOperator extends AbstractOperator implements Operato
         if (other instanceof Value.StringValue) {
             _value = _variable.parseValue((Value.StringValue) other);
         } else {
-            throw new RulesTokenException("One operand of " + getSymbol() +
+            throw new RulesTokenException("The RHS of " + getSymbol() +
                     " must be a value");
         }
     }
 
+    @Override
+    public String getProductionRule() {
+
+        return EXPRESSION + ARROW_OPERATOR + VARIABLE + " " + getSymbol() + " " + STRING;
+    }
 
     @Override
     public String toString() {

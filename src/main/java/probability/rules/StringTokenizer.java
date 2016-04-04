@@ -24,7 +24,7 @@ class StringTokenizer {
     /**
      * Character starting and ending a quotation.
      */
-    private static final int QUOTE_CHAR = '"';
+    static final char QUOTE_CHAR = '"';
 
     private final StreamTokenizer _st;
 
