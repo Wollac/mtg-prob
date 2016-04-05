@@ -13,7 +13,7 @@ import probability.config.Settings;
 import probability.core.Card;
 import probability.core.Color;
 import probability.core.Deck;
-import probability.core.EnumCount;
+import probability.utils.EnumCount;
 import probability.core.ManaCost;
 import probability.core.MulliganRule;
 import probability.core.Spell;

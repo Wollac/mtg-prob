@@ -2,6 +2,8 @@ package probability.core;
 
 import java.util.Objects;
 
+import probability.utils.EnumCount;
+
 public final class ManaCost {
 
     private final EnumCount<Color> _colorCounts;

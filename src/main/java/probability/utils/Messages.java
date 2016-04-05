@@ -1,4 +1,4 @@
-package probability.core;
+package probability.utils;
 
 
 import java.text.MessageFormat;
