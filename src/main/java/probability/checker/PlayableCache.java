@@ -15,7 +15,7 @@ class PlayableCache {
     private static int _cacheHits;
     private final List<Set<Stack<Land>>> _list;
 
-    public PlayableCache(int n) {
+    PlayableCache(int n) {
 
         _list = new ArrayList<>(n);
 
