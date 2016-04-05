@@ -2,9 +2,9 @@ package probability.checker;
 
 import probability.core.Board;
 import probability.core.Color;
-import probability.utils.EnumCount;
 import probability.core.ManaCost;
 import probability.core.land.Land;
+import probability.utils.EnumCount;
 
 class PlayableRecursion {
 
@@ -18,7 +18,9 @@ class PlayableRecursion {
 
     private final Board board;
 
-    public PlayableRecursion(Hand hand, int maxTurn, ManaCost spellCost) {
+    PlayableRecursion(Hand hand, int maxTurn, ManaCost spellCost) {
+
+        assert maxTurn > 0 : maxTurn;
 
         _hand = hand;
         _maxTurn = maxTurn;
@@ -28,26 +30,19 @@ class PlayableRecursion {
         board = new Board();
     }
 
-    public boolean check() {
+    boolean check() {
 
-        final Color tappedColor = null;
         final int turn = 1;
-
-        return recursion(tappedColor, turn);
+        return recursion(turn);
     }
 
-    private boolean recursion(Color tappedColor, int turn) {
+    private boolean recursion(int turn) {
 
         if (turn > _maxTurn) {
             return false;
         }
-
-        if (tappedColor != null) {
-
-            remainingCost.payMana(tappedColor);
-            if (remainingCost.allPaid()) {
-                return true;
-            }
+        if (remainingCost.allPaid()) {
+            return true;
         }
 
         if (isUselessSituation(turn)) {
@@ -68,9 +63,9 @@ class PlayableRecursion {
                 if (remainingCost.contains(color)) {
 
                     if (tapped) {
-                        if (testColor(color, turn)) return true;
+                        if (addTappedColorAndTest(color, turn)) return true;
                     } else {
-                        if (testTappedColor(color, turn)) return true;
+                        if (addColorAndTest(color, turn)) return true;
                     }
                 }
 
@@ -79,21 +74,22 @@ class PlayableRecursion {
             removeLandObject(frame);
         }
 
-        if (recursion(null, turn + 1)) return true;
+        // do not play any lands this turn
+        if (recursion(turn + 1)) return true;
 
         cacheUselessSituation(turn);
 
         return false;
     }
 
-    private boolean testTappedColor(Color color, int currentTurn) {
+    private boolean addColorAndTest(Color color, int currentTurn) {
 
         remainingCost.payMana(color);
         if (remainingCost.allPaid()) {
             return true;
         }
 
-        if (currentTurn < _maxTurn && recursion(null, currentTurn + 1)) {
+        if (currentTurn < _maxTurn && recursion(currentTurn + 1)) {
             return true;
         }
         remainingCost.freeMana(color);
@@ -101,15 +97,15 @@ class PlayableRecursion {
         return false;
     }
 
-    private boolean testColor(Color color, int currentTurn) {
+    private boolean addTappedColorAndTest(Color color, int currentTurn) {
 
         if (currentTurn < _maxTurn) {
+            remainingCost.payMana(color);
 
-            if (recursion(color, currentTurn + 1)) {
+            if (recursion(currentTurn + 1)) {
                 return true;
             }
 
-            // color has only been considered in the remaining cost if there was time to spend it
             remainingCost.freeMana(color);
         }
 
@@ -136,7 +132,13 @@ class PlayableRecursion {
     }
 
     private void cacheUselessSituation(int turn) {
-        _cache.add(board, _maxTurn - turn);
+
+        final int remainingTurns = _maxTurn - turn;
+
+        // this situation must not already be contained in the cache
+        assert !_cache.contains(board, remainingTurns);
+
+        _cache.add(board, remainingTurns);
     }
 
     private static final class RemainingManaCost {
