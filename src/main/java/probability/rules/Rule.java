@@ -1,11 +1,11 @@
 package probability.rules;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import probability.attr.ImmutableAttributeHolder;
+import probability.utils.FormattedPrintWriter;
 import probability.utils.Messages;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -29,16 +29,20 @@ public class Rule {
         _expressions = checkNotNull(expressions);
     }
 
-    public static void printGrammar(PrintWriter writer) {
+    public static void printGrammar(FormattedPrintWriter writer) {
 
         writer.println(Messages.formatMessage(RuleMessages.RULE));
         writer.println(Messages.formatMessage(RuleMessages.EXPRESSION, EXPRESSION));
 
-        writer.println("  " + Parentheses.getProductionRules());
+        writer.setIndentionLevel(1);
+
+        writer.println(Parentheses.getProductionRules());
 
         for (Operation o : Operation.values()) {
-            writer.println("  " + o.getProductionRule());
+            writer.println(o.getProductionRule());
         }
+
+        writer.setIndentionLevel(0);
 
         writer.println(Messages.formatMessage(RuleMessages.VARIABLE, VARIABLE));
         writer.println(Messages.formatMessage(RuleMessages.STRING, STRING,

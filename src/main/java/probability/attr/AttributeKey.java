@@ -4,11 +4,13 @@ import java.util.function.Predicate;
 
 public abstract class AttributeKey<T> {
 
-    final private String _name;
+    private final String _name;
 
-    final private T _defaultValue;
-    final private Predicate<T> _validator;
-    private Class<? super T> _type;
+    private final T _defaultValue;
+
+    private final Predicate<T> _validator;
+
+    private final Class<? super T> _type;
 
     AttributeKey(String name, Class<? super T> type, T defaultValue, Predicate<T> validator) {
         _name = name;
