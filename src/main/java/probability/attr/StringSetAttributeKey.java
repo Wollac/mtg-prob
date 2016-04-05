@@ -25,6 +25,10 @@ public class StringSetAttributeKey extends AttributeKey<Set<String>> {
     @Override
     public Set<String> parseValue(String valueString) throws AttributeParseException {
 
+        if (valueString.startsWith("[") && valueString.endsWith("]")) {
+            valueString = valueString.substring(1, valueString.length() - 1);
+        }
+
         List<String> list;
         try {
             list = Arrays.asList(parser.parseLine(valueString));

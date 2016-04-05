@@ -13,7 +13,7 @@ class Variable<T> implements Expression, Token {
 
     private final AttributeKey<T> _key;
 
-    private Variable(AttributeKey<T> key) {
+    Variable(AttributeKey<T> key) {
 
         _key = checkNotNull(key);
     }

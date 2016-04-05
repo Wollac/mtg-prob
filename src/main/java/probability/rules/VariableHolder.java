@@ -25,7 +25,7 @@ public class VariableHolder {
         }
     }
 
-    private <T> void registerVariable(AttributeKey<T> key) {
+    <T> void registerVariable(AttributeKey<T> key) {
 
         String name = key.getName();
 
