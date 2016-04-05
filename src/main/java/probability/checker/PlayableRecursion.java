@@ -2,7 +2,7 @@ package probability.checker;
 
 import probability.core.Board;
 import probability.core.Color;
-import probability.core.EnumCount;
+import probability.utils.EnumCount;
 import probability.core.ManaCost;
 import probability.core.land.Land;
 

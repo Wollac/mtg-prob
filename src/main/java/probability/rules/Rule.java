@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import probability.attr.ImmutableAttributeHolder;
-import probability.core.Messages;
+import probability.utils.Messages;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static probability.rules.NamingConventions.EXPRESSION;
