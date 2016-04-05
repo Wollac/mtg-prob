@@ -5,7 +5,6 @@ import com.google.common.io.Resources;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
@@ -22,6 +21,7 @@ import probability.rules.Rule;
 import probability.rules.RuleLoader;
 import probability.rules.RuleLoader.RulesParseException;
 import probability.rules.VariableHolder;
+import probability.utils.FormattedPrintWriter;
 
 public class MulliganRule {
 
@@ -83,15 +83,18 @@ public class MulliganRule {
         return getDefaultRule();
     }
 
-    public void printDescription(PrintWriter writer) {
+    public void printDescription(FormattedPrintWriter writer) {
 
-        writer.println("Rule when to take a mulligan");
+        writer.printlnTitle("Rule when to take a mulligan");
         Rule.printGrammar(writer);
         writer.println();
         writer.println("The following variables can be used:");
+
+        writer.setIndentionLevel(1);
         for (AttributeKey<?> var : AttributeUtils.getAttributeKeys(VARIABLES.class)) {
-            writer.println("  " + getVariableDescription(var));
+            writer.println(getVariableDescription(var));
         }
+        writer.setIndentionLevel(0);
     }
 
     private Rule getDefaultRule() {
