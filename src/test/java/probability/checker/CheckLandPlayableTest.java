@@ -1,14 +1,9 @@
 package probability.checker;
 
-import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.EnumSet;
-
 import probability.core.Color;
 import probability.core.Colors;
 import probability.core.Spell;
-import probability.core.land.BasicLand;
 import probability.core.land.CheckLand;
 import probability.core.land.Land;
 
@@ -19,6 +14,10 @@ public class CheckLandPlayableTest extends AbstractSingleSpellPlayableTest {
         return new CheckLand("CHECK-" + colors.toString(), colors);
     }
 
+    // Spell: G
+    // Starting Hand: []
+    // Draws: 2->Check(G)
+    // Expected: playable not earlier than turn three, as the check land comes into play tapped
     @Test
     public void notUsableFirstLand() {
 
@@ -29,9 +28,13 @@ public class CheckLandPlayableTest extends AbstractSingleSpellPlayableTest {
 
         Hand hand = createDrawingHand(land);
 
-        Assert.assertFalse(isPlayable(spell, 2, hand));
+        assertIsPlayableFirstInTurn(spell, hand, 3);
     }
 
+    // Spell: GG
+    // Starting Hand: []
+    // Draws: 2->Check(G) 3->Check(G)
+    // Expected: playable not earlier than turn four, as the check land comes into play tapped
     @Test
     public void notUsableTwoCheckLands() {
 
@@ -42,38 +45,65 @@ public class CheckLandPlayableTest extends AbstractSingleSpellPlayableTest {
 
         Hand hand = createDrawingHand(land, land);
 
-        Assert.assertFalse(isPlayable(spell, 3, hand));
+        assertIsPlayableFirstInTurn(spell, hand, 4);
     }
 
+    // Spell: GG
+    // Starting Hand: []
+    // Draws: 2->Basic(G) 3->Check(G)
+    // Expected: playable not earlier than turn three, the check land does not come into play tapped
     @Test
     public void usableSameColorBasicLand() {
 
         final Color COLOR = Color.Green;
 
         Spell spell = createSpell(COLOR, COLOR);
+
+        Land basic = CheckerTestUtils.createBasicLand(COLOR);
         Land check = createLand(COLOR);
-        Land basic = new BasicLand("", new Colors(COLOR));
 
         Hand hand = createDrawingHand(basic, check);
 
-        Assert.assertFalse(isPlayable(spell, 2, hand));
-        Assert.assertTrue(isPlayable(spell, 3, hand));
+        assertIsPlayableFirstInTurn(spell, hand, 3);
     }
 
+    // Spell: G
+    // Starting Hand: []
+    // Draws: 2->Basic(W) 3->Check(G)
+    // Expected: playable not earlier than turn four, as the check land comes into play tapped
     @Test
     public void notUsableDifferentColorBasicLand() {
 
         final Color CHECK_COLOR = Color.Green;
 
-        Spell spell = createSpell(CHECK_COLOR, CHECK_COLOR);
+        Spell spell = createSpell(CHECK_COLOR);
         Land check = createLand(CHECK_COLOR);
 
-        Color differentColor = EnumSet.complementOf(EnumSet.of(CHECK_COLOR)).iterator().next();
-        Land basic = new BasicLand("", new Colors(differentColor));
+        Color differentColor = CheckerTestUtils.getDifferentColor(CHECK_COLOR);
+        Land basic = CheckerTestUtils.createBasicLand(differentColor);
 
         Hand hand = createDrawingHand(basic, check);
 
-        Assert.assertFalse(isPlayable(spell, 3, hand));
+        assertIsPlayableFirstInTurn(spell, hand, 4);
     }
 
+    // Spell: G
+    // Starting Hand: []
+    // Draws: 2->Basic(W) 3->Check(W U R B G)
+    // Expected: playable in turn three, as the check land comes into play untapped, if the basic land has been played
+    @Test
+    public void unusableBasicIsNecessary() {
+
+        final Color COLOR = Color.Green;
+
+        Spell spell = createSpell(COLOR);
+        Land check = createLand(Color.values());
+
+        Color differentColor = CheckerTestUtils.getDifferentColor(COLOR);
+        Land basic = CheckerTestUtils.createBasicLand(differentColor);
+
+        Hand hand = createDrawingHand(basic, check);
+
+        assertIsPlayableFirstInTurn(spell, hand, 3);
+    }
 }
