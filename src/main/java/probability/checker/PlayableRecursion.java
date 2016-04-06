@@ -2,6 +2,7 @@ package probability.checker;
 
 import probability.core.Board;
 import probability.core.Color;
+import probability.core.IdentifiedCardObject;
 import probability.core.ManaCost;
 import probability.core.land.Land;
 import probability.utils.EnumCount;

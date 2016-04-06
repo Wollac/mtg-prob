@@ -1,17 +1,25 @@
 package probability.core.land;
 
-import probability.checker.IdentifiedCardObject;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import probability.core.Board;
 import probability.core.Color;
 import probability.core.Colors;
-
-import java.util.*;
+import probability.core.IdentifiedCardObject;
 
 /**
- * Models Fetch Lands such as <a href="http://magiccards.info/query?q=!Flooded+Strand">Flooded Strand</a>.
+ * Models Fetch Lands such as <a href="http://magiccards.info/query?q=!Flooded+Strand">Flooded
+ * Strand</a>.
  * <p>
- * Fetch lands can produce the colors of all {@linkplain BasicLand}s that are not yet played or drawn.
- * They never enter the battlefield tapped.
+ * Fetch lands can produce the colors of all {@linkplain BasicLand}s that are not
+ * yet played or drawn. They never enter the battlefield tapped.
  */
 public class FetchLand extends AbstractLand {
 
@@ -27,7 +35,7 @@ public class FetchLand extends AbstractLand {
         _producableColors = new Colors();
     }
 
-    public void setfetchableBasicLandObjects(Collection<IdentifiedCardObject> basicLandObjects) {
+    public void setFetchableBasicLandObjects(Collection<IdentifiedCardObject> basicLandObjects) {
         _fetchableBasicLandObjects = new ArrayList<>(basicLandObjects);
 
         Set<Color> colors = Color.emptyEnumSet();
@@ -76,7 +84,6 @@ public class FetchLand extends AbstractLand {
                         objectsByColor.putIfAbsent(color, landObject);
                     }
 
-
                 }
             }
 
@@ -89,7 +96,9 @@ public class FetchLand extends AbstractLand {
             final boolean hasNext = _it.hasNext();
 
             if (!hasNext && _lastLandObject != null) {
+                assert _lastLandObject.isPlayed();
                 _lastLandObject.markNotPlayed();
+                _lastLandObject = null;
             }
 
             return hasNext;

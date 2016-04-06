@@ -3,6 +3,7 @@ package probability.checker;
 import org.junit.Test;
 import probability.core.Color;
 import probability.core.Colors;
+import probability.core.IdentifiedCardObject;
 import probability.core.Spell;
 import probability.core.land.BasicLand;
 import probability.core.land.FetchLand;
@@ -94,7 +95,7 @@ public class FetchLandPlayableTest extends AbstractSingleSpellPlayableTest {
 
         List<IdentifiedCardObject> objectList = IdentifiedCardObject.toCardObjects(Arrays.asList(lands), 1000);
 
-        FetchableColorComputer computer = new FetchableColorComputer(objectList);
+        FetchLandInitializer computer = new FetchLandInitializer(objectList);
         computer.initializeFetchLands(Collections.singleton(fetch));
     }
 }

@@ -1,12 +1,24 @@
 package probability.checker;
 
 import com.google.common.base.Preconditions;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import probability.config.Settings;
-import probability.core.*;
+import probability.core.Card;
+import probability.core.Color;
+import probability.core.Deck;
+import probability.core.IdentifiedCardObject;
+import probability.core.ManaCost;
+import probability.core.MulliganRule;
+import probability.core.Spell;
 import probability.core.land.Land;
 import probability.utils.EnumCount;
-
-import java.util.*;
 
 public class PlayableChecker {
 
@@ -110,8 +122,7 @@ public class PlayableChecker {
 
     private boolean isPlayable(Hand hand, int turn) {
 
-        FetchableColorComputer foo = new FetchableColorComputer(() -> _cards.listIterator(hand.size() + 1));
-        foo.initializeFetchLands(hand.getLandCardsUntilTurn(turn));
+        initializeFetchLands(hand, turn);
 
         Set<Spell> playableSpellTypes = getPlayableSpellTypes(hand, turn);
 
@@ -125,6 +136,11 @@ public class PlayableChecker {
         }
 
         return false;
+    }
+
+    private void initializeFetchLands(Hand hand, int turn) {
+
+        new FetchLandInitializer(() -> _cards.listIterator(hand.size() + 1)).initializeFetchLands(hand.getLandCardsUntilTurn(turn));
     }
 
     private Set<Spell> getPlayableSpellTypes(Hand hand, int turn) {
