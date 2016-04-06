@@ -1,15 +1,22 @@
 package probability.checker;
 
 import com.google.common.base.Strings;
+
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
+
 import probability.core.Color;
 import probability.core.Colors;
 import probability.core.ManaCost;
 import probability.core.Spell;
 import probability.core.land.Land;
-
-import java.util.*;
 
 abstract class AbstractSingleSpellPlayableTest {
 
