@@ -1,12 +1,18 @@
 package probability.core.land;
 
-import java.util.Set;
-
 import probability.core.Board;
 import probability.core.Color;
 import probability.core.Colors;
 
-public final class FetchLand extends AbstractLand {
+import java.util.Set;
+
+/**
+ * Models Fetch Lands such as <a href="http://magiccards.info/query?q=!Flooded+Strand">Flooded Strand</a>.
+ * <p>
+ * Fetch lands can produce the colors of all {@linkplain BasicLand}s that are not yet played or drawn.
+ * They never enter the battlefield tapped.
+ */
+public class FetchLand extends AbstractLand {
 
     private Colors _fetchedColors;
 
