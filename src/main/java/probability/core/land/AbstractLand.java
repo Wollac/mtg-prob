@@ -47,7 +47,7 @@ abstract class AbstractLand implements Land {
     }
 
     @Override
-    public Set<Color> producesColors(Board board) {
+    public Iterable<Color> producesColors(Board board) {
         return colors();
     }
 

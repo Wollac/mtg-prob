@@ -1,13 +1,13 @@
 package probability.checker;
 
+import probability.core.Card;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
-import probability.core.Card;
-
-final class IdentifiedCardObject implements Supplier<Card> {
+public final class IdentifiedCardObject implements Supplier<Card> {
 
     private final Card _card;
 
@@ -23,9 +23,14 @@ final class IdentifiedCardObject implements Supplier<Card> {
 
     public static List<IdentifiedCardObject> toCardObjects(Collection<? extends Card> cards) {
 
+        return toCardObjects(cards, 0);
+    }
+
+    public static List<IdentifiedCardObject> toCardObjects(Collection<? extends Card> cards, int idOffset) {
+
         List<IdentifiedCardObject> result = new ArrayList<>();
 
-        int index = 0;
+        int index = idOffset;
         for (Card card : cards) {
             result.add(new IdentifiedCardObject(card, index++));
         }

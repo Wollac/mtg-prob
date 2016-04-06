@@ -1,47 +1,33 @@
 package probability.checker;
 
 
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.Set;
-
-import probability.core.Card;
 import probability.core.CardUtils;
 import probability.core.Color;
-import probability.core.Colors;
 import probability.core.land.BasicLand;
 import probability.core.land.FetchLand;
 import probability.core.land.Land;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+
 
 class FetchableColorComputer {
 
-    private final EnumMap<Color, Colors> _fetchableColors;
+    private final Collection<IdentifiedCardObject> _fetchableBasicLandObjects;
 
-    private final Collection<Card> _cardsToFetch;
+    public FetchableColorComputer(Iterable<IdentifiedCardObject> cardObjectsToFetch) {
 
-    private Set<BasicLand> _landsToFetch;
+        _fetchableBasicLandObjects = new ArrayList<>();
 
-    public FetchableColorComputer(Collection<Card> cardsToFetch) {
-
-        _fetchableColors = new EnumMap<>(Color.class);
-        _cardsToFetch = cardsToFetch;
-    }
-
-    private Set<BasicLand> computeBasicLandTypesToFetch(Collection<Card> cardsToFetch) {
-
-        Set<BasicLand> result = new HashSet<>();
-
-        for (Card card : cardsToFetch) {
-            if (card instanceof BasicLand) {
-                result.add((BasicLand) card);
+        for (IdentifiedCardObject cardObject : cardObjectsToFetch) {
+            if (CardUtils.isBasicLand(cardObject.get())) {
+                _fetchableBasicLandObjects.add(cardObject);
             }
         }
 
-        return result;
     }
-
 
     public void initializeFetchLands(Iterable<Land> lands) {
 
@@ -49,38 +35,25 @@ class FetchableColorComputer {
             if (CardUtils.isFetchLand(land)) {
 
                 FetchLand fetch = (FetchLand) land;
-                fetch.setFetchableColors(getFetchableColors(fetch.colors()));
+
+                fetch.setfetchableBasicLandObjects(getFetchableLandObjects(fetch.colors()));
             }
         }
     }
 
-    private Set<Color> getFetchableColors(Set<Color> colors) {
+    private Collection<IdentifiedCardObject> getFetchableLandObjects(Set<Color> colors) {
 
-        if (_landsToFetch == null) {
-            _landsToFetch = computeBasicLandTypesToFetch(_cardsToFetch);
-        }
+        Collection<IdentifiedCardObject> result = new ArrayList<>();
 
-        Set<Color> fetchableColors = Color.emptyEnumSet();
-        for (Color color : colors) {
+        for (IdentifiedCardObject landObject : _fetchableBasicLandObjects) {
 
-            Colors currentFetchableColors = _fetchableColors.computeIfAbsent(color, this::computeFetchableColors);
-            fetchableColors.addAll(currentFetchableColors.getColors());
-        }
-
-        return fetchableColors;
-    }
-
-    private Colors computeFetchableColors(Color color) {
-
-        Set<Color> colors = Color.emptyEnumSet();
-
-        for (BasicLand land : _landsToFetch) {
-            if (land.colors().contains(color)) {
-                colors.addAll(land.producibleColors());
+            if (!Collections.disjoint(((BasicLand) landObject.get()).colors(), colors)) {
+                result.add(landObject);
             }
         }
 
-        return new Colors(colors);
+        return result;
     }
+
 
 }

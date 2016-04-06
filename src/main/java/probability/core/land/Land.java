@@ -14,6 +14,6 @@ public interface Land extends Card {
 
     Set<Color> producibleColors();
 
-    Set<Color> producesColors(Board board);
+    Iterable<Color> producesColors(Board board);
 
 }
