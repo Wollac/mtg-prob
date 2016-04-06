@@ -1,6 +1,7 @@
 package probability.checker;
 
 import org.junit.Test;
+
 import probability.core.Color;
 import probability.core.Colors;
 import probability.core.Spell;
@@ -74,6 +75,26 @@ public class BasicLandPlayableTest extends AbstractSingleSpellPlayableTest {
         Land basic = createLand(COLOR);
 
         Hand hand = createDrawingHand(basic, basic);
+
+        assertIsPlayableFirstInTurn(spell, hand, 3);
+    }
+
+    // Spell: 1G
+    // Starting Hand: []
+    // Draws: 2->Basic(WUBRG) 3->Basic(W)
+    // Expected: playable in turn three
+    @Test
+    public void testBacktracking() {
+
+        Color[] allColors = Color.values();
+        final Color COLOR = allColors[allColors.length - 1];
+
+        Spell spell = createSpell("1" + COLOR);
+
+        Land basic2 = CheckerTestUtils.createBasicLand(CheckerTestUtils.getDifferentColor(COLOR));
+        Land basic1 = CheckerTestUtils.createBasicLand(Color.values());
+
+        Hand hand = createDrawingHand(basic1, basic2);
 
         assertIsPlayableFirstInTurn(spell, hand, 3);
     }
