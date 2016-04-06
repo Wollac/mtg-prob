@@ -58,11 +58,12 @@ public class SetElementOperatorTest {
     @Parameterized.Parameters(name = "{index}: var({0}) operator {1}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
+                {Sets.newHashSet("A", ""), ""},
                 {Sets.newHashSet("A", "B"), "A"},
                 {Sets.newHashSet("A", "B"), "[A, B]"},
                 {Collections.emptySet(), ""},
-                {Collections.emptySet(), "A"},
-                {Sets.newHashSet("A", "A"), "B"}
+                {Collections.emptySet(), "[]"},
+                {Sets.newHashSet("A"), "B"}
         });
     }
 
