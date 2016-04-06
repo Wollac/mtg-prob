@@ -1,31 +1,24 @@
 package probability.checker;
 
 import com.google.common.base.Strings;
-
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Set;
-
 import probability.core.Color;
 import probability.core.Colors;
 import probability.core.ManaCost;
 import probability.core.Spell;
 import probability.core.land.Land;
 
+import java.util.*;
+
 abstract class AbstractSingleSpellPlayableTest {
 
-    static final int MAX_TURN = 12;
+    private static final int MAX_TURN = 12;
 
     /**
      * Checks whether the given spell can be played with the given hand.
      */
-    protected static boolean isPlayable(Spell spell, int turn, Hand hand) {
+    private static boolean isPlayable(Spell spell, int turn, Hand hand) {
 
         PlayableRecursion checker = new PlayableRecursion(hand, turn, spell.getCost());
         boolean playable = checker.check();
@@ -35,11 +28,24 @@ abstract class AbstractSingleSpellPlayableTest {
         return playable;
     }
 
-    protected Spell createSpell(String costString) {
+    /**
+     * Checks whether the given spell can be played not earlier than the specified turn.
+     */
+    static void assertIsPlayableFirstInTurn(Spell spell, Hand hand, int turn) {
+
+        for (int i = 1; i < turn; i++) {
+            Assert.assertFalse("unexpectedly playable in turn " + i, isPlayable(spell, i, hand));
+        }
+        for (int i = turn; i <= MAX_TURN; i++) {
+            Assert.assertTrue("unexpectedly not playable in turn " + i, isPlayable(spell, i, hand));
+        }
+    }
+
+    Spell createSpell(String costString) {
         return new Spell("", new ManaCost(costString));
     }
 
-    protected Spell createSpell(Color... colors) {
+    Spell createSpell(Color... colors) {
         StringBuilder sb = new StringBuilder();
         for (Color color : colors) {
             sb.append(color.getLetterCode());
@@ -48,11 +54,11 @@ abstract class AbstractSingleSpellPlayableTest {
         return createSpell(sb.toString());
     }
 
-    protected Hand createEmptyHand() {
+    private Hand createEmptyHand() {
         return new Hand(Collections.emptySet(), Collections.emptySet());
     }
 
-    protected Hand createDrawingHand(Land... lands) {
+    Hand createDrawingHand(Land... lands) {
         return createDrawingHand(Arrays.asList(lands));
     }
 
@@ -60,19 +66,19 @@ abstract class AbstractSingleSpellPlayableTest {
         return new Hand(0, lands);
     }
 
-    protected Hand createStartingHand(Land... lands) {
+    Hand createStartingHand(Land... lands) {
         return createStartingHand(Arrays.asList(lands));
     }
 
-    protected Hand createStartingHand(Collection<Land> lands) {
+    private Hand createStartingHand(Collection<Land> lands) {
         return new Hand(lands.size(), lands);
     }
 
-    protected Land createLand(String colorString) {
+    Land createLand(String colorString) {
         return createLand(Colors.valueOf(colorString));
     }
 
-    protected Land createLand(Color... colors) {
+    Land createLand(Color... colors) {
 
         return createLand(new Colors(colors));
     }
@@ -88,6 +94,9 @@ abstract class AbstractSingleSpellPlayableTest {
         Assert.assertFalse(isPlayable(spell, MAX_TURN, hand));
     }
 
+    // Spell: G
+    // Starting Hand: W U B R
+    // Expected: never playable
     @Test
     public void testWrongColor() {
 
@@ -105,6 +114,9 @@ abstract class AbstractSingleSpellPlayableTest {
         Assert.assertFalse(isPlayable(spell, MAX_TURN, hand));
     }
 
+    // Spell: GGGG
+    // Starting Hand: W U B R G G G
+    // Expected: never playable
     @Test
     public void testNotEnoughColor() {
 
@@ -114,7 +126,7 @@ abstract class AbstractSingleSpellPlayableTest {
         String costString = Strings.repeat(Character.toString(SPELL_COLOR.getLetterCode()), COUNT);
         Spell spell = createSpell(costString);
 
-        Set<Color> differentColors = EnumSet.complementOf(EnumSet.of(SPELL_COLOR));
+        Set<Color> differentColors = CheckerTestUtils.getDifferentColors(SPELL_COLOR);
 
         Collection<Land> lands = new ArrayList<>();
         differentColors.stream().forEach(c -> lands.add(createLand(c)));
