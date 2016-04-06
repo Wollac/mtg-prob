@@ -1,20 +1,11 @@
 package probability.checker;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-
 import probability.core.Card;
 import probability.core.CardUtils;
 import probability.core.Spell;
 import probability.core.land.Land;
+
+import java.util.*;
 
 class Hand {
 
@@ -38,6 +29,10 @@ class Hand {
 
         _startingHandSize = startingHandSize;
         _cards = IdentifiedCardObject.toCardObjects(cards);
+    }
+
+    int size() {
+        return _cards.size();
     }
 
     void markAllInHand() {

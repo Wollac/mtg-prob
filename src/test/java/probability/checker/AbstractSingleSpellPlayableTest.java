@@ -34,11 +34,19 @@ abstract class AbstractSingleSpellPlayableTest {
     static void assertIsPlayableFirstInTurn(Spell spell, Hand hand, int turn) {
 
         for (int i = 1; i < turn; i++) {
-            Assert.assertFalse("unexpectedly playable in turn " + i, isPlayable(spell, i, hand));
+            assertNotPlayableInTurn(spell, hand, i);
         }
         for (int i = turn; i <= MAX_TURN; i++) {
-            Assert.assertTrue("unexpectedly not playable in turn " + i, isPlayable(spell, i, hand));
+            assertPlayableInTurn(spell, hand, i);
         }
+    }
+
+    static void assertPlayableInTurn(Spell spell, Hand hand, int i) {
+        Assert.assertTrue("unexpectedly not playable in turn " + i, isPlayable(spell, i, hand));
+    }
+
+    static void assertNotPlayableInTurn(Spell spell, Hand hand, int i) {
+        Assert.assertFalse("unexpectedly playable in turn " + i, isPlayable(spell, i, hand));
     }
 
     Spell createSpell(String costString) {
