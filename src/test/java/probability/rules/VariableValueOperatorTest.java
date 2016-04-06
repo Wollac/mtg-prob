@@ -11,8 +11,10 @@ import probability.attr.IntegerAttributeKey;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Stack;
 import java.util.function.BiPredicate;
+
+import static probability.rules.TestUtils.createSingleVariableBinding;
+import static probability.rules.TestUtils.createVariableValueOperatorExpression;
 
 @RunWith(Parameterized.class)
 public class VariableValueOperatorTest {
@@ -32,37 +34,15 @@ public class VariableValueOperatorTest {
 
     private static <T> void assertOperation(AttributeKey<T> key, T varBinding, T value, Operation operation, BiPredicate<T, T> expected) {
 
-        Expression expr = createOperationExpression(operation, key, value.toString());
-        ImmutableAttributeHolder binding = createSingleVariableBinding(key, varBinding);
-
-        Assert.assertEquals(expected.test(varBinding, value), expr.interpret(binding));
-    }
-
-    private static <T> ImmutableAttributeHolder createSingleVariableBinding(AttributeKey<T> key, T varBinding) {
-
-        VariableHolder holder = new VariableHolder();
-        holder.registerVariable(key);
-        holder.assignValue(key, varBinding);
-
-        return holder.getBindings();
-    }
-
-    private static Expression createOperationExpression(Operation operation, AttributeKey<?> key, String valueString) {
-
-        Variable<?> var = new Variable<>(key);
-
-        Stack<Token> stack = new Stack<>();
-        stack.push(var);
-        stack.push(new Value.StringValue(valueString));
-
-        Expression expression = null;
+        Expression expr = null;
         try {
-            expression = operation.newInstance().parse(stack);
+            expr = createVariableValueOperatorExpression(operation, key, value.toString());
         } catch (Token.RulesTokenException e) {
             Assert.fail(e.getMessage());
         }
+        ImmutableAttributeHolder binding = createSingleVariableBinding(key, varBinding);
 
-        return expression;
+        Assert.assertEquals(expected.test(varBinding, value), expr.interpret(binding));
     }
 
     @Parameters(name = "{index}: var({0}) operator {1}")
