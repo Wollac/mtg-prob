@@ -1,6 +1,4 @@
-package probability.checker;
-
-import probability.core.Card;
+package probability.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
