@@ -1,11 +1,15 @@
 package probability.rules;
 
+import org.junit.Assert;
 import probability.attr.AttributeKey;
 import probability.attr.ImmutableAttributeHolder;
 
 import java.util.Stack;
 
 class TestUtils {
+
+    private static final Tautology TAUTOLOGY = new Tautology();
+    private static final Contradiction CONTRADICTION = new Contradiction();
 
     private TestUtils() {
         // do not initialize
@@ -22,12 +26,59 @@ class TestUtils {
 
     static Expression createVariableValueOperatorExpression(Operation operation, AttributeKey<?> key, String valueString) throws Token.RulesTokenException {
 
+        Operator op = operation.newInstance();
+        Assert.assertTrue(op instanceof VariableValueOperator);
+
         Variable<?> var = new Variable<>(key);
 
         Stack<Token> stack = new Stack<>();
         stack.push(var);
         stack.push(new Value.StringValue(valueString));
 
-        return operation.newInstance().parse(stack);
+        return op.parse(stack);
+    }
+
+    static Token createConstantToken(boolean value) {
+
+        if (value) {
+            return TAUTOLOGY;
+        }
+        return CONTRADICTION;
+    }
+
+    private static class Tautology implements Token, Expression {
+
+        @Override
+        public TokenType getTokenType() {
+            return TokenType.FUNCTION;
+        }
+
+        @Override
+        public Expression parse(Stack<Token> stack) throws RulesTokenException {
+            return this;
+        }
+
+        @Override
+        public boolean interpret(ImmutableAttributeHolder bindings) {
+            return true;
+        }
+    }
+
+    private static class Contradiction implements Token, Expression {
+
+        @Override
+        public TokenType getTokenType() {
+            return TokenType.FUNCTION;
+        }
+
+        @Override
+        public Expression parse(Stack<Token> stack) throws RulesTokenException {
+            return this;
+        }
+
+        @Override
+        public boolean interpret(ImmutableAttributeHolder bindings) {
+            return false;
+        }
     }
 }
