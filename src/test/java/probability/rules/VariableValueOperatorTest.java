@@ -2,21 +2,40 @@ package probability.rules;
 
 import org.junit.Assert;
 import org.junit.Test;
-import probability.attr.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import probability.attr.AttributeKey;
+import probability.attr.ImmutableAttributeHolder;
+import probability.attr.IntegerAttributeKey;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.Stack;
+import java.util.function.BiPredicate;
 
+@RunWith(Parameterized.class)
 public class VariableValueOperatorTest {
 
-    private static <T> void assertEqual(AttributeKey<T> key, T varBinding, T value) {
+    private static final IntegerAttributeKey KEY = new IntegerAttributeKey("INTEGER");
+    private final int _varBinding;
+    private final int _value;
 
-        Expression expr = createOperationExpression(Operation.EQUAL, key, value.toString());
+    public VariableValueOperatorTest(int varBinding, int value) {
+        _varBinding = varBinding;
+        _value = value;
+    }
+
+    private static void testOperation(int varBinding, int value, Operation operation, BiPredicate<Integer, Integer> expected) {
+        assertOperation(KEY, varBinding, value, operation, expected);
+    }
+
+    private static <T> void assertOperation(AttributeKey<T> key, T varBinding, T value, Operation operation, BiPredicate<T, T> expected) {
+
+        Expression expr = createOperationExpression(operation, key, value.toString());
         ImmutableAttributeHolder binding = createSingleVariableBinding(key, varBinding);
 
-        Assert.assertEquals(varBinding.equals(value), expr.interpret(binding));
+        Assert.assertEquals(expected.test(varBinding, value), expr.interpret(binding));
     }
 
     private static <T> ImmutableAttributeHolder createSingleVariableBinding(AttributeKey<T> key, T varBinding) {
@@ -46,31 +65,31 @@ public class VariableValueOperatorTest {
         return expression;
     }
 
-    @Test
-    public void testIntegerEquals() {
-        IntegerAttributeKey key = new IntegerAttributeKey("INTEGER");
-
-        assertEqual(key, 0, 1);
-        assertEqual(key, 1, 0);
-        assertEqual(key, 1, 1);
+    @Parameters(name = "{index}: var({0}) operator {1}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {0, 0}, {0, 1}, {1, 0}, {1, 1}
+        });
     }
 
     @Test
-    public void testStringEqual() {
-
-        StringAttributeKey key = new StringAttributeKey("STRING");
-
-        assertEqual(key, "A", "B");
-        assertEqual(key, "a", "A");
-        assertEqual(key, "A", "A");
+    public void testEqual() {
+        testOperation(_varBinding, _value, Operation.EQUAL, Integer::equals);
     }
 
     @Test
-    public void testSetEqual() {
-
-        StringSetAttributeKey key = new StringSetAttributeKey("SET");
-
-        assertEqual(key, Collections.singleton("A"), Collections.emptySet());
-        assertEqual(key, new HashSet<>(Arrays.asList("A", "B")), new HashSet<>(Arrays.asList("B", "A")));
+    public void testNotEqual() {
+        testOperation(_varBinding, _value, Operation.NOT_EQUAL, (x, y) -> !x.equals(y));
     }
+
+    @Test
+    public void testLessThan() {
+        testOperation(_varBinding, _value, Operation.LESS_THAN, (x, y) -> x.compareTo(y) < 0);
+    }
+
+    @Test
+    public void testGreaterThan() {
+        testOperation(_varBinding, _value, Operation.GREATER_THAN, (x, y) -> x.compareTo(y) > 0);
+    }
+
 }
