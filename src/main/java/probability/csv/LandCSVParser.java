@@ -16,8 +16,9 @@ import probability.core.land.CheckLand;
 import probability.core.land.FastLand;
 import probability.core.land.FetchLand;
 import probability.core.land.Land;
-import probability.core.land.NonBasicLand;
+import probability.core.land.NonbasicLand;
 import probability.core.land.ReflectingLand;
+import probability.core.land.SlowFetchLand;
 import probability.core.land.TapLand;
 
 public class LandCSVParser extends AbstractCSVParser<Land> {
@@ -38,7 +39,7 @@ public class LandCSVParser extends AbstractCSVParser<Land> {
             case Basic:
                 return new BasicLand(name, colors);
             case NonBasic:
-                return new NonBasicLand(name, colors);
+                return new NonbasicLand(name, colors);
             case Tap:
                 return new TapLand(name, colors);
             case Check:
@@ -49,8 +50,10 @@ public class LandCSVParser extends AbstractCSVParser<Land> {
                 return new FetchLand(name, colors);
             case Reflecting:
                 return new ReflectingLand(name, colors);
+            case SlowFetch:
+                return new SlowFetchLand(name, colors);
             default:
-                throw new IllegalStateException("unexpected land type " + type);
+                throw new AssertionError("unexpected land type " + type);
         }
     }
 
@@ -73,7 +76,7 @@ public class LandCSVParser extends AbstractCSVParser<Land> {
     }
 
     private enum LandTypes {
-        Basic, NonBasic, Tap, Check, Fast, Fetch, Reflecting
+        Basic, NonBasic, Tap, Check, Fast, Fetch, Reflecting, SlowFetch
     }
 
     private interface ATTR {
