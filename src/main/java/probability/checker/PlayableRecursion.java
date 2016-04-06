@@ -12,6 +12,8 @@ class PlayableRecursion {
 
     private final int _maxTurn;
 
+    private final int _lastLandTurn;
+
     private final PlayableCache _cache;
 
     private final RemainingManaCost remainingCost;
@@ -23,8 +25,11 @@ class PlayableRecursion {
         assert maxTurn > 0 : maxTurn;
 
         _hand = hand;
+
         _maxTurn = maxTurn;
-        _cache = new PlayableCache(maxTurn + 1);
+        _lastLandTurn = Math.min(_maxTurn, hand.getLastLandTurn());
+
+        _cache = new PlayableCache(maxTurn);
 
         remainingCost = new RemainingManaCost(spellCost);
         board = new Board();
@@ -49,19 +54,22 @@ class PlayableRecursion {
             return false;
         }
 
-        for (IdentifiedCardObject frame : _hand.getLandTypesInHandUntilTurn(turn)) {
+        boolean noLandProducesUsableColors = true;
+        for (IdentifiedCardObject landObject : _hand.getLandTypesInHandUntilTurn(turn)) {
 
-            final Land land = (Land) frame.get();
+            final Land land = (Land) landObject.get();
             final boolean tapped = land.comesIntoPlayTapped(board);
 
             Iterable<Color> colors = land.producesColors(board);
 
-            playLandObject(frame);
+            playLandObject(landObject);
 
+            boolean producesUsableColors = false;
             for (Color color : colors) {
 
                 if (remainingCost.contains(color)) {
 
+                    producesUsableColors = true;
                     if (tapped) {
                         if (addTappedColorAndTest(color, turn)) return true;
                     } else {
@@ -71,11 +79,23 @@ class PlayableRecursion {
 
             }
 
-            removeLandObject(frame);
+            // it makes never sense to not use a usable land
+            if (!producesUsableColors) {
+                // play the land but don't use the mana
+                if (recursion(turn + 1)) return true;
+            } else {
+                noLandProducesUsableColors = false;
+            }
+
+            removeLandObject(landObject);
         }
 
-        // do not play any lands this turn
-        if (recursion(turn + 1)) return true;
+        // as a land can produce at most one mana, it makes never sense to not play a land that could have been used
+        // it also makes no sense, if there wont be any land available later on
+        if (noLandProducesUsableColors && turn < _lastLandTurn) {
+            // do not play any lands this turn
+            if (recursion(turn + 1)) return true;
+        }
 
         cacheUselessSituation(turn);
 
@@ -156,7 +176,7 @@ class PlayableRecursion {
             _spentGenericMana = 0;
         }
 
-        public void payMana(Color color) {
+        void payMana(Color color) {
 
             final int newCount = _manaPool.increase(color);
 
@@ -168,7 +188,7 @@ class PlayableRecursion {
             assert _spentGenericMana <= _originalCost.genericCount();
         }
 
-        public void freeMana(Color color) {
+        void freeMana(Color color) {
 
             final int oldCount = _manaPool.decrease(color) + 1;
 
@@ -180,19 +200,19 @@ class PlayableRecursion {
             assert oldCount > 0;
         }
 
-        public boolean allPaid() {
+        boolean allPaid() {
 
             return _originalCost.getConverted() <= _manaPool.totalCount();
         }
 
-        public boolean contains(Color color) {
+        boolean contains(Color color) {
 
             final int remainingGeneric = _originalCost.genericCount() - _spentGenericMana;
 
             return remainingGeneric > 0 || _originalCost.count(color) > _manaPool.count(color);
         }
 
-        public ManaCost computeRemainingManaCost() {
+        private ManaCost computeRemainingManaCost() {
 
             EnumCount<Color> remainingColors = new EnumCount<>(Color.class);
             for (Color c : Color.values()) {
