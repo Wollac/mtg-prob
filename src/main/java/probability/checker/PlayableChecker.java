@@ -129,19 +129,20 @@ public class PlayableChecker {
                 _cards.subList(handSize, handSize + turn - 1));
     }
 
-    private boolean isPlayable(Hand hand, int turn) {
+    private boolean isPlayable(Hand hand, int maxTurn) {
 
-        if (hand.getSpellTypesUntilTurn(turn).isEmpty()) {
+        Set<Spell> spells = hand.getAllSpellTypes();
+        if (spells.isEmpty()) {
             return true;
         }
 
-        initializeFetchLands(hand, turn);
+        initializeFetchLands(hand);
 
-        Set<Spell> playableSpellTypes = getPlayableSpellTypes(hand, turn);
+        Set<Spell> playableSpellTypes = getPlayableSpellTypes(spells, hand.getAllLands(), maxTurn);
 
         for (Spell spell : playableSpellTypes) {
 
-            PlayableRecursion recursion = new PlayableRecursion(hand, turn, spell.getCost());
+            PlayableRecursion recursion = new PlayableRecursion(hand, maxTurn, spell.getCost());
 
             if (recursion.check()) {
                 return true;
@@ -151,21 +152,13 @@ public class PlayableChecker {
         return false;
     }
 
-    private void initializeFetchLands(Hand hand, int turn) {
+    private void initializeFetchLands(Hand hand) {
 
         FetchLandInitializer initializer = new FetchLandInitializer(() -> _cards.listIterator(hand.size() + 1));
-        initializer.initializeFetchLands(hand.getLandCardsUntilTurn(turn));
+        initializer.initializeFetchLands(hand.getAllLands());
     }
 
-    private Set<Spell> getPlayableSpellTypes(Hand hand, int turn) {
-
-        Set<Spell> spells = hand.getSpellTypesUntilTurn(turn);
-
-        if (spells.isEmpty()) {
-            return Collections.emptySet();
-        }
-
-        Collection<Land> lands = hand.getLandCardsUntilTurn(turn);
+    private Set<Spell> getPlayableSpellTypes(Set<Spell> spells, Collection<Land> lands, int maxTurn) {
 
         if (lands.isEmpty()) {
             return Collections.emptySet();
@@ -176,7 +169,7 @@ public class PlayableChecker {
             maxColorCount.increaseEach(land.producibleColors());
         }
 
-        final int maxConverted = Math.min(lands.size(), turn);
+        final int maxConverted = Math.min(lands.size(), maxTurn);
 
         for (Iterator<Spell> iterator = spells.iterator(); iterator.hasNext(); ) {
             Spell spell = iterator.next();
