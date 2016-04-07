@@ -1,12 +1,7 @@
 package probability.checker;
 
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import probability.core.CardUtils;
 import probability.core.Color;
 import probability.core.IdentifiedCardObject;
@@ -14,16 +9,23 @@ import probability.core.land.BasicLand;
 import probability.core.land.FetchLand;
 import probability.core.land.Land;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 class FetchLandInitializer {
 
-    private final List<FetchLand> _initialized = new ArrayList<>();
     private Iterable<IdentifiedCardObject> _cardObjectsToFetch;
-    private Collection<IdentifiedCardObject> _fetchableBasicLandObjects = null;
+    private Collection<IdentifiedCardObject> _fetchableBasicLandObjects;
+
+    private final Set<FetchLand> _initializedIdentities;
 
     FetchLandInitializer(Iterable<IdentifiedCardObject> cardObjectsToFetch) {
 
-        _cardObjectsToFetch = cardObjectsToFetch;
+        _cardObjectsToFetch = Preconditions.checkNotNull(cardObjectsToFetch);
+
+        _initializedIdentities = Sets.newIdentityHashSet();
     }
 
     void initializeFetchLands(Iterable<Land> lands) {
@@ -32,10 +34,8 @@ class FetchLandInitializer {
             if (CardUtils.isFetchLand(land)) {
 
                 FetchLand fetch = (FetchLand) land;
-
-                if (!isInitialized(fetch)) {
+                if (_initializedIdentities.add(fetch)) {
                     fetch.setFetchableBasicLandObjects(getFetchableLandObjects(fetch.colors()));
-                    _initialized.add(fetch);
                 }
             }
         }
@@ -72,19 +72,6 @@ class FetchLandInitializer {
         _cardObjectsToFetch = null;
 
         return _fetchableBasicLandObjects;
-    }
-
-
-    private boolean isInitialized(FetchLand land) {
-
-        // TODO: what we want here is a HashSet for the Object hash code
-        for (FetchLand initializedLand : _initialized) {
-            if (initializedLand == land) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
 }
