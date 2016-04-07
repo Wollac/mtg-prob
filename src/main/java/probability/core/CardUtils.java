@@ -2,6 +2,7 @@ package probability.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -69,6 +70,10 @@ public final class CardUtils {
     public static Collection<Land> retainAllLandsToArrayList(
             Collection<Card> cards) {
 
+        if (cards.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         Collection<Land> lands = new ArrayList<>(cards.size());
 
         for (Card card : cards) {
@@ -86,6 +91,10 @@ public final class CardUtils {
 
     public static Collection<Spell> retainAllSpellsToArrayList(
             Collection<Card> cards) {
+
+        if (cards.isEmpty()) {
+            return Collections.emptyList();
+        }
 
         Collection<Spell> spells = new ArrayList<>(cards.size());
 
