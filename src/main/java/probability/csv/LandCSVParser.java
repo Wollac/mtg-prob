@@ -17,7 +17,6 @@ import probability.core.land.FastLand;
 import probability.core.land.FetchLand;
 import probability.core.land.Land;
 import probability.core.land.NonbasicLand;
-import probability.core.land.ReflectingLand;
 import probability.core.land.SlowFetchLand;
 import probability.core.land.TapLand;
 
@@ -48,8 +47,6 @@ public class LandCSVParser extends AbstractCSVParser<Land> {
                 return new FastLand(name, colors);
             case Fetch:
                 return new FetchLand(name, colors);
-            case Reflecting:
-                return new ReflectingLand(name, colors);
             case SlowFetch:
                 return new SlowFetchLand(name, colors);
             default:
@@ -76,7 +73,7 @@ public class LandCSVParser extends AbstractCSVParser<Land> {
     }
 
     private enum LandTypes {
-        Basic, NonBasic, Tap, Check, Fast, Fetch, Reflecting, SlowFetch
+        Basic, NonBasic, Tap, Check, Fast, Fetch, SlowFetch
     }
 
     private interface ATTR {
