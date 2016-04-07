@@ -1,16 +1,15 @@
 package probability.rules;
 
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import probability.attr.AttributeKey;
 import probability.attr.ImmutableAttributeHolder;
+import probability.utils.Suppliers;
 
-public class VariableHolder {
+public final class VariableHolder {
 
     private static final Pattern NAME_PATTERN = Pattern.compile("[a-zA-Z]\\w*");
 
@@ -47,7 +46,7 @@ public class VariableHolder {
         return false;
     }
 
-    public boolean isRegistered(String name) {
+    boolean isRegistered(String name) {
         return _name2var.containsKey(name);
     }
 
@@ -91,12 +90,12 @@ public class VariableHolder {
 
         private final Map<AttributeKey<?>, Supplier<?>> _supplierMap = new HashMap<>();
 
-        public <T> void putAttributeValue(AttributeKey<T> key, T value) {
+        <T> void putAttributeValue(AttributeKey<T> key, T value) {
 
             _supplierMap.put(key, () -> value);
         }
 
-        public <T> void putAttributeSupplier(AttributeKey<T> key, Supplier<T> supplier) {
+        <T> void putAttributeSupplier(AttributeKey<T> key, Supplier<T> supplier) {
 
             _supplierMap.put(key, Suppliers.memoize(supplier));
         }
