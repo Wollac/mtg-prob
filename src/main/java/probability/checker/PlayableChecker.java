@@ -131,6 +131,10 @@ public class PlayableChecker {
 
     private boolean isPlayable(Hand hand, int turn) {
 
+        if (hand.getSpellTypesUntilTurn(turn).isEmpty()) {
+            return true;
+        }
+
         initializeFetchLands(hand, turn);
 
         Set<Spell> playableSpellTypes = getPlayableSpellTypes(hand, turn);
