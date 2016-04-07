@@ -74,10 +74,19 @@ public class PlayableChecker {
                 good++;
             }
 
-            hand.markAllInHand();
+            markAllNotPlayed();
         }
 
         return good;
+    }
+
+    private void markAllNotPlayed() {
+
+        // this seams to be faster without streams
+        //noinspection Convert2streamapi
+        for (IdentifiedCardObject card : _cards) {
+            card.markNotPlayed();
+        }
     }
 
     private Hand getStartingHand(int turn) {
@@ -140,7 +149,8 @@ public class PlayableChecker {
 
     private void initializeFetchLands(Hand hand, int turn) {
 
-        new FetchLandInitializer(() -> _cards.listIterator(hand.size() + 1)).initializeFetchLands(hand.getLandCardsUntilTurn(turn));
+        FetchLandInitializer initializer = new FetchLandInitializer(() -> _cards.listIterator(hand.size() + 1));
+        initializer.initializeFetchLands(hand.getLandCardsUntilTurn(turn));
     }
 
     private Set<Spell> getPlayableSpellTypes(Hand hand, int turn) {

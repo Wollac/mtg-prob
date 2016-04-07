@@ -15,8 +15,6 @@ class PlayableRecursion {
 
     private final int _lastLandTurn;
 
-    private final PlayableCache _cache;
-
     private final RemainingManaCost remainingCost;
 
     private final Board board;
@@ -29,8 +27,6 @@ class PlayableRecursion {
 
         _maxTurn = maxTurn;
         _lastLandTurn = Math.min(_maxTurn, hand.getLastLandTurn());
-
-        _cache = new PlayableCache(maxTurn);
 
         remainingCost = new RemainingManaCost(spellCost);
         board = new Board();
@@ -49,10 +45,6 @@ class PlayableRecursion {
         }
         if (remainingCost.allPaid()) {
             return true;
-        }
-
-        if (isUselessSituation(turn)) {
-            return false;
         }
 
         boolean noLandProducesUsableColors = true;
@@ -97,8 +89,6 @@ class PlayableRecursion {
             // do not play any lands this turn
             if (recursion(turn + 1)) return true;
         }
-
-        cacheUselessSituation(turn);
 
         return false;
     }
@@ -146,20 +136,6 @@ class PlayableRecursion {
 
         // the popped Land should always be the one from the IdentifiedCardObject
         assert landObject.get() == popLand;
-    }
-
-    private boolean isUselessSituation(int turn) {
-        return _cache.contains(board, _maxTurn - turn);
-    }
-
-    private void cacheUselessSituation(int turn) {
-
-        final int remainingTurns = _maxTurn - turn;
-
-        // this situation must not already be contained in the cache
-        assert !_cache.contains(board, remainingTurns);
-
-        _cache.add(board, remainingTurns);
     }
 
     private static final class RemainingManaCost {
