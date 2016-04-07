@@ -20,7 +20,7 @@ import probability.core.land.Land;
 
 abstract class AbstractSingleSpellPlayableTest {
 
-    private static final int MAX_TURN = 12;
+    static final int MAX_TURN = 12;
 
     /**
      * Checks whether the given spell can be played with the given hand.

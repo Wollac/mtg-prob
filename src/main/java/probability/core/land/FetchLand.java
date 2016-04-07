@@ -18,24 +18,25 @@ import probability.core.IdentifiedCardObject;
  * Models Fetch Lands such as <a href="http://magiccards.info/query?q=!Flooded+Strand">Flooded
  * Strand</a>.
  * <p>
- * Fetch lands can produce the colors of all {@linkplain BasicLand}s that are not
- * yet played or drawn. They never enter the battlefield tapped.
+ * Fetch lands can produce the colors of all {@linkplain BasicLand}s that are not yet played or
+ * drawn. They never enter the battlefield tapped.
  */
 public class FetchLand extends AbstractLand {
 
     private List<IdentifiedCardObject> _fetchableBasicLandObjects;
 
-    private Colors _producableColors;
+    private Colors _producibleColors;
 
     public FetchLand(String name, Colors colors) {
 
         super(name, colors);
 
         _fetchableBasicLandObjects = Collections.emptyList();
-        _producableColors = new Colors();
+        _producibleColors = new Colors();
     }
 
     public void setFetchableBasicLandObjects(Collection<IdentifiedCardObject> basicLandObjects) {
+
         _fetchableBasicLandObjects = new ArrayList<>(basicLandObjects);
 
         Set<Color> colors = Color.emptyEnumSet();
@@ -44,12 +45,12 @@ public class FetchLand extends AbstractLand {
             colors.addAll(((Land) basicLandObject.get()).producibleColors());
         }
 
-        _producableColors = new Colors(colors);
+        _producibleColors = new Colors(colors);
     }
 
     @Override
     public Set<Color> producibleColors() {
-        return _producableColors.getColors();
+        return _producibleColors.getColors();
     }
 
     @Override
@@ -59,7 +60,7 @@ public class FetchLand extends AbstractLand {
             return Collections.emptySet();
         }
 
-        return () -> new MyIterator(_fetchableBasicLandObjects);
+        return () -> new ColorIterator(_fetchableBasicLandObjects);
     }
 
     @Override
@@ -67,13 +68,18 @@ public class FetchLand extends AbstractLand {
         return false;
     }
 
-    private static class MyIterator implements Iterator<Color> {
+
+    /**
+     * An iterator that iterates over fetchable colors and at the same time marks the corresponding
+     * card objects played or not.
+     */
+    private static class ColorIterator implements Iterator<Color> {
 
         private final Iterator<Map.Entry<Color, IdentifiedCardObject>> _it;
 
         private IdentifiedCardObject _lastLandObject = null;
 
-        MyIterator(List<IdentifiedCardObject> landObjects) {
+        ColorIterator(List<IdentifiedCardObject> landObjects) {
 
             EnumMap<Color, IdentifiedCardObject> objectsByColor = new EnumMap<>(Color.class);
 
@@ -95,9 +101,10 @@ public class FetchLand extends AbstractLand {
 
             final boolean hasNext = _it.hasNext();
 
-            if (!hasNext && _lastLandObject != null) {
-                assert _lastLandObject.isPlayed();
-                _lastLandObject.markNotPlayed();
+            // TODO probably an AutoCloseable is more java-like
+            // we abuse the hasNext to get something like a destructor
+            if (!hasNext) {
+                markLastNotPlayed();
                 _lastLandObject = null;
             }
 
@@ -109,16 +116,25 @@ public class FetchLand extends AbstractLand {
 
             Map.Entry<Color, IdentifiedCardObject> entry = _it.next();
 
+            markLastNotPlayed();
+            markLandObjectPlayed(entry.getValue());
+
+            return entry.getKey();
+        }
+
+        private void markLandObjectPlayed(IdentifiedCardObject landObject) {
+
+            assert !landObject.isPlayed();
+            landObject.markPlayed();
+            _lastLandObject = landObject;
+        }
+
+        private void markLastNotPlayed() {
+
             if (_lastLandObject != null) {
                 assert _lastLandObject.isPlayed();
                 _lastLandObject.markNotPlayed();
             }
-
-            assert !entry.getValue().isPlayed();
-            entry.getValue().markPlayed();
-            _lastLandObject = entry.getValue();
-
-            return entry.getKey();
         }
     }
 

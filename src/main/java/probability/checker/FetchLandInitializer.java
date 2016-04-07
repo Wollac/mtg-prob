@@ -26,21 +26,6 @@ class FetchLandInitializer {
         _cardObjectsToFetch = cardObjectsToFetch;
     }
 
-    private Collection<IdentifiedCardObject> getAllFetchableLandObjects() {
-
-        Collection<IdentifiedCardObject> _fetchableBasicLandObjects;
-        _fetchableBasicLandObjects = new ArrayList<>();
-
-        for (IdentifiedCardObject cardObject : _cardObjectsToFetch) {
-            if (CardUtils.isBasicLand(cardObject.get())) {
-                _fetchableBasicLandObjects.add(cardObject);
-            }
-        }
-        _cardObjectsToFetch = null;
-
-        return _fetchableBasicLandObjects;
-    }
-
     void initializeFetchLands(Iterable<Land> lands) {
 
         for (Land land : lands) {
@@ -54,17 +39,6 @@ class FetchLandInitializer {
                 }
             }
         }
-    }
-
-    private boolean isInitialized(FetchLand land) {
-
-        for (FetchLand initializedLand : _initialized) {
-            if (initializedLand == land) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private Collection<IdentifiedCardObject> getFetchableLandObjects(Set<Color> colors) {
@@ -83,6 +57,34 @@ class FetchLandInitializer {
         }
 
         return result;
+    }
+
+    private Collection<IdentifiedCardObject> getAllFetchableLandObjects() {
+
+        Collection<IdentifiedCardObject> _fetchableBasicLandObjects;
+        _fetchableBasicLandObjects = new ArrayList<>();
+
+        for (IdentifiedCardObject cardObject : _cardObjectsToFetch) {
+            if (CardUtils.isBasicLand(cardObject.get())) {
+                _fetchableBasicLandObjects.add(cardObject);
+            }
+        }
+        _cardObjectsToFetch = null;
+
+        return _fetchableBasicLandObjects;
+    }
+
+
+    private boolean isInitialized(FetchLand land) {
+
+        // TODO: what we want here is a HashSet for the Object hash code
+        for (FetchLand initializedLand : _initialized) {
+            if (initializedLand == land) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
