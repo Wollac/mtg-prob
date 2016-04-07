@@ -30,7 +30,7 @@ public class FetchLandPlayableTest extends AbstractSingleSpellPlayableTest {
         List<IdentifiedCardObject> objectList = IdentifiedCardObject.toCardObjects(Arrays.asList(lands), 1000);
 
         FetchLandInitializer computer = new FetchLandInitializer(objectList);
-        computer.initializeFetchLands(Collections.singleton(fetch));
+        computer.initializeFetchLand(fetch);
     }
 
     @Override
@@ -164,10 +164,10 @@ public class FetchLandPlayableTest extends AbstractSingleSpellPlayableTest {
         BasicLand basic1 = CheckerTestUtils.createBasicLand(differentColor);
         BasicLand basic2 = CheckerTestUtils.createBasicLand(COLOR);
 
-        BasicLand[] fetchable = new BasicLand[]{basic1, basic1, basic2};
+        BasicLand[] toFetch = new BasicLand[]{basic1, basic1, basic2};
 
-        initializeFetchLand(fetch1, fetchable);
-        initializeFetchLand(fetch2, fetchable);
+        initializeFetchLand(fetch1, toFetch);
+        initializeFetchLand(fetch2, toFetch);
 
         assertPlayableInTurn(spell, hand, 3);
     }

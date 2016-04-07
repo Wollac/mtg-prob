@@ -8,16 +8,20 @@ import probability.core.IdentifiedCardObject;
 import probability.core.land.BasicLand;
 import probability.core.land.FetchLand;
 import probability.core.land.Land;
+import probability.utils.Suppliers;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Supplier;
 
-class FetchLandInitializer {
+final class FetchLandInitializer {
 
     private Iterable<IdentifiedCardObject> _cardObjectsToFetch;
-    private Collection<IdentifiedCardObject> _fetchableBasicLandObjects;
+
+    private final Supplier<Collection<IdentifiedCardObject>> _basicLandObjectsToFetch =
+            Suppliers.memoize(this::retainBasicLandObjectsToFetch);
 
     private final Set<FetchLand> _initializedIdentities;
 
@@ -28,28 +32,28 @@ class FetchLandInitializer {
         _initializedIdentities = Sets.newIdentityHashSet();
     }
 
-    void initializeFetchLands(Iterable<Land> lands) {
+    void initializeFetchLands(Iterable<? extends Land> lands) {
 
         for (Land land : lands) {
-            if (CardUtils.isFetchLand(land)) {
 
-                FetchLand fetch = (FetchLand) land;
-                if (_initializedIdentities.add(fetch)) {
-                    fetch.setFetchableBasicLandObjects(getFetchableLandObjects(fetch.colors()));
-                }
+            if (CardUtils.isFetchLand(land)) {
+                initializeFetchLand((FetchLand) land);
             }
+        }
+    }
+
+    void initializeFetchLand(FetchLand fetchLand) {
+
+        if (_initializedIdentities.add(fetchLand)) {
+            fetchLand.setFetchableBasicLandObjects(getFetchableLandObjects(fetchLand.colors()));
         }
     }
 
     private Collection<IdentifiedCardObject> getFetchableLandObjects(Set<Color> colors) {
 
-        if (_fetchableBasicLandObjects == null) {
-            _fetchableBasicLandObjects = getAllFetchableLandObjects();
-        }
-
         Collection<IdentifiedCardObject> result = new ArrayList<>();
 
-        for (IdentifiedCardObject landObject : _fetchableBasicLandObjects) {
+        for (IdentifiedCardObject landObject : _basicLandObjectsToFetch.get()) {
 
             if (!Collections.disjoint(((BasicLand) landObject.get()).colors(), colors)) {
                 result.add(landObject);
@@ -59,19 +63,19 @@ class FetchLandInitializer {
         return result;
     }
 
-    private Collection<IdentifiedCardObject> getAllFetchableLandObjects() {
+    private Collection<IdentifiedCardObject> retainBasicLandObjectsToFetch() {
 
-        Collection<IdentifiedCardObject> _fetchableBasicLandObjects;
-        _fetchableBasicLandObjects = new ArrayList<>();
+        Collection<IdentifiedCardObject> result = new ArrayList<>();
 
         for (IdentifiedCardObject cardObject : _cardObjectsToFetch) {
             if (CardUtils.isBasicLand(cardObject.get())) {
-                _fetchableBasicLandObjects.add(cardObject);
+                result.add(cardObject);
             }
         }
+        // no longer needed
         _cardObjectsToFetch = null;
 
-        return _fetchableBasicLandObjects;
+        return result;
     }
 
 }
