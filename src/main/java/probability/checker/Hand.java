@@ -150,7 +150,23 @@ class Hand {
 
     @Override
     public String toString() {
-        return _cards.toString();
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("starting=").append(_cards.subList(0, _startingHandSize));
+
+        sb.append(", draws=");
+        sb.append('{');
+        int turn = 2;
+        for (Iterator<IdentifiedCardObject> it = _cards.listIterator(_startingHandSize); it.hasNext(); ) {
+            sb.append(turn++).append("->").append(it.next());
+            if (it.hasNext()) {
+                sb.append(", ");
+            }
+        }
+        sb.append('}');
+
+        return sb.toString();
     }
 
 }
