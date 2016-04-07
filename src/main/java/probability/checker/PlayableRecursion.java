@@ -48,7 +48,7 @@ class PlayableRecursion {
         }
 
         boolean noLandProducesUsableColors = true;
-        for (IdentifiedCardObject landObject : _hand.getLandTypesInHandUntilTurn(turn)) {
+        for (IdentifiedCardObject landObject : _hand.getNotPlayedLandObjectsUntilTurn(turn)) {
 
             final Land land = (Land) landObject.get();
             final boolean tapped = land.comesIntoPlayTapped(board);
