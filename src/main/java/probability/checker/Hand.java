@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import probability.core.Card;
 import probability.core.CardUtils;
@@ -167,16 +169,11 @@ final class Hand {
 
         sb.append("starting=").append(_cards.subList(0, _startingHandSize));
 
-        sb.append(", draws=");
-        sb.append('{');
-        int turn = 2;
-        for (Iterator<IdentifiedCardObject> it = _cards.listIterator(_startingHandSize); it.hasNext(); ) {
-            sb.append(turn++).append("->").append(it.next());
-            if (it.hasNext()) {
-                sb.append(", ");
-            }
-        }
-        sb.append('}');
+        // we need a mutable Object
+        AtomicInteger index = new AtomicInteger(2);
+        String draws = _cards.stream().skip(_startingHandSize).map(c -> index.getAndIncrement() + "->" + c).collect(Collectors.joining(", "));
+
+        sb.append(", draws=").append('{').append(draws).append('}');
 
         return sb.toString();
     }
