@@ -10,6 +10,8 @@ import java.util.Set;
 
 public final class Colors extends ForwardingSet<Color> implements Set<Color> {
 
+    private static final Colors EMPTY_COLORS = new Colors();
+
     private final Set<Color> _colors;
 
     private volatile int _hashCode;
@@ -59,6 +61,10 @@ public final class Colors extends ForwardingSet<Color> implements Set<Color> {
         return new Colors(colorSet);
     }
 
+    public static Colors emptyColors() {
+        return EMPTY_COLORS;
+    }
+
     public Set<Color> getColors() {
         return _colors;
     }
@@ -103,5 +109,4 @@ public final class Colors extends ForwardingSet<Color> implements Set<Color> {
 
         return sb.toString();
     }
-
 }

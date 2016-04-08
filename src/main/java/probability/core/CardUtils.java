@@ -1,8 +1,6 @@
 package probability.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,12 +37,18 @@ final class CardUtils {
         return DUMMY_CARD;
     }
 
-    public static Colors getColors(Collection<? extends Land> lands) {
+    public static Colors getLandColors(Collection<IdentifiedCardObject> cardObjects) {
+
+        if (cardObjects.isEmpty()) {
+            return Colors.emptyColors();
+        }
 
         Set<Color> colorSet = Color.emptyEnumSet();
 
-        for (Land land : lands) {
-            colorSet.addAll(land.colors());
+        for (IdentifiedCardObject o : cardObjects) {
+            if (o.isLand()) {
+                colorSet.addAll(((Land) o.get()).colors());
+            }
         }
 
         return new Colors(colorSet);
@@ -54,6 +58,7 @@ final class CardUtils {
      * Create a set that contains the cards sorted by getName()
      */
     public static SortedSet<Card> sortCardsByName(Collection<Card> cards) {
+
         SortedSet<Card> sorted = new TreeSet<>(
                 Comparator.comparing(Card::getName));
         sorted.addAll(cards);
@@ -61,13 +66,13 @@ final class CardUtils {
         return sorted;
     }
 
-    public static Set<String> getNames(Collection<IdentifiedCardObject> cardObjects) {
+    public static Set<String> getNames(Iterable<IdentifiedCardObject> cardObjects) {
 
         Set<String> names = new HashSet<>();
 
         for (IdentifiedCardObject o : cardObjects) {
 
-            if (o.getType() == Card.CardType.Other) {
+            if (!o.isOther()) {
                 names.add(o.getName());
             }
         }
@@ -75,20 +80,16 @@ final class CardUtils {
         return names;
     }
 
-    public static Collection<Land> retainAllLandsToArrayList(
-            Collection<IdentifiedCardObject> cardObjects) {
+    public static int getNumberOfLandObjects(Iterable<IdentifiedCardObject> cardObjects) {
 
-        if (cardObjects.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        Collection<Land> lands = new ArrayList<>();
+        int n = 0;
         for (IdentifiedCardObject o : cardObjects) {
             if (o.isLand()) {
-                lands.add((Land) o.get());
+                n++;
             }
         }
 
-        return lands;
+        return n;
     }
+
 }

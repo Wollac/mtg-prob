@@ -32,7 +32,7 @@ public class FetchLand extends AbstractLand {
         super(name, colors);
 
         _fetchableBasicLandObjects = Collections.emptyList();
-        _producibleColors = new Colors();
+        _producibleColors = Colors.emptyColors();
     }
 
     public void setFetchableBasicLandObjects(Collection<IdentifiedCardObject> basicLandObjects) {

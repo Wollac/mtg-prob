@@ -120,10 +120,10 @@ public class PlayableChecker {
             return true;
         }
 
-        List<Land> lands = hand.getAllLands();
-        initializeFetchLands(lands, hand.size());
+        List<IdentifiedCardObject> landObjects = hand.getAllLands();
+        initializeFetchLands(landObjects, hand.size());
 
-        Set<Spell> playableSpellTypes = getPlayableSpellTypes(spells, lands, maxTurn);
+        Set<Spell> playableSpellTypes = getPlayableSpellTypes(spells, landObjects, maxTurn);
 
         for (Spell spell : playableSpellTypes) {
 
@@ -137,26 +137,27 @@ public class PlayableChecker {
         return false;
     }
 
-    private void initializeFetchLands(Iterable<Land> lands, int skipObjectsInDeck) {
+    private void initializeFetchLands(List<IdentifiedCardObject> landObjects, int skipObjectsInDeck) {
 
         Iterable<IdentifiedCardObject> objectsToFetch = () -> _cards.listIterator(skipObjectsInDeck + 1);
         FetchLandInitializer initializer = new FetchLandInitializer(objectsToFetch);
 
-        initializer.initializeFetchLands(lands);
+        initializer.initializeFetchLands(landObjects);
     }
 
-    private Set<Spell> getPlayableSpellTypes(Set<Spell> spells, Collection<Land> lands, int maxTurn) {
+    private Set<Spell> getPlayableSpellTypes(Set<Spell> spells, Collection<IdentifiedCardObject> landObjects, int maxTurn) {
 
-        if (lands.isEmpty()) {
+        if (landObjects.isEmpty()) {
             return Collections.emptySet();
         }
 
         EnumCount<Color> maxColorCount = new EnumCount<>(Color.class);
-        for (Land land : lands) {
+        for (IdentifiedCardObject o : landObjects) {
+            Land land = (Land) o.get();
             maxColorCount.increaseEach(land.producibleColors());
         }
 
-        final int maxConverted = Math.min(lands.size(), maxTurn);
+        final int maxConverted = Math.min(landObjects.size(), maxTurn);
 
         for (Iterator<Spell> iterator = spells.iterator(); iterator.hasNext(); ) {
             Spell spell = iterator.next();

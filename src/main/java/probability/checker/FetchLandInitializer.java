@@ -32,9 +32,10 @@ final class FetchLandInitializer {
         _initializedIdentities = Sets.newIdentityHashSet();
     }
 
-    void initializeFetchLands(Iterable<? extends Land> lands) {
+    void initializeFetchLands(Iterable<IdentifiedCardObject> landObjects) {
 
-        for (Land land : lands) {
+        for (IdentifiedCardObject o : landObjects) {
+            Land land = (Land) o.get();
             if (land instanceof FetchLand) {
                 initializeFetchLand((FetchLand) land);
             }

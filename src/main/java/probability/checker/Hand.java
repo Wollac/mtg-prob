@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import probability.core.Card;
 import probability.core.IdentifiedCardObject;
 import probability.core.Spell;
-import probability.core.land.Land;
 
 final class Hand {
 
@@ -36,7 +35,7 @@ final class Hand {
         _cards.addAll(startingHand);
         _cards.addAll(draws);
 
-        _lastTurn = _cards.size() - _startingHandSize + 1;
+        _lastTurn = getLastTurn();
     }
 
     Hand(int startingHandSize, Collection<? extends Card> cards) {
@@ -47,7 +46,11 @@ final class Hand {
         _startingHandSize = startingHandSize;
         _cards = IdentifiedCardObject.toCardObjects(cards);
 
-        _lastTurn = _cards.size() - _startingHandSize + 1;
+        _lastTurn = getLastTurn();
+    }
+
+    private int getLastTurn() {
+        return _cards.size() - _startingHandSize + 1;
     }
 
     int size() {
@@ -72,20 +75,9 @@ final class Hand {
         return result;
     }
 
-    List<Land> getAllLands() {
+    List<IdentifiedCardObject> getAllLands() {
 
-        List<IdentifiedCardObject> landObjects = getLandObjectsUntilTurn(_lastTurn);
-
-        if (landObjects.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Land> result = new ArrayList<>(landObjects.size());
-        for (IdentifiedCardObject cardObject : landObjects) {
-            result.add((Land) cardObject.get());
-        }
-
-        return result;
+        return getLandObjectsUntilTurn(_lastTurn);
     }
 
     List<IdentifiedCardObject> getNotPlayedLandObjectsUntilTurn(int turn) {

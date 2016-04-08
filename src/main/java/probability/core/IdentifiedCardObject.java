@@ -5,20 +5,32 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+/**
+ * A card object represents a current instance of a card that can be played or not. There can very
+ * well be multiple card objects corresponding to the same card (type). As each instance represents
+ * it own object they should be collected in a {@code List} and not a {@code Set}.
+ */
 public final class IdentifiedCardObject implements Supplier<Card> {
 
     private final Card _card;
 
+    // for some reason caching the type and then comparing is considerably faster than instanceof
     private final Card.CardType type;
 
     private boolean _played;
 
+    /**
+     * Creates a card object corresponding to the given card.
+     */
     private IdentifiedCardObject(Card card) {
 
         _card = card;
         type = card.getCardType();
     }
 
+    /**
+     * Creates a new card object of each of the provided cards and returns them as a list.
+     */
     public static List<IdentifiedCardObject> toCardObjects(Collection<? extends Card> cards) {
 
         return cards.stream().map(IdentifiedCardObject::new).collect(Collectors.toList());
@@ -29,11 +41,15 @@ public final class IdentifiedCardObject implements Supplier<Card> {
     }
 
     public boolean isLand() {
-        return type == Card.CardType.Land;
+        return getType() == Card.CardType.Land;
     }
 
     public boolean isSpell() {
-        return type == Card.CardType.Spell;
+        return getType() == Card.CardType.Spell;
+    }
+
+    public boolean isOther() {
+        return getType() == Card.CardType.Other;
     }
 
     public String getName() {
@@ -61,4 +77,5 @@ public final class IdentifiedCardObject implements Supplier<Card> {
     public String toString() {
         return _card.toString();
     }
+
 }
