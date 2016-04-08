@@ -2,7 +2,6 @@ package probability.checker;
 
 import com.google.common.base.Preconditions;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 import probability.config.Settings;
-import probability.core.Card;
 import probability.core.Color;
 import probability.core.Deck;
 import probability.core.IdentifiedCardObject;
@@ -101,26 +99,12 @@ public class PlayableChecker {
                 handSize++;
             }
 
-            List<Card> startingHand = getStartingCards(handSize);
-
-            if (!_mulliganRule.takeMulligan(startingHand)) {
+            if (!_mulliganRule.takeMulligan(_cards.subList(0, handSize))) {
                 return createHand(handSize, turn);
             }
         }
 
         return createHand(0, turn);
-    }
-
-    private List<Card> getStartingCards(int handSize) {
-
-        List<Card> startingHand = new ArrayList<>(handSize);
-
-        Iterator<IdentifiedCardObject> it = _cards.iterator();
-        for (int i = 0; i < handSize; i++) {
-            startingHand.add(it.next().get());
-        }
-
-        return startingHand;
     }
 
     private Hand createHand(int handSize, int turn) {
@@ -136,9 +120,10 @@ public class PlayableChecker {
             return true;
         }
 
-        initializeFetchLands(hand);
+        List<Land> lands = hand.getAllLands();
+        initializeFetchLands(lands, hand.size());
 
-        Set<Spell> playableSpellTypes = getPlayableSpellTypes(spells, hand.getAllLands(), maxTurn);
+        Set<Spell> playableSpellTypes = getPlayableSpellTypes(spells, lands, maxTurn);
 
         for (Spell spell : playableSpellTypes) {
 
@@ -152,10 +137,12 @@ public class PlayableChecker {
         return false;
     }
 
-    private void initializeFetchLands(Hand hand) {
+    private void initializeFetchLands(Iterable<Land> lands, int skipObjectsInDeck) {
 
-        FetchLandInitializer initializer = new FetchLandInitializer(() -> _cards.listIterator(hand.size() + 1));
-        initializer.initializeFetchLands(hand.getAllLands());
+        Iterable<IdentifiedCardObject> objectsToFetch = () -> _cards.listIterator(skipObjectsInDeck + 1);
+        FetchLandInitializer initializer = new FetchLandInitializer(objectsToFetch);
+
+        initializer.initializeFetchLands(lands);
     }
 
     private Set<Spell> getPlayableSpellTypes(Set<Spell> spells, Collection<Land> lands, int maxTurn) {

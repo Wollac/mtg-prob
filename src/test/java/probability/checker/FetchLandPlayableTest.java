@@ -3,7 +3,6 @@ package probability.checker;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import probability.core.Color;
@@ -27,7 +26,7 @@ public class FetchLandPlayableTest extends AbstractSingleSpellPlayableTest {
 
     private static void initializeFetchLand(FetchLand fetch, BasicLand... lands) {
 
-        List<IdentifiedCardObject> objectList = IdentifiedCardObject.toCardObjects(Arrays.asList(lands), 1000);
+        List<IdentifiedCardObject> objectList = IdentifiedCardObject.toCardObjects(Arrays.asList(lands));
 
         FetchLandInitializer computer = new FetchLandInitializer(objectList);
         computer.initializeFetchLand(fetch);

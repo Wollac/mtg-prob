@@ -15,7 +15,7 @@ public class ManaDork extends Spell {
         _colors = checkNotNull(colors);
     }
 
-    Set<Color> producesColors(Board board) {
+    Set<Color> producesColors() {
         return _colors.getColors();
     }
 

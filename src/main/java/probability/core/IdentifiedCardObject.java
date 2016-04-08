@@ -1,39 +1,43 @@
 package probability.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public final class IdentifiedCardObject implements Supplier<Card> {
 
     private final Card _card;
 
-    private final int _id;
+    private final Card.CardType type;
 
     private boolean _played;
 
-    private IdentifiedCardObject(Card card, int id) {
+    private IdentifiedCardObject(Card card) {
 
         _card = card;
-        _id = id;
+        type = card.getCardType();
     }
 
     public static List<IdentifiedCardObject> toCardObjects(Collection<? extends Card> cards) {
 
-        return toCardObjects(cards, 0);
+        return cards.stream().map(IdentifiedCardObject::new).collect(Collectors.toList());
     }
 
-    public static List<IdentifiedCardObject> toCardObjects(Collection<? extends Card> cards, int idOffset) {
+    public Card.CardType getType() {
+        return type;
+    }
 
-        List<IdentifiedCardObject> result = new ArrayList<>();
+    public boolean isLand() {
+        return type == Card.CardType.Land;
+    }
 
-        int index = idOffset;
-        for (Card card : cards) {
-            result.add(new IdentifiedCardObject(card, index++));
-        }
+    public boolean isSpell() {
+        return type == Card.CardType.Spell;
+    }
 
-        return result;
+    public String getName() {
+        return _card.getName();
     }
 
     public void markPlayed() {
@@ -48,23 +52,9 @@ public final class IdentifiedCardObject implements Supplier<Card> {
         return _played;
     }
 
-    public int getId() {
-        return _id;
-    }
-
     @Override
     public Card get() {
         return _card;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof IdentifiedCardObject && ((IdentifiedCardObject) obj)._id == _id;
-    }
-
-    @Override
-    public int hashCode() {
-        return _id;
     }
 
     @Override

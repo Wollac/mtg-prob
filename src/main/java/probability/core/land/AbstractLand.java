@@ -3,7 +3,6 @@ package probability.core.land;
 import java.util.Objects;
 import java.util.Set;
 
-import probability.core.Board;
 import probability.core.Color;
 import probability.core.Colors;
 
@@ -47,7 +46,7 @@ abstract class AbstractLand implements Land {
     }
 
     @Override
-    public Iterable<Color> producesColors(Board board) {
+    public Iterable<Color> producesColors() {
         return colors();
     }
 

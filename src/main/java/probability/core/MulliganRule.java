@@ -35,12 +35,6 @@ public class MulliganRule {
 
     private final VariableHolder _variables = new VariableHolder();
 
-    public MulliganRule() {
-
-        registerVariables();
-        _rule = getDefaultRule();
-    }
-
     public MulliganRule(File file) {
 
         registerVariables();
@@ -112,7 +106,7 @@ public class MulliganRule {
         return rule;
     }
 
-    public boolean takeMulligan(final Collection<Card> startingHand) {
+    public boolean takeMulligan(Collection<IdentifiedCardObject> startingHand) {
 
         _variables.assignValue(VARIABLES.CARDS, startingHand.size());
 

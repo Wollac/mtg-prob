@@ -53,7 +53,7 @@ class PlayableRecursion {
             final Land land = (Land) landObject.get();
             final boolean tapped = land.comesIntoPlayTapped(board);
 
-            Iterable<Color> colors = land.producesColors(board);
+            Iterable<Color> colors = land.producesColors();
 
             playLandObject(landObject);
 
@@ -125,17 +125,17 @@ class PlayableRecursion {
 
     private void playLandObject(IdentifiedCardObject landObject) {
 
-        board.playLand((Land) landObject.get());
+        board.play(landObject);
         landObject.markPlayed();
     }
 
     private void removeLandObject(IdentifiedCardObject landObject) {
 
         landObject.markNotPlayed();
-        Land popLand = board.popLand();
+        IdentifiedCardObject popObject = board.pop();
 
-        // the popped Land should always be the one from the IdentifiedCardObject
-        assert landObject.get() == popLand;
+        // the popped Object should always be the the IdentifiedCardObject
+        assert popObject == landObject;
     }
 
     private static final class RemainingManaCost {

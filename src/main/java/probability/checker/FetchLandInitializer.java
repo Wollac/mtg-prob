@@ -2,13 +2,6 @@ package probability.checker;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
-import probability.core.CardUtils;
-import probability.core.Color;
-import probability.core.IdentifiedCardObject;
-import probability.core.land.BasicLand;
-import probability.core.land.FetchLand;
-import probability.core.land.Land;
-import probability.utils.Suppliers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,14 +9,21 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import probability.core.Color;
+import probability.core.IdentifiedCardObject;
+import probability.core.land.BasicLand;
+import probability.core.land.FetchLand;
+import probability.core.land.Land;
+import probability.utils.Suppliers;
+
 final class FetchLandInitializer {
+
+    private final Set<FetchLand> _initializedIdentities;
 
     private Iterable<IdentifiedCardObject> _cardObjectsToFetch;
 
     private final Supplier<Collection<IdentifiedCardObject>> _basicLandObjectsToFetch =
             Suppliers.memoize(this::retainBasicLandObjectsToFetch);
-
-    private final Set<FetchLand> _initializedIdentities;
 
     FetchLandInitializer(Iterable<IdentifiedCardObject> cardObjectsToFetch) {
 
@@ -35,8 +35,7 @@ final class FetchLandInitializer {
     void initializeFetchLands(Iterable<? extends Land> lands) {
 
         for (Land land : lands) {
-
-            if (CardUtils.isFetchLand(land)) {
+            if (land instanceof FetchLand) {
                 initializeFetchLand((FetchLand) land);
             }
         }
@@ -68,7 +67,7 @@ final class FetchLandInitializer {
         Collection<IdentifiedCardObject> result = new ArrayList<>();
 
         for (IdentifiedCardObject cardObject : _cardObjectsToFetch) {
-            if (CardUtils.isBasicLand(cardObject.get())) {
+            if (cardObject.get() instanceof BasicLand) {
                 result.add(cardObject);
             }
         }

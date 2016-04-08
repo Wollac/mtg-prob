@@ -3,28 +3,30 @@ package probability.checker;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import probability.core.Card;
-import probability.core.CardUtils;
 import probability.core.IdentifiedCardObject;
 import probability.core.Spell;
 import probability.core.land.Land;
-import probability.utils.FixedCapacityIntCache;
 
 final class Hand {
 
     private final int _startingHandSize;
 
+    private final int _lastTurn;
+
     private final List<IdentifiedCardObject> _cards;
 
-    private final FixedCapacityIntCache<List<IdentifiedCardObject>> _landObjectsCache;
+    private final Map<Integer, List<IdentifiedCardObject>> _landObjectsCache = new HashMap<>();
 
     Hand(Collection<IdentifiedCardObject> startingHand, Collection<IdentifiedCardObject> draws) {
 
@@ -34,7 +36,7 @@ final class Hand {
         _cards.addAll(startingHand);
         _cards.addAll(draws);
 
-        _landObjectsCache = createLandObjectsTurnCache();
+        _lastTurn = _cards.size() - _startingHandSize + 1;
     }
 
     Hand(int startingHandSize, Collection<? extends Card> cards) {
@@ -45,7 +47,7 @@ final class Hand {
         _startingHandSize = startingHandSize;
         _cards = IdentifiedCardObject.toCardObjects(cards);
 
-        _landObjectsCache = createLandObjectsTurnCache();
+        _lastTurn = _cards.size() - _startingHandSize + 1;
     }
 
     int size() {
@@ -61,10 +63,9 @@ final class Hand {
 
         Set<Spell> result = new HashSet<>();
 
-        for (IdentifiedCardObject cardObject : _cards) {
-            Card card = cardObject.get();
-            if (CardUtils.isSpell(card)) {
-                result.add((Spell) card);
+        for (IdentifiedCardObject o : _cards) {
+            if (o.isSpell()) {
+                result.add((Spell) o.get());
             }
         }
 
@@ -73,7 +74,7 @@ final class Hand {
 
     List<Land> getAllLands() {
 
-        List<IdentifiedCardObject> landObjects = getLandObjectsUntilTurn(getTurnWithLastDraw());
+        List<IdentifiedCardObject> landObjects = getLandObjectsUntilTurn(_lastTurn);
 
         if (landObjects.isEmpty()) {
             return Collections.emptyList();
@@ -110,14 +111,13 @@ final class Hand {
 
     int getLastLandTurn() {
 
-        int turn = getTurnWithLastDraw();
+        int turn = _lastTurn;
         for (ListIterator<IdentifiedCardObject> it = _cards.listIterator(_cards.size()); it.hasPrevious(); turn--) {
 
             if (turn <= 1) {
                 return 1;
             }
-
-            if (CardUtils.isLand(it.previous().get())) {
+            if (it.previous().isLand()) {
                 return turn;
             }
         }
@@ -126,19 +126,10 @@ final class Hand {
         return 0;
     }
 
-    private FixedCapacityIntCache<List<IdentifiedCardObject>> createLandObjectsTurnCache() {
-
-        return new FixedCapacityIntCache<>(getTurnWithLastDraw() + 1, this::createLandObjectsUntilTurn);
-    }
-
     private List<IdentifiedCardObject> getLandObjectsUntilTurn(int turn) {
 
-        turn = Math.min(getTurnWithLastDraw(), turn);
-        return _landObjectsCache.get(turn);
-    }
-
-    private int getTurnWithLastDraw() {
-        return _cards.size() - _startingHandSize + 1;
+        turn = Math.min(_lastTurn, turn);
+        return _landObjectsCache.computeIfAbsent(turn, this::createLandObjectsUntilTurn);
     }
 
     private int getNumberOfCardsUntilTurn(int turn) {
@@ -154,7 +145,7 @@ final class Hand {
         Iterator<IdentifiedCardObject> it = _cards.iterator();
         for (int i = 0; i < n; i++) {
             IdentifiedCardObject cardObject = it.next();
-            if (CardUtils.isLand(cardObject.get())) {
+            if (cardObject.isLand()) {
                 result.add(cardObject);
             }
         }
