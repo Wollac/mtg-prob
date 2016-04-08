@@ -1,61 +1,60 @@
 package probability.core;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
+import probability.core.land.BasicLand;
 import probability.core.land.Land;
 
 public class Board {
 
-    private final Stack<Land> _playedLands;
+    private final Stack<IdentifiedCardObject> _playedObjects;
+
+    private int _numPlayedLands;
 
     public Board() {
-        _playedLands = new Stack<>();
+        _playedObjects = new Stack<>();
+        _numPlayedLands = 0;
     }
 
-    public Stack<Land> getPlayedLands() {
-        return _playedLands;
-    }
-
-    public void playLand(Land land) {
-        _playedLands.push(land);
-    }
-
-    public Land popLand() {
-        return _playedLands.pop();
-    }
 
     public int getNumPlayedLands() {
-        return _playedLands.size();
+        return _numPlayedLands;
     }
 
-    public Set<Color> getPlayedLandProducibleColors() {
-        Set<Color> colors = new HashSet<>();
+    public void play(IdentifiedCardObject cardObject) {
 
-        for (Land land : _playedLands) {
-            colors.addAll(land.producibleColors());
+        _playedObjects.push(cardObject);
+        if (cardObject.isLand()) {
+            _numPlayedLands++;
+        }
+    }
+
+    public IdentifiedCardObject pop() {
+
+        IdentifiedCardObject cardObject = _playedObjects.pop();
+        if (cardObject.isLand()) {
+            _numPlayedLands--;
+            assert _numPlayedLands >= 0;
         }
 
-        return colors;
+        return cardObject;
     }
 
     public boolean isBasicColorPlayed(Set<Color> colors) {
-        return !Collections.disjoint(colors, getPlayedBasicLandColors());
-    }
 
-    private Set<Color> getPlayedBasicLandColors() {
+        for (IdentifiedCardObject o : _playedObjects) {
 
-        Set<Color> colors = Color.emptyEnumSet();
-
-        for (Land land : _playedLands) {
-            if (CardUtils.isBasicLand(land)) {
-                colors.addAll(land.colors());
+            if (o.isLand()) {
+                Land land = (Land) o.get();
+                if (land instanceof BasicLand && !Collections.disjoint(colors, land.colors())) {
+                    return true;
+                }
             }
         }
 
-        return colors;
+        return false;
     }
 
 }

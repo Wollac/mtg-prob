@@ -54,7 +54,7 @@ public class FetchLand extends AbstractLand {
     }
 
     @Override
-    public Iterable<Color> producesColors(Board board) {
+    public Iterable<Color> producesColors() {
 
         if (_fetchableBasicLandObjects.isEmpty()) {
             return Collections.emptySet();

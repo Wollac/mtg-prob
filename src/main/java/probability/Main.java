@@ -35,14 +35,6 @@ public class Main {
 
         MulliganRule mulliganRule = new MulliganRule(new File("mulligan.txt"));
 
-        FormattedPrintWriter writer = new FormattedPrintWriter(System.out, 100);
-        mulliganRule.printDescription(writer);
-        try {
-            writer.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         System.out.println("Taking a mulligan, if one of the following rules applies:");
         System.out.println(mulliganRule.toFormattedString());
 
