@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.function.Supplier;
 
 import probability.attr.AttributeKey;
 import probability.attr.AttributeUtils;
@@ -22,6 +23,7 @@ import probability.rules.RuleLoader;
 import probability.rules.RuleLoader.RulesParseException;
 import probability.rules.VariableHolder;
 import probability.utils.FormattedPrintWriter;
+import probability.utils.Suppliers;
 
 public class MulliganRule {
 
@@ -112,13 +114,14 @@ public class MulliganRule {
 
     public boolean takeMulligan(final Collection<Card> startingHand) {
 
-        Collection<Land> lands = CardUtils.retainAllLandsToArrayList(startingHand);
-
-        _variables.assignValue(VARIABLES.LANDS, lands.size());
-        _variables.assignValue(VARIABLES.NONLANDS, startingHand.size() - lands.size());
         _variables.assignValue(VARIABLES.CARDS, startingHand.size());
 
-        _variables.assignSupplier(VARIABLES.LAND_COLORS, () -> CardUtils.getColors(lands));
+        Supplier<Collection<Land>> landSupplier = Suppliers.memoize(() -> CardUtils.retainAllLandsToArrayList(startingHand));
+
+        _variables.assignSupplier(VARIABLES.LANDS, () -> landSupplier.get().size());
+        _variables.assignSupplier(VARIABLES.NONLANDS, () -> startingHand.size() - landSupplier.get().size());
+
+        _variables.assignSupplier(VARIABLES.LAND_COLORS, () -> CardUtils.getColors(landSupplier.get()));
         _variables.assignSupplier(VARIABLES.CARD_NAMES, () -> CardUtils.getNames(startingHand));
 
         return _rule.evaluate(_variables);
