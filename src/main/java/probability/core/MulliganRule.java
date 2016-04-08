@@ -17,7 +17,6 @@ import probability.attr.AttributeUtils;
 import probability.attr.ColorsAttributeKey;
 import probability.attr.IntegerAttributeKey;
 import probability.attr.StringSetAttributeKey;
-import probability.core.land.Land;
 import probability.rules.Rule;
 import probability.rules.RuleLoader;
 import probability.rules.RuleLoader.RulesParseException;
@@ -106,16 +105,16 @@ public class MulliganRule {
         return rule;
     }
 
-    public boolean takeMulligan(Collection<IdentifiedCardObject> startingHand) {
+    public boolean takeMulligan(final Collection<IdentifiedCardObject> startingHand) {
 
         _variables.assignValue(VARIABLES.CARDS, startingHand.size());
 
-        Supplier<Collection<Land>> landSupplier = Suppliers.memoize(() -> CardUtils.retainAllLandsToArrayList(startingHand));
+        Supplier<Integer> landsSupplier = Suppliers.memoize(() -> CardUtils.getNumberOfLandObjects(startingHand));
 
-        _variables.assignSupplier(VARIABLES.LANDS, () -> landSupplier.get().size());
-        _variables.assignSupplier(VARIABLES.NONLANDS, () -> startingHand.size() - landSupplier.get().size());
+        _variables.assignSupplier(VARIABLES.LANDS, landsSupplier::get);
+        _variables.assignSupplier(VARIABLES.NONLANDS, () -> startingHand.size() - landsSupplier.get());
 
-        _variables.assignSupplier(VARIABLES.LAND_COLORS, () -> CardUtils.getColors(landSupplier.get()));
+        _variables.assignSupplier(VARIABLES.LAND_COLORS, () -> CardUtils.getLandColors(startingHand));
         _variables.assignSupplier(VARIABLES.CARD_NAMES, () -> CardUtils.getNames(startingHand));
 
         return _rule.evaluate(_variables);
