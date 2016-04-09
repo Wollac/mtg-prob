@@ -13,12 +13,6 @@ public final class ManaCost {
     // As the ManaCost is immutable, its hash code can be cached
     private volatile int _hash;
 
-    public ManaCost() {
-
-        _colorCounts = new EnumCount<>(Color.class);
-        _genericMana = 0;
-    }
-
     public ManaCost(EnumCount<Color> colorCounts, int genericMana) {
 
         _colorCounts = new EnumCount<>(Color.class, colorCounts);
@@ -27,7 +21,7 @@ public final class ManaCost {
 
     public ManaCost(String costString) throws IllegalArgumentException {
 
-        this();
+        _colorCounts = new EnumCount<>(Color.class);
 
         boolean genericSet = false;
 
@@ -43,9 +37,7 @@ public final class ManaCost {
                 genericSet = true;
             } else {
 
-                Color color = Color.getColor(c);
-
-                _colorCounts.increase(color);
+                _colorCounts.increase(Color.getColor(c));
             }
         }
     }
