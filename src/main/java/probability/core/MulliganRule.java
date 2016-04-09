@@ -130,10 +130,10 @@ public class MulliganRule {
             } else {
                 sb.append(expression);
             }
-            sb.append('\n');
+            sb.append(System.lineSeparator());
         }
 
-        return sb.toString() + "\n";
+        return sb.toString();
     }
 
     private interface VARIABLES {
