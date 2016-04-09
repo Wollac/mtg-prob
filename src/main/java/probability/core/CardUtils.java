@@ -46,6 +46,7 @@ final class CardUtils {
         Set<Color> colorSet = Color.emptyEnumSet();
 
         for (CardObject o : cardObjects) {
+
             if (o.isLand()) {
                 colorSet.addAll(((Land) o.get()).colors());
             }
