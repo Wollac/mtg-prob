@@ -25,20 +25,17 @@ public enum Color {
 
     public static Color getColor(char c) {
 
-        if (!_codeToColor.containsKey(c)) {
+        Color color = _codeToColor.get(c);
+        if (color == null) {
             throw new IllegalArgumentException("illegal character '" + c
                     + "' is not a valid mana letter " + _codeToColor.keySet());
         }
 
-        return _codeToColor.get(c);
+        return color;
     }
 
     public static EnumSet<Color> emptyEnumSet() {
         return EnumSet.noneOf(Color.class);
-    }
-
-    public static int numberOfColors() {
-        return _codeToColor.size();
     }
 
     public char getLetterCode() {
