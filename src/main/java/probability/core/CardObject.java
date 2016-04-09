@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  * well be multiple card objects corresponding to the same card (type). As each instance represents
  * it own object they should be collected in a {@code List} and not a {@code Set}.
  */
-public final class IdentifiedCardObject implements Supplier<Card> {
+public final class CardObject implements Supplier<Card> {
 
     private final Card _card;
 
@@ -22,7 +22,7 @@ public final class IdentifiedCardObject implements Supplier<Card> {
     /**
      * Creates a card object corresponding to the given card.
      */
-    private IdentifiedCardObject(Card card) {
+    private CardObject(Card card) {
 
         _card = card;
         type = card.getCardType();
@@ -31,9 +31,9 @@ public final class IdentifiedCardObject implements Supplier<Card> {
     /**
      * Creates a new card object of each of the provided cards and returns them as a list.
      */
-    public static List<IdentifiedCardObject> toCardObjects(Collection<? extends Card> cards) {
+    public static List<CardObject> toCardObjects(Collection<? extends Card> cards) {
 
-        return cards.stream().map(IdentifiedCardObject::new).collect(Collectors.toList());
+        return cards.stream().map(CardObject::new).collect(Collectors.toList());
     }
 
     public Card.CardType getType() {

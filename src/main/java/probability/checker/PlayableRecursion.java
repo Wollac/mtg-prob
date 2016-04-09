@@ -1,8 +1,8 @@
 package probability.checker;
 
 import probability.core.Board;
+import probability.core.CardObject;
 import probability.core.Color;
-import probability.core.IdentifiedCardObject;
 import probability.core.ManaCost;
 import probability.core.land.Land;
 import probability.utils.EnumCount;
@@ -48,7 +48,7 @@ class PlayableRecursion {
         }
 
         boolean noLandProducesUsableColors = true;
-        for (IdentifiedCardObject landObject : _hand.getNotPlayedLandObjectsUntilTurn(turn)) {
+        for (CardObject landObject : _hand.getNotPlayedLandObjectsUntilTurn(turn)) {
 
             final Land land = (Land) landObject.get();
             final boolean tapped = land.comesIntoPlayTapped(board);
@@ -123,18 +123,18 @@ class PlayableRecursion {
         return false;
     }
 
-    private void playLandObject(IdentifiedCardObject landObject) {
+    private void playLandObject(CardObject landObject) {
 
         board.play(landObject);
         landObject.markPlayed();
     }
 
-    private void removeLandObject(IdentifiedCardObject landObject) {
+    private void removeLandObject(CardObject landObject) {
 
         landObject.markNotPlayed();
-        IdentifiedCardObject popObject = board.pop();
+        CardObject popObject = board.pop();
 
-        // the popped Object should always be the the IdentifiedCardObject
+        // the popped Object should always be the the CardObject
         assert popObject == landObject;
     }
 

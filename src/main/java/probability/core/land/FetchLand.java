@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.Set;
 
 import probability.core.Board;
+import probability.core.CardObject;
 import probability.core.Color;
 import probability.core.Colors;
-import probability.core.IdentifiedCardObject;
 
 /**
  * Models Fetch Lands such as <a href="http://magiccards.info/query?q=!Flooded+Strand">Flooded
@@ -23,7 +23,7 @@ import probability.core.IdentifiedCardObject;
  */
 public class FetchLand extends AbstractLand {
 
-    private List<IdentifiedCardObject> _fetchableBasicLandObjects;
+    private List<CardObject> _fetchableBasicLandObjects;
 
     private Colors _producibleColors;
 
@@ -35,13 +35,13 @@ public class FetchLand extends AbstractLand {
         _producibleColors = Colors.emptyColors();
     }
 
-    public void setFetchableBasicLandObjects(Collection<IdentifiedCardObject> basicLandObjects) {
+    public void setFetchableBasicLandObjects(Collection<CardObject> basicLandObjects) {
 
         _fetchableBasicLandObjects = new ArrayList<>(basicLandObjects);
 
         Set<Color> colors = Color.emptyEnumSet();
 
-        for (IdentifiedCardObject basicLandObject : _fetchableBasicLandObjects) {
+        for (CardObject basicLandObject : _fetchableBasicLandObjects) {
             colors.addAll(((Land) basicLandObject.get()).producibleColors());
         }
 
@@ -75,15 +75,15 @@ public class FetchLand extends AbstractLand {
      */
     private static class ColorIterator implements Iterator<Color> {
 
-        private final Iterator<Map.Entry<Color, IdentifiedCardObject>> _it;
+        private final Iterator<Map.Entry<Color, CardObject>> _it;
 
-        private IdentifiedCardObject _lastLandObject = null;
+        private CardObject _lastLandObject = null;
 
-        ColorIterator(List<IdentifiedCardObject> landObjects) {
+        ColorIterator(List<CardObject> landObjects) {
 
-            EnumMap<Color, IdentifiedCardObject> objectsByColor = new EnumMap<>(Color.class);
+            EnumMap<Color, CardObject> objectsByColor = new EnumMap<>(Color.class);
 
-            for (IdentifiedCardObject landObject : landObjects) {
+            for (CardObject landObject : landObjects) {
                 if (!landObject.isPlayed()) {
 
                     for (Color color : ((Land) landObject.get()).producibleColors()) {
@@ -114,7 +114,7 @@ public class FetchLand extends AbstractLand {
         @Override
         public Color next() {
 
-            Map.Entry<Color, IdentifiedCardObject> entry = _it.next();
+            Map.Entry<Color, CardObject> entry = _it.next();
 
             markLastNotPlayed();
             markLandObjectPlayed(entry.getValue());
@@ -122,7 +122,7 @@ public class FetchLand extends AbstractLand {
             return entry.getKey();
         }
 
-        private void markLandObjectPlayed(IdentifiedCardObject landObject) {
+        private void markLandObjectPlayed(CardObject landObject) {
 
             assert !landObject.isPlayed();
             landObject.markPlayed();

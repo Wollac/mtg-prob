@@ -9,8 +9,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import probability.core.CardObject;
 import probability.core.Color;
-import probability.core.IdentifiedCardObject;
 import probability.core.land.BasicLand;
 import probability.core.land.FetchLand;
 import probability.core.land.Land;
@@ -20,21 +20,21 @@ final class FetchLandInitializer {
 
     private final Set<FetchLand> _initializedIdentities;
 
-    private Iterable<IdentifiedCardObject> _cardObjectsToFetch;
+    private Iterable<CardObject> _cardObjectsToFetch;
 
-    private final Supplier<Collection<IdentifiedCardObject>> _basicLandObjectsToFetch =
+    private final Supplier<Collection<CardObject>> _basicLandObjectsToFetch =
             Suppliers.memoize(this::retainBasicLandObjectsToFetch);
 
-    FetchLandInitializer(Iterable<IdentifiedCardObject> cardObjectsToFetch) {
+    FetchLandInitializer(Iterable<CardObject> cardObjectsToFetch) {
 
         _cardObjectsToFetch = Preconditions.checkNotNull(cardObjectsToFetch);
 
         _initializedIdentities = Sets.newIdentityHashSet();
     }
 
-    void initializeFetchLands(Iterable<IdentifiedCardObject> landObjects) {
+    void initializeFetchLands(Iterable<CardObject> landObjects) {
 
-        for (IdentifiedCardObject o : landObjects) {
+        for (CardObject o : landObjects) {
             Land land = (Land) o.get();
             if (land instanceof FetchLand) {
                 initializeFetchLand((FetchLand) land);
@@ -49,11 +49,11 @@ final class FetchLandInitializer {
         }
     }
 
-    private Collection<IdentifiedCardObject> getFetchableLandObjects(Set<Color> colors) {
+    private Collection<CardObject> getFetchableLandObjects(Set<Color> colors) {
 
-        Collection<IdentifiedCardObject> result = new ArrayList<>();
+        Collection<CardObject> result = new ArrayList<>();
 
-        for (IdentifiedCardObject landObject : _basicLandObjectsToFetch.get()) {
+        for (CardObject landObject : _basicLandObjectsToFetch.get()) {
 
             if (!Collections.disjoint(((BasicLand) landObject.get()).colors(), colors)) {
                 result.add(landObject);
@@ -63,11 +63,11 @@ final class FetchLandInitializer {
         return result;
     }
 
-    private Collection<IdentifiedCardObject> retainBasicLandObjectsToFetch() {
+    private Collection<CardObject> retainBasicLandObjectsToFetch() {
 
-        Collection<IdentifiedCardObject> result = new ArrayList<>();
+        Collection<CardObject> result = new ArrayList<>();
 
-        for (IdentifiedCardObject cardObject : _cardObjectsToFetch) {
+        for (CardObject cardObject : _cardObjectsToFetch) {
             if (cardObject.get() instanceof BasicLand) {
                 result.add(cardObject);
             }

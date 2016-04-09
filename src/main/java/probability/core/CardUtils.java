@@ -33,11 +33,11 @@ final class CardUtils {
     private CardUtils() {
     }
 
-    public static Card getDummyCard() {
+    static Card getDummyCard() {
         return DUMMY_CARD;
     }
 
-    public static Colors getLandColors(Collection<IdentifiedCardObject> cardObjects) {
+    static Colors getLandColors(Collection<CardObject> cardObjects) {
 
         if (cardObjects.isEmpty()) {
             return Colors.emptyColors();
@@ -45,7 +45,7 @@ final class CardUtils {
 
         Set<Color> colorSet = Color.emptyEnumSet();
 
-        for (IdentifiedCardObject o : cardObjects) {
+        for (CardObject o : cardObjects) {
             if (o.isLand()) {
                 colorSet.addAll(((Land) o.get()).colors());
             }
@@ -57,7 +57,7 @@ final class CardUtils {
     /**
      * Create a set that contains the cards sorted by getName()
      */
-    public static SortedSet<Card> sortCardsByName(Collection<Card> cards) {
+    static SortedSet<Card> sortCardsByName(Collection<Card> cards) {
 
         SortedSet<Card> sorted = new TreeSet<>(
                 Comparator.comparing(Card::getName));
@@ -66,11 +66,11 @@ final class CardUtils {
         return sorted;
     }
 
-    public static Set<String> getNames(Iterable<IdentifiedCardObject> cardObjects) {
+    static Set<String> getNames(Iterable<CardObject> cardObjects) {
 
         Set<String> names = new HashSet<>();
 
-        for (IdentifiedCardObject o : cardObjects) {
+        for (CardObject o : cardObjects) {
 
             if (!o.isOther()) {
                 names.add(o.getName());
@@ -80,10 +80,10 @@ final class CardUtils {
         return names;
     }
 
-    public static int getNumberOfLandObjects(Iterable<IdentifiedCardObject> cardObjects) {
+    static int getNumberOfLandObjects(Iterable<CardObject> cardObjects) {
 
         int n = 0;
-        for (IdentifiedCardObject o : cardObjects) {
+        for (CardObject o : cardObjects) {
             if (o.isLand()) {
                 n++;
             }

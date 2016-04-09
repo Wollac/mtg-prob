@@ -9,7 +9,7 @@ import probability.core.land.Land;
 
 public class Board {
 
-    private final Stack<IdentifiedCardObject> _playedObjects;
+    private final Stack<CardObject> _playedObjects;
 
     private int _numPlayedLands;
 
@@ -23,7 +23,7 @@ public class Board {
         return _numPlayedLands;
     }
 
-    public void play(IdentifiedCardObject cardObject) {
+    public void play(CardObject cardObject) {
 
         _playedObjects.push(cardObject);
         if (cardObject.isLand()) {
@@ -31,9 +31,9 @@ public class Board {
         }
     }
 
-    public IdentifiedCardObject pop() {
+    public CardObject pop() {
 
-        IdentifiedCardObject cardObject = _playedObjects.pop();
+        CardObject cardObject = _playedObjects.pop();
         if (cardObject.isLand()) {
             _numPlayedLands--;
             assert _numPlayedLands >= 0;
@@ -44,7 +44,7 @@ public class Board {
 
     public boolean isBasicColorPlayed(Set<Color> colors) {
 
-        for (IdentifiedCardObject o : _playedObjects) {
+        for (CardObject o : _playedObjects) {
 
             if (o.isLand()) {
                 Land land = (Land) o.get();
