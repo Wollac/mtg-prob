@@ -105,13 +105,13 @@ public class MulliganRule {
         return rule;
     }
 
-    public boolean takeMulligan(final Collection<IdentifiedCardObject> startingHand) {
+    public boolean takeMulligan(final Collection<CardObject> startingHand) {
 
         _variables.assignValue(VARIABLES.CARDS, startingHand.size());
 
         Supplier<Integer> landsSupplier = Suppliers.memoize(() -> CardUtils.getNumberOfLandObjects(startingHand));
 
-        _variables.assignSupplier(VARIABLES.LANDS, landsSupplier::get);
+        _variables.assignSupplier(VARIABLES.LANDS, landsSupplier);
         _variables.assignSupplier(VARIABLES.NONLANDS, () -> startingHand.size() - landsSupplier.get());
 
         _variables.assignSupplier(VARIABLES.LAND_COLORS, () -> CardUtils.getLandColors(startingHand));

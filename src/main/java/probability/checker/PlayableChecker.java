@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Set;
 
 import probability.config.Settings;
+import probability.core.CardObject;
 import probability.core.Color;
 import probability.core.Deck;
-import probability.core.IdentifiedCardObject;
 import probability.core.ManaCost;
 import probability.core.MulliganRule;
 import probability.core.Spell;
@@ -20,7 +20,7 @@ import probability.utils.EnumCount;
 
 public class PlayableChecker {
 
-    private final List<IdentifiedCardObject> _cards;
+    private final List<CardObject> _cards;
 
     private final MulliganRule _mulliganRule;
 
@@ -29,7 +29,7 @@ public class PlayableChecker {
         Preconditions.checkArgument(deck.cards().size() >= initialHandSize(),
                 "not enough cards in the deck");
 
-        _cards = IdentifiedCardObject.toCardObjects(deck.cards());
+        _cards = CardObject.toCardObjects(deck.cards());
 
         _mulliganRule = mulliganRule;
     }
@@ -82,7 +82,7 @@ public class PlayableChecker {
 
         // this seams to be faster without streams
         //noinspection Convert2streamapi
-        for (IdentifiedCardObject card : _cards) {
+        for (CardObject card : _cards) {
             card.markNotPlayed();
         }
     }
@@ -120,7 +120,7 @@ public class PlayableChecker {
             return true;
         }
 
-        List<IdentifiedCardObject> landObjects = hand.getAllLands();
+        List<CardObject> landObjects = hand.getAllLands();
         initializeFetchLands(landObjects, hand.size());
 
         Set<Spell> playableSpellTypes = getPlayableSpellTypes(spells, landObjects, maxTurn);
@@ -137,22 +137,22 @@ public class PlayableChecker {
         return false;
     }
 
-    private void initializeFetchLands(List<IdentifiedCardObject> landObjects, int skipObjectsInDeck) {
+    private void initializeFetchLands(List<CardObject> landObjects, int skipObjectsInDeck) {
 
-        Iterable<IdentifiedCardObject> objectsToFetch = () -> _cards.listIterator(skipObjectsInDeck + 1);
+        Iterable<CardObject> objectsToFetch = () -> _cards.listIterator(skipObjectsInDeck + 1);
         FetchLandInitializer initializer = new FetchLandInitializer(objectsToFetch);
 
         initializer.initializeFetchLands(landObjects);
     }
 
-    private Set<Spell> getPlayableSpellTypes(Set<Spell> spells, Collection<IdentifiedCardObject> landObjects, int maxTurn) {
+    private Set<Spell> getPlayableSpellTypes(Set<Spell> spells, Collection<CardObject> landObjects, int maxTurn) {
 
         if (landObjects.isEmpty()) {
             return Collections.emptySet();
         }
 
         EnumCount<Color> maxColorCount = new EnumCount<>(Color.class);
-        for (IdentifiedCardObject o : landObjects) {
+        for (CardObject o : landObjects) {
             Land land = (Land) o.get();
             maxColorCount.increaseEach(land.producibleColors());
         }

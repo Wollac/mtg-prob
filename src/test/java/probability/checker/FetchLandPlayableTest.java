@@ -5,9 +5,9 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import probability.core.CardObject;
 import probability.core.Color;
 import probability.core.Colors;
-import probability.core.IdentifiedCardObject;
 import probability.core.Spell;
 import probability.core.land.BasicLand;
 import probability.core.land.FetchLand;
@@ -26,7 +26,7 @@ public class FetchLandPlayableTest extends AbstractSingleSpellPlayableTest {
 
     private static void initializeFetchLand(FetchLand fetch, BasicLand... lands) {
 
-        List<IdentifiedCardObject> objectList = IdentifiedCardObject.toCardObjects(Arrays.asList(lands));
+        List<CardObject> objectList = CardObject.toCardObjects(Arrays.asList(lands));
 
         FetchLandInitializer computer = new FetchLandInitializer(objectList);
         computer.initializeFetchLand(fetch);
