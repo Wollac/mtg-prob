@@ -16,6 +16,7 @@ import probability.attr.AttributeHolder;
 import probability.attr.AttributeKey;
 import probability.attr.AttributeKey.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
+import probability.utils.LineCommentReader;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -28,7 +29,7 @@ public abstract class AbstractCSVParser<T> {
 
     private Map<AttributeKey<?>, Integer> _attribute2column;
 
-    protected AbstractCSVParser(Reader reader) throws IOException {
+    AbstractCSVParser(Reader reader) throws IOException {
 
         checkNotNull(reader);
 
@@ -138,9 +139,7 @@ public abstract class AbstractCSVParser<T> {
 
     public static class CvsParseException extends Exception {
 
-        private static final long serialVersionUID = 1L;
-
-        public CvsParseException(String str, Throwable cause) {
+        CvsParseException(String str, Throwable cause) {
             super(str, cause);
         }
 

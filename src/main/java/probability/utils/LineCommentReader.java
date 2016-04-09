@@ -1,4 +1,4 @@
-package probability.csv;
+package probability.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.io.StringReader;
  *
  * Extending StringReader is fine, as we are only overwriting the constructor.
  */
-class LineCommentReader extends StringReader {
+public final class LineCommentReader extends StringReader {
 
     private static final String[] DEFAULT_COMMENT_TAGS = {"#", "//"};
 
@@ -37,16 +37,9 @@ class LineCommentReader extends StringReader {
         while ((line = reader.readLine()) != null) {
             line = line.trim();
 
-            if (line.isEmpty()) {
-                continue;
+            if (!line.isEmpty() && !startsWithComment(line, commentTags)) {
+                builder.append(line).append(System.lineSeparator());
             }
-
-            if (startsWithComment(line, commentTags)) {
-                continue;
-            }
-
-            builder.append(line).append('\n');
-
         }
 
         return builder.toString();

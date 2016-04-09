@@ -26,7 +26,8 @@ public class Deck {
         StringBuilder sb = new StringBuilder();
 
         if (type != null) {
-            sb.append(type).append(" (").append(cardCounts.size()).append("):\n");
+            sb.append(type).append(" (").append(cardCounts.size()).append("):");
+            sb.append(System.lineSeparator());
         }
 
         for (Card card : CardUtils.sortCardsByName(cardCounts.elementSet())) {
@@ -87,7 +88,7 @@ public class Deck {
 
         for (CardType type : CardType.values()) {
             sb.append(cardCountsToString(cardCounts.get(type), type));
-            sb.append('\n');
+            sb.append(System.lineSeparator());
         }
 
         return sb.toString();
@@ -101,7 +102,8 @@ public class Deck {
         StringBuilder sb = new StringBuilder();
 
         for (Card card : cardCounts.elementSet()) {
-            sb.append(cardCounts.count(card)).append("x ").append(card).append('\n');
+            sb.append(cardCounts.count(card)).append("x ").append(card);
+            sb.append(System.lineSeparator());
         }
 
         return sb.toString();
