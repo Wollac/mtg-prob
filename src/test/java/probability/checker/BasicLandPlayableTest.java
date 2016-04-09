@@ -15,6 +15,18 @@ public class BasicLandPlayableTest extends AbstractSingleSpellPlayableTest {
         return new BasicLand("BASIC-" + colors.toString(), colors);
     }
 
+    // Spell: 0
+    // Starting Hand: []
+    // Expected: playable in the first turn
+    @Test
+    public void testFreeSpell() {
+
+        Spell spell = createSpell("0");
+        Hand hand = createEmptyHand();
+
+        assertIsPlayableFirstInTurn(spell, hand, 1);
+    }
+
     // Spell: 1
     // Starting Hand: []
     // Draws: 2->Basic(B)

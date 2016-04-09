@@ -69,7 +69,7 @@ abstract class AbstractSingleSpellPlayableTest {
         return createSpell(sb.toString());
     }
 
-    private Hand createEmptyHand() {
+    Hand createEmptyHand() {
         return new Hand(Collections.emptySet(), Collections.emptySet());
     }
 
@@ -100,6 +100,9 @@ abstract class AbstractSingleSpellPlayableTest {
 
     abstract Land createLand(Colors colors);
 
+    // Spell: 1
+    // Starting Hand: []
+    // Expected: never playable
     @Test
     public void testEmpty() {
 
