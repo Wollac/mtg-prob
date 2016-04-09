@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import probability.core.Card;
 import probability.core.CardObject;
+import probability.core.ManaCost;
 import probability.core.Spell;
 
 final class Hand {
@@ -62,20 +63,24 @@ final class Hand {
         _cards.stream().forEach(CardObject::markNotPlayed);
     }
 
-    Set<Spell> getAllSpellTypes() {
+    /**
+     * Returns the mana costs corresponding to all the spells in the current hand.
+     */
+    Set<ManaCost> getAllSpellCosts() {
 
-        Set<Spell> result = new HashSet<>();
+        Set<ManaCost> result = new HashSet<>();
 
         for (CardObject o : _cards) {
             if (o.isSpell()) {
-                result.add((Spell) o.get());
+                Spell spell = (Spell) o.get();
+                result.add(spell.getCost());
             }
         }
 
         return result;
     }
 
-    List<CardObject> getAllLands() {
+    List<CardObject> getAllLandObjects() {
 
         return getLandObjectsUntilTurn(_lastTurn);
     }

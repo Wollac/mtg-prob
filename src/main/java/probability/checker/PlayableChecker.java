@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -14,7 +14,6 @@ import probability.core.Color;
 import probability.core.Deck;
 import probability.core.ManaCost;
 import probability.core.MulliganRule;
-import probability.core.Spell;
 import probability.core.land.Land;
 import probability.utils.EnumCount;
 
@@ -34,33 +33,6 @@ public class PlayableChecker {
         _mulliganRule = mulliganRule;
     }
 
-    private static int sampleSize() {
-        return Settings.config.sampleSize();
-    }
-
-    private static boolean drawOnTurn() {
-        return Settings.config.drawOnTurn();
-    }
-
-    private static int initialHandSize() {
-        return Settings.config.initialHandSize();
-    }
-
-    private static boolean spellIsPlayable(ManaCost spellCost, EnumCount<Color> maxColorCount, int maxCMC) {
-
-        if (spellCost.getConverted() > maxCMC) {
-            return false;
-        }
-
-        for (Color color : Color.values()) {
-            if (spellCost.count(color) > maxColorCount.count(color)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     public int countPlayable(int turn) {
 
         int good = 0;
@@ -76,6 +48,18 @@ public class PlayableChecker {
         }
 
         return good;
+    }
+
+    private static int sampleSize() {
+        return Settings.config.sampleSize();
+    }
+
+    private static boolean drawOnTurn() {
+        return Settings.config.drawOnTurn();
+    }
+
+    private static int initialHandSize() {
+        return Settings.config.initialHandSize();
     }
 
     private void markAllNotPlayed() {
@@ -109,25 +93,31 @@ public class PlayableChecker {
 
     private Hand createHand(int handSize, int turn) {
 
-        return new Hand(_cards.subList(0, handSize),
-                _cards.subList(handSize, handSize + turn - 1));
+        return new Hand(_cards.subList(0, handSize), _cards.subList(handSize, handSize + turn - 1));
     }
 
     private boolean isPlayable(Hand hand, int maxTurn) {
 
-        Set<Spell> spells = hand.getAllSpellTypes();
-        if (spells.isEmpty()) {
+        Set<ManaCost> spellCosts = hand.getAllSpellCosts();
+
+        // we are computing the combined failure probability, thus we have a
+        // success if there are no spells have been drawn
+        if (spellCosts.isEmpty()) {
             return true;
         }
 
-        List<CardObject> landObjects = hand.getAllLands();
-        initializeFetchLands(landObjects, hand.size());
+        List<CardObject> landObjects = hand.getAllLandObjects();
 
-        Set<Spell> playableSpellTypes = getPlayableSpellTypes(spells, landObjects, maxTurn);
+        // initialize fetch lands only if there are some lands
+        if (!landObjects.isEmpty()) {
+            initializeFetchLands(landObjects, hand.size());
+        }
 
-        for (Spell spell : playableSpellTypes) {
+        Set<ManaCost> playableSpellCosts = getPlayableManaCosts(spellCosts, landObjects, maxTurn);
 
-            PlayableRecursion recursion = new PlayableRecursion(hand, maxTurn, spell.getCost());
+        for (ManaCost spellCost : playableSpellCosts) {
+
+            PlayableRecursion recursion = new PlayableRecursion(hand, maxTurn, spellCost);
 
             if (recursion.check()) {
                 return true;
@@ -145,9 +135,15 @@ public class PlayableChecker {
         initializer.initializeFetchLands(landObjects);
     }
 
-    private Set<Spell> getPlayableSpellTypes(Set<Spell> spells, Collection<CardObject> landObjects, int maxTurn) {
+    /**
+     * Creates a new set containing only those ManaCosts that could definitely be paid using the
+     * provided landObjects.
+     */
+    private Set<ManaCost> getPlayableManaCosts(Collection<ManaCost> spellCosts,
+                                               Collection<CardObject> landObjects, int maxTurn) {
 
-        if (landObjects.isEmpty()) {
+        // if there are no costs to begin with, return an empty set
+        if (spellCosts.isEmpty()) {
             return Collections.emptySet();
         }
 
@@ -157,17 +153,32 @@ public class PlayableChecker {
             maxColorCount.increaseEach(land.producibleColors());
         }
 
+        // assuming that a land can produce at most one mana
         final int maxConverted = Math.min(landObjects.size(), maxTurn);
 
-        for (Iterator<Spell> iterator = spells.iterator(); iterator.hasNext(); ) {
-            Spell spell = iterator.next();
-
-            if (!spellIsPlayable(spell.getCost(), maxColorCount, maxConverted)) {
-                iterator.remove();
+        Set<ManaCost> result = new HashSet<>();
+        for (ManaCost cost : spellCosts) {
+            if (spellIsPlayable(cost, maxColorCount, maxConverted)) {
+                result.add(cost);
             }
         }
 
-        return spells;
+        return result;
+    }
+
+    private static boolean spellIsPlayable(ManaCost spellCost, EnumCount<Color> maxColorCount, int maxCMC) {
+
+        if (spellCost.getConverted() > maxCMC) {
+            return false;
+        }
+
+        for (Color color : Color.values()) {
+            if (spellCost.count(color) > maxColorCount.count(color)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }
