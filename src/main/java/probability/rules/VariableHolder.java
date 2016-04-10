@@ -34,7 +34,7 @@ public final class VariableHolder {
         }
 
         _name2var.put(name, Variable.createVariable(key));
-        _bindings.putAttributeValue(key, key.getDefaultValue());
+        _bindings.setAttributeValueUnchecked(key, key.getDefaultValue());
     }
 
     private boolean isRegistered(AttributeKey<?> key) {
@@ -52,7 +52,7 @@ public final class VariableHolder {
 
     public <T> void assignValue(AttributeKey<T> key, T value) {
 
-        _bindings.putAttributeValue(key, value);
+        _bindings.setAttributeValueUnchecked(key, value);
     }
 
     public <T> void assignSupplier(AttributeKey<T> key, Supplier<T> supplier) {
