@@ -1,6 +1,7 @@
 package probability.core;
 
 import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import com.google.common.io.Resources;
 
 import java.io.File;
@@ -22,6 +23,7 @@ import probability.rules.RuleLoader;
 import probability.rules.RuleLoader.RulesParseException;
 import probability.rules.VariableHolder;
 import probability.utils.FormattedPrintWriter;
+import probability.utils.Messages;
 import probability.utils.Suppliers;
 
 public class MulliganRule {
@@ -37,22 +39,18 @@ public class MulliganRule {
     public MulliganRule(File file) {
 
         registerVariables();
-        _rule = loadFromFile(file);
+        _rule = loadRule(file);
     }
 
-    private static String getDefaultRulesStringFromResources() throws IOException {
+    private Rule loadRule(File file) {
 
-        URL url = Resources.getResource(DEFAULT_RULES_RESOURCE_NAME);
-        return Resources.toString(url, Charsets.UTF_8);
-    }
-
-    private static String getVariableDescription(AttributeKey<?> var) {
-
-        try {
-            return var.getName() + ": " + bundle.getString(var.getName());
-        } catch (MissingResourceException e) {
-            return var.getName();
+        Rule rule = loadFromFile(file);
+        if (rule == null) {
+            rule = getDefaultRule();
+            writeRuleToFile(rule, file);
         }
+
+        return rule;
     }
 
     private void registerVariables() {
@@ -75,21 +73,51 @@ public class MulliganRule {
         }
         System.err.println("Using default mulligan rules");
 
-        return getDefaultRule();
+        return null;
     }
 
-    public void printDescription(FormattedPrintWriter writer) {
+    private void writeRuleToFile(Rule rule, File file) {
 
-        writer.printlnTitle("Rule when to take a mulligan");
+        if (!file.exists()) {
+
+            System.err.println("Mulligan rules file " + file + " does not exist," +
+                    " creating new file with description an default rules");
+
+            try (FormattedPrintWriter out = new FormattedPrintWriter(Files.newWriter(file, Charsets.UTF_8), 100)) {
+
+                out.setPrefixString("// ");
+                printDescription(out);
+                out.setPrefixString("");
+                out.println();
+
+                rule.toStrings().forEach(out::println);
+            } catch (IOException e) {
+                System.err.println("Could not write default mulligan rules file: " + e.getMessage());
+            }
+        }
+    }
+
+    private void printDescription(FormattedPrintWriter writer) {
+
+        writer.printlnTitle(Messages.formatMessage(MessageKeys.MULLIGAN));
         Rule.printGrammar(writer);
         writer.println();
-        writer.println("The following variables can be used:");
+        writer.println(Messages.formatMessage(MessageKeys.VARIABLES));
 
         writer.setIndentionLevel(1);
         for (AttributeKey<?> var : AttributeUtils.getAttributeKeys(VARIABLES.class)) {
             writer.println(getVariableDescription(var));
         }
         writer.setIndentionLevel(0);
+    }
+
+    private static String getVariableDescription(AttributeKey<?> var) {
+
+        try {
+            return var.getName() + ": " + bundle.getString(var.getName());
+        } catch (MissingResourceException e) {
+            return var.getName();
+        }
     }
 
     private Rule getDefaultRule() {
@@ -103,6 +131,12 @@ public class MulliganRule {
         }
 
         return rule;
+    }
+
+    private static String getDefaultRulesStringFromResources() throws IOException {
+
+        URL url = Resources.getResource(DEFAULT_RULES_RESOURCE_NAME);
+        return Resources.toString(url, Charsets.UTF_8);
     }
 
     public boolean takeMulligan(final Collection<CardObject> startingHand) {
@@ -134,6 +168,22 @@ public class MulliganRule {
         }
 
         return sb.toString();
+    }
+
+    private enum MessageKeys implements Messages.MessageKey {
+
+        MULLIGAN("rules.description.mulligan"), VARIABLES("rules.description.variables");
+
+        private final String _key;
+
+        MessageKeys(String key) {
+            _key = key;
+        }
+
+        @Override
+        public String getBundleKey() {
+            return _key;
+        }
     }
 
     private interface VARIABLES {

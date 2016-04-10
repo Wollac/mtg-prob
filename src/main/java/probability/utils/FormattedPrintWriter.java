@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.BreakIterator;
+import java.util.Objects;
 
 public class FormattedPrintWriter extends Writer {
 
@@ -18,16 +19,20 @@ public class FormattedPrintWriter extends Writer {
 
     private final int _lineWidth;
 
+    private String _prefix;
+
     private int _indentionLevel;
 
     public FormattedPrintWriter(Writer out, int lineWidth) {
         _writer = new PrintWriter(out);
         _lineWidth = lineWidth;
+        _prefix = "";
     }
 
     public FormattedPrintWriter(OutputStream out, int lineWidth) {
-        _writer = new PrintWriter(out);
+        _writer = new PrintWriter(out, true);
         _lineWidth = lineWidth;
+        _prefix = "";
     }
 
     private static String trimEnd(String s) {
@@ -65,14 +70,18 @@ public class FormattedPrintWriter extends Writer {
         _indentionLevel = level;
     }
 
+    public void setPrefixString(String prefix) {
+        _prefix = Objects.requireNonNull(prefix);
+    }
+
     public void println() {
-        _writer.println();
+        _writer.println(_prefix);
     }
 
     public void println(Object object) {
         String s = object.toString();
 
-        final int usableWidth = _lineWidth - INDENTION_STRING.length() * _indentionLevel;
+        final int usableWidth = _lineWidth - _prefix.length() - INDENTION_STRING.length() * _indentionLevel;
 
         int offset = 0;
         BreakIterator wb = BreakIterator.getLineInstance();
@@ -92,7 +101,9 @@ public class FormattedPrintWriter extends Writer {
 
         String trimmed = trimEnd(string);
         if (!trimmed.isEmpty()) {
-            _writer.println(Strings.repeat(INDENTION_STRING, _indentionLevel) + string);
+            _writer.println(_prefix + Strings.repeat(INDENTION_STRING, _indentionLevel) + string);
+        } else {
+            _writer.println(_prefix);
         }
     }
 
@@ -100,9 +111,9 @@ public class FormattedPrintWriter extends Writer {
 
         String title = capitalizeWords(string.trim());
 
-        int length = Math.min(title.length(), _lineWidth - 2 * TITLE_STRING.length() - 2);
+        final int length = Math.min(title.length(), _lineWidth - _prefix.length() - 2 * TITLE_STRING.length() - 2);
 
-        _writer.println(TITLE_STRING + ' ' + title.substring(0, length) + ' ' + TITLE_STRING);
+        _writer.println(_prefix + TITLE_STRING + ' ' + title.substring(0, length) + ' ' + TITLE_STRING);
     }
 
     @Override
