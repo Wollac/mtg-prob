@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import probability.attr.AttributeKey;
 import probability.attr.ImmutableAttributeHolder;
-import probability.utils.Suppliers;
+import probability.attr.SuppliedAttributeHolder;
 
 public final class VariableHolder {
 
@@ -83,45 +83,6 @@ public final class VariableHolder {
         if (Operation.getOperationFromSymbol(name) != null) {
             throw new IllegalArgumentException(
                     "Invalid variable name \"" + name + "\": name of an operation");
-        }
-    }
-
-    private static final class SuppliedAttributeHolder implements ImmutableAttributeHolder {
-
-        private final Map<AttributeKey<?>, Supplier<?>> _supplierMap = new HashMap<>();
-
-        <T> void putAttributeValue(AttributeKey<T> key, T value) {
-
-            _supplierMap.put(key, () -> value);
-        }
-
-        <T> void putAttributeSupplier(AttributeKey<T> key, Supplier<T> supplier) {
-
-            _supplierMap.put(key, Suppliers.memoize(supplier));
-        }
-
-        @Override
-        public <T> T getAttributeValue(AttributeKey<T> key, T def) {
-
-            if (_supplierMap.containsKey(key)) {
-                return getAttributeValue(key);
-            }
-
-            return def;
-        }
-
-        @Override
-        public <T> T getAttributeValue(AttributeKey<T> key) {
-
-            Supplier<?> supplier = _supplierMap.get(key);
-
-            // the variable holder assures that there are no variables without a supplier
-            assert supplier != null;
-
-            @SuppressWarnings("unchecked")
-            T value = (T) supplier.get();
-
-            return value;
         }
     }
 
