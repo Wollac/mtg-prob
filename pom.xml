@@ -101,6 +101,8 @@
                             <options>
                                 <option>-printusage ${project.build.directory}/proguard_usage.txt
                                 </option>
+                                <!-- <option>-dontobfuscate</option>
+                                <option>-optimizations !code/allocation/variable</option> -->
                                 <!-- <option>-verbose</option> -->
                             </options>
                             <libs>
@@ -129,7 +131,6 @@
                                 <option>-dontwarn sun.misc.Unsafe</option>
                                 <option>-dontwarn com.google.common.collect.MinMaxPriorityQueue
                                 </option>
-                                <!-- <option>-verbose</option> -->
                             </options>
 
                             <libs>
