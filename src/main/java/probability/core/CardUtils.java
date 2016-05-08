@@ -9,7 +9,7 @@ import java.util.TreeSet;
 
 import probability.core.land.Land;
 
-final class CardUtils {
+public final class CardUtils {
 
     private static final Card DUMMY_CARD = new Card() {
 
@@ -91,6 +91,18 @@ final class CardUtils {
         }
 
         return n;
+    }
+
+    public static Set<Integer> getConvertedManaCosts(Iterable<? extends Card> cards) {
+
+        Set<Integer> result = new HashSet<>();
+        for (Card c : cards) {
+            if (c instanceof Spell) {
+                result.add(((Spell) c).getCMC());
+            }
+        }
+
+        return result;
     }
 
 }

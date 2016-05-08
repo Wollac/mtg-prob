@@ -5,19 +5,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import probability.checker.PlayableChecker;
 import probability.config.Settings;
-import probability.core.Card;
+import probability.core.CardUtils;
 import probability.core.Deck;
 import probability.core.MulliganRule;
-import probability.core.Spell;
 import probability.csv.AbstractCSVParser.CvsParseException;
 import probability.csv.LandCSVParser;
 import probability.csv.SpellCSVParser;
-import probability.utils.FormattedPrintWriter;
 
 public class Main {
 
@@ -33,21 +30,21 @@ public class Main {
         System.out.println("The following deck has been loaded:");
         System.out.println(deck.toFormattedString());
 
-        MulliganRule mulliganRule = new MulliganRule(new File("mulligan.txt"));
+        MulliganRule mulliganRule = new MulliganRule(new File(Settings.MULLIGAN_RULES_FILE_NAME));
 
         System.out.println("Taking a mulligan, if one of the following rules applies:");
         System.out.println(mulliganRule.toFormattedString());
 
-        Set<Integer> convertedManaCosts = getConvertedManaCosts(deck);
+        Set<Integer> convertedManaCosts = CardUtils.getConvertedManaCosts(deck.cards());
 
         int minCmc = Collections.min(convertedManaCosts);
         int maxCmc = Collections.min(convertedManaCosts);
 
-        System.out.println("Calculating the combined failure probability for" + " the given spells:");
+        System.out.println("Calculating the combined failure probability for the given spells:");
 
         PlayableChecker checker = new PlayableChecker(deck, mulliganRule);
 
-        for (int turn = minCmc; turn <= maxCmc + 3; turn++) {
+        for (int turn = minCmc; turn <= maxCmc + Settings.config.turnsAfterMaxCMC(); turn++) {
 
             int playable = checker.countPlayable(turn);
             double factor = 1.0 - (double) playable / Settings.config.sampleSize();
@@ -55,20 +52,6 @@ public class Main {
             System.out.printf("Turn %02d: %4.1f%%%n", turn, factor * 100.0);
         }
 
-    }
-
-    private static Set<Integer> getConvertedManaCosts(Deck deck) {
-
-        Set<Integer> result = new HashSet<>();
-
-        for (Card card : deck.cards()) {
-
-            if (card instanceof Spell) {
-                result.add(((Spell) card).getCMC());
-            }
-        }
-
-        return result;
     }
 
     private static Deck buildDeck() {
@@ -89,7 +72,7 @@ public class Main {
 
     private static void addLands(Deck deck) {
 
-        try (Reader reader = new FileReader("lands.csv")) {
+        try (Reader reader = new FileReader(Settings.LANDS_FILE_NAME)) {
             LandCSVParser parser = new LandCSVParser(reader);
 
             deck.addAll(parser.readAll());
@@ -102,7 +85,7 @@ public class Main {
 
     private static void addSpells(Deck deck) {
 
-        try (Reader reader = new FileReader("spells.csv")) {
+        try (Reader reader = new FileReader(Settings.SPELLS_FILE_NAME)) {
             SpellCSVParser parse = new SpellCSVParser(reader);
 
             deck.addAll(parse.readAll());

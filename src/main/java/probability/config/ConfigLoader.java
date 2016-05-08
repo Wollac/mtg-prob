@@ -15,37 +15,12 @@ class ConfigLoader {
 
     private final GenericJsonIO configIO;
 
-    public ConfigLoader() {
+    ConfigLoader() {
 
         configIO = new GenericJsonIO(ATTR.NUMBER_OF_CARDS, ATTR.INITIAL_HAND_SIZE, ATTR.DRAW_ON_TURN, ATTR.SAMPLE_SIZE);
     }
 
-    static Config getDefaultConfig() {
-
-        return new Config() {
-            @Override
-            public int numberOfCards() {
-                return ATTR.NUMBER_OF_CARDS.getDefaultValue();
-            }
-
-            @Override
-            public int initialHandSize() {
-                return ATTR.INITIAL_HAND_SIZE.getDefaultValue();
-            }
-
-            @Override
-            public boolean drawOnTurn() {
-                return ATTR.DRAW_ON_TURN.getDefaultValue();
-            }
-
-            @Override
-            public int sampleSize() {
-                return ATTR.SAMPLE_SIZE.getDefaultValue();
-            }
-        };
-    }
-
-    public Config loadFromFileOrWriteDefault(File configFile) {
+    Config loadFromFileOrWriteDefault(File configFile) {
 
         if (!configFile.exists()) {
             writeDefaultConfigFile(configFile);
@@ -57,6 +32,7 @@ class ConfigLoader {
     }
 
     private Config getConfig() {
+
         return new Config() {
             @Override
             public int numberOfCards() {
@@ -76,6 +52,11 @@ class ConfigLoader {
             @Override
             public int sampleSize() {
                 return getConfigValue(ATTR.SAMPLE_SIZE);
+            }
+
+            @Override
+            public int turnsAfterMaxCMC() {
+                return getConfigValue(ATTR.TURNS_AFTER_MAX_CMC);
             }
         };
     }
@@ -130,6 +111,9 @@ class ConfigLoader {
 
         IntegerAttributeKey SAMPLE_SIZE = new IntegerAttributeKey(
                 "sample size", 10000, i -> (i >= 1000));
+
+        IntegerAttributeKey TURNS_AFTER_MAX_CMC = new IntegerAttributeKey(
+                "turns after max CMC", 3, i -> (i > 0));
 
     }
 

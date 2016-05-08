@@ -64,11 +64,7 @@ public class PlayableChecker {
 
     private void markAllNotPlayed() {
 
-        // this seams to be faster without streams
-        //noinspection Convert2streamapi
-        for (CardObject card : _cards) {
-            card.markNotPlayed();
-        }
+        _cards.forEach(CardObject::markNotPlayed);
     }
 
     private Hand getStartingHand(int turn) {

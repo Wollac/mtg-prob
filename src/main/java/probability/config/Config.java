@@ -10,4 +10,6 @@ public interface Config {
 
     int sampleSize();
 
+    int turnsAfterMaxCMC();
+
 }
