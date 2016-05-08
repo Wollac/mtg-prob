@@ -3,7 +3,13 @@ package probability.config;
 import java.io.File;
 import java.net.URL;
 
-public class Settings {
+public final class Settings {
+
+    public static final String MULLIGAN_RULES_FILE_NAME = "mulligan.txt";
+
+    public static final String LANDS_FILE_NAME = "lands.csv";
+
+    public static final String SPELLS_FILE_NAME = "spells.csv";
 
     private static final String CONFIG_FILE_NAME = "mtg.config";
 
@@ -18,5 +24,9 @@ public class Settings {
         } else {
             config = loader.loadFromFileOrWriteDefault(new File(CONFIG_FILE_NAME));
         }
+    }
+
+    private Settings() {
+        // do not initialize
     }
 }
