@@ -35,11 +35,13 @@ public abstract class ReadOrWriteDefaultIO {
 
     private void write(File file, Charset charset) {
 
-        if (file.isFile() && !file.exists()) {
+        if (!file.exists()) {
 
             try (Writer writer = Files.newWriter(file, charset)) {
 
                 writeDefault(writer);
+                System.out.println("Created default file: " + file.getName());
+
             } catch (IOException e) {
                 System.err.println("Could not write file: " + e.getMessage());
             }
