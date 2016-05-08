@@ -1,9 +1,14 @@
 package probability.config;
 
+import com.google.common.base.Charsets;
+
 import java.io.File;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 public final class Settings {
+
+    public static final Charset CHARSET = Charsets.UTF_8;
 
     public static final String MULLIGAN_RULES_FILE_NAME = "mulligan.txt";
 

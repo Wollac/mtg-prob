@@ -1,11 +1,12 @@
 package probability.core;
 
 import com.google.common.base.Charsets;
-import com.google.common.io.Files;
 import com.google.common.io.Resources;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
@@ -18,82 +19,75 @@ import probability.attr.AttributeUtils;
 import probability.attr.ColorsAttributeKey;
 import probability.attr.IntegerAttributeKey;
 import probability.attr.StringSetAttributeKey;
+import probability.config.Settings;
 import probability.rules.Rule;
 import probability.rules.RuleLoader;
 import probability.rules.RuleLoader.RulesParseException;
 import probability.rules.VariableHolder;
 import probability.utils.FormattedPrintWriter;
 import probability.utils.Messages;
+import probability.utils.ReadOrWriteDefaultIO;
 import probability.utils.Suppliers;
 
-public class MulliganRule {
+public class MulliganRule extends ReadOrWriteDefaultIO {
 
     private static final String DEFAULT_RULES_RESOURCE_NAME = "default_mulligan_rule.txt";
 
     private static final ResourceBundle bundle = ResourceBundle.getBundle("variables");
 
-    private final Rule _rule;
+    private static final VariableHolder _variables = createVariableHolder();
 
-    private final VariableHolder _variables = new VariableHolder();
+    private Rule _rule;
 
     public MulliganRule(File file) {
 
-        registerVariables();
-        _rule = loadRule(file);
+        super(file, Settings.CHARSET);
+
+        assert _rule != null;
     }
 
-    private Rule loadRule(File file) {
-
-        Rule rule = loadFromFile(file);
-        if (rule == null) {
-            rule = getDefaultRule();
-            writeRuleToFile(rule, file);
-        }
-
-        return rule;
-    }
-
-    private void registerVariables() {
+    private static VariableHolder createVariableHolder() {
 
         List<AttributeKey<?>> variableKeys = AttributeUtils.getAttributeKeys(VARIABLES.class);
 
-        _variables.registerVariables(variableKeys);
+        VariableHolder holder = new VariableHolder();
+        holder.registerVariables(variableKeys);
+
+        return holder;
     }
 
-    private Rule loadFromFile(File file) {
+    @Override
+    protected boolean read(Reader reader) throws IOException {
 
+        boolean success = false;
         try {
             RuleLoader loader = new RuleLoader(_variables);
-            return loader.readFromFile(file);
-        } catch (IOException e) {
-            System.err.println("Could not read mulligan rules file: " + e.getMessage());
+            _rule = loader.read(reader);
+
+            if (_rule != null) {
+                success = true;
+            }
         } catch (RulesParseException e) {
-            System.err.println("Error parsing rules file " + file.getName() + " in line "
+            System.err.println("Error parsing rules in line "
                     + e.getErrorLine() + ": " + e.getMessage());
         }
-        System.err.println("Using default mulligan rules");
 
-        return null;
+        return success;
     }
 
-    private void writeRuleToFile(Rule rule, File file) {
+    @Override
+    protected void writeDefault(Writer writer) throws IOException {
 
-        if (!file.exists()) {
+        _rule = getDefaultRule();
 
-            System.err.println("Mulligan rules file " + file + " does not exist," +
-                    " creating new file with description an default rules");
+        try (FormattedPrintWriter out = new FormattedPrintWriter(writer, 100)) {
 
-            try (FormattedPrintWriter out = new FormattedPrintWriter(Files.newWriter(file, Charsets.UTF_8), 100)) {
+            out.setPrefixString("// ");
+            printDescription(out);
+            out.setPrefixString("");
+            out.println();
 
-                out.setPrefixString("// ");
-                printDescription(out);
-                out.setPrefixString("");
-                out.println();
-
-                rule.toStrings().forEach(out::println);
-            } catch (IOException e) {
-                System.err.println("Could not write default mulligan rules file: " + e.getMessage());
-            }
+            _rule.toStrings().forEach(out::println);
         }
     }
 
@@ -125,7 +119,7 @@ public class MulliganRule {
         Rule rule;
         try {
             RuleLoader loader = new RuleLoader(_variables);
-            rule = loader.readFromString(getDefaultRulesStringFromResources());
+            rule = loader.read(getDefaultRulesReaderFromResources());
         } catch (IOException | RulesParseException e) {
             throw new IllegalStateException("Error parsing default rules", e);
         }
@@ -133,10 +127,10 @@ public class MulliganRule {
         return rule;
     }
 
-    private static String getDefaultRulesStringFromResources() throws IOException {
+    private static Reader getDefaultRulesReaderFromResources() throws IOException {
 
         URL url = Resources.getResource(DEFAULT_RULES_RESOURCE_NAME);
-        return Resources.toString(url, Charsets.UTF_8);
+        return Resources.asCharSource(url, Charsets.UTF_8).openStream();
     }
 
     public boolean takeMulligan(final Collection<CardObject> startingHand) {

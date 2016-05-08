@@ -1,8 +1,8 @@
 package probability.utils;
 
-import java.io.BufferedReader;
+import com.google.common.io.CharStreams;
+
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
 
 /**
@@ -15,26 +15,23 @@ public final class LineCommentReader extends StringReader {
 
     private static final String[] DEFAULT_COMMENT_TAGS = {"#", "//"};
 
-    public LineCommentReader(Reader in, String... commentTags)
+    public LineCommentReader(Readable r, String... commentTags)
             throws IOException {
 
-        super(initString(in, commentTags));
+        super(initString(r, commentTags));
     }
 
-    public LineCommentReader(Reader in) throws IOException {
+    public LineCommentReader(Readable r) throws IOException {
 
-        this(in, DEFAULT_COMMENT_TAGS);
+        this(r, DEFAULT_COMMENT_TAGS);
     }
 
-    private static String initString(Reader in, String[] commentTags)
+    private static String initString(Readable r, String[] commentTags)
             throws IOException {
-
-        BufferedReader reader = new BufferedReader(in);
 
         StringBuilder builder = new StringBuilder();
-        String line;
 
-        while ((line = reader.readLine()) != null) {
+        for (String line : CharStreams.readLines(r)) {
             line = line.trim();
 
             if (!line.isEmpty() && !startsWithComment(line, commentTags)) {

@@ -1,14 +1,10 @@
 package probability.rules;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Stack;
 
 import probability.rules.Parentheses.CloseParenthesis;
@@ -66,31 +62,18 @@ public class RuleLoader {
     }
 
     /**
-     * Reads a rule from the given text file.
+     * Parses a rule from the given text.
+     *
+     * @param reader reader representing the characters
+     * @return parsed rule
+     * @throws IOException         if an error occurred during reading
+     * @throws RulesParseException if an error occurred during parsing
      */
-    public Rule readFromFile(File file) throws IOException, RulesParseException {
+    public Rule read(Reader reader) throws IOException, RulesParseException {
 
-        checkNotNull(file);
+        List<Expression> expressions = parse(Objects.requireNonNull(reader));
 
-        try (Reader reader = Files.newReader(file, Charsets.UTF_8)) {
-
-            List<Expression> expressions = parse(reader);
-            return new Rule(expressions);
-        }
-    }
-
-    /**
-     * Reads a rule from the given string.
-     */
-    public Rule readFromString(String string) throws IOException, RulesParseException {
-
-        checkNotNull(string);
-
-        try (Reader reader = new StringReader(string)) {
-
-            List<Expression> expressions = parse(reader);
-            return new Rule(expressions);
-        }
+        return new Rule(expressions);
     }
 
     private List<Expression> parse(Reader reader) throws IOException, RulesParseException {
