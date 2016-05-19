@@ -20,12 +20,12 @@ import probability.attr.ColorsAttributeKey;
 import probability.attr.IntegerAttributeKey;
 import probability.attr.StringSetAttributeKey;
 import probability.config.Settings;
+import probability.messages.Messages;
 import probability.rules.Rule;
 import probability.rules.RuleLoader;
 import probability.rules.RuleLoader.RulesParseException;
 import probability.rules.VariableHolder;
 import probability.utils.FormattedPrintWriter;
-import probability.utils.Messages;
 import probability.utils.ReadOrWriteDefaultIO;
 import probability.utils.Suppliers;
 
@@ -93,10 +93,10 @@ public class MulliganRule extends ReadOrWriteDefaultIO {
 
     private void printDescription(FormattedPrintWriter writer) {
 
-        writer.printlnTitle(Messages.formatMessage(MessageKeys.MULLIGAN));
+        writer.printlnTitle(Messages.get().mulliganRuleDescriptionTitle());
         Rule.printGrammar(writer);
         writer.println();
-        writer.println(Messages.formatMessage(MessageKeys.VARIABLES));
+        writer.println(Messages.get().variablesDescriptionTitle());
 
         writer.setIndentionLevel(1);
         for (AttributeKey<?> var : AttributeUtils.getAttributeKeys(VARIABLES.class)) {
@@ -162,22 +162,6 @@ public class MulliganRule extends ReadOrWriteDefaultIO {
         }
 
         return sb.toString();
-    }
-
-    private enum MessageKeys implements Messages.MessageKey {
-
-        MULLIGAN("rules.description.mulligan"), VARIABLES("rules.description.variables");
-
-        private final String _key;
-
-        MessageKeys(String key) {
-            _key = key;
-        }
-
-        @Override
-        public String getBundleKey() {
-            return _key;
-        }
     }
 
     private interface VARIABLES {

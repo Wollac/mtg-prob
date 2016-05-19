@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import probability.attr.ImmutableAttributeHolder;
+import probability.messages.Messages;
 import probability.utils.FormattedPrintWriter;
-import probability.utils.Messages;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static probability.rules.NamingConventions.EXPRESSION;
@@ -31,8 +31,8 @@ public class Rule {
 
     public static void printGrammar(FormattedPrintWriter writer) {
 
-        writer.println(Messages.formatMessage(RuleMessages.RULE));
-        writer.println(Messages.formatMessage(RuleMessages.EXPRESSION, EXPRESSION));
+        writer.println(Messages.get().grammarDescriptionRule());
+        writer.println(Messages.get().grammarDescriptionExpression(EXPRESSION));
 
         writer.setIndentionLevel(1);
 
@@ -44,9 +44,8 @@ public class Rule {
 
         writer.setIndentionLevel(0);
 
-        writer.println(Messages.formatMessage(RuleMessages.VARIABLE, VARIABLE));
-        writer.println(Messages.formatMessage(RuleMessages.STRING, STRING,
-                StringTokenizer.QUOTE_CHAR));
+        writer.println(Messages.get().grammarDescriptionVariable(VARIABLE));
+        writer.println(Messages.get().grammarDescriptionString(STRING, StringTokenizer.QUOTE_CHAR));
     }
 
     /**
@@ -92,23 +91,6 @@ public class Rule {
         }
 
         return sb.toString();
-    }
-
-    private enum RuleMessages implements Messages.MessageKey {
-
-        RULE("rules.description.rule"), EXPRESSION("rules.description.expression"),
-        VARIABLE("rules.description.variable"), STRING("rules.description.string");
-
-        private final String _key;
-
-        RuleMessages(String resourceKey) {
-            _key = resourceKey;
-        }
-
-        @Override
-        public String getBundleKey() {
-            return _key;
-        }
     }
 
 }
