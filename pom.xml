@@ -17,6 +17,7 @@
         <opencsv.version>3.3</opencsv.version>
         <json.version>20141113</json.version>
         <junit.version>4.11</junit.version>
+        <reflections.version>0.9.10</reflections.version>
     </properties>
 
     <dependencies>
@@ -39,6 +40,12 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>${reflections.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
