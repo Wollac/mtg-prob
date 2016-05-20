@@ -14,7 +14,7 @@ import java.util.Set;
 
 import probability.attr.AttributeHolder;
 import probability.attr.AttributeKey;
-import probability.attr.AttributeKey.AttributeParseException;
+import probability.attr.AttributeParseException;
 
 class GenericJsonIO {
 

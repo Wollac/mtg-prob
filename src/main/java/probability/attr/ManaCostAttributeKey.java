@@ -16,8 +16,7 @@ public class ManaCostAttributeKey extends AttributeKey<ManaCost> {
         try {
             result = new ManaCost(valueString);
         } catch (IllegalArgumentException e) {
-            throw new AttributeParseException("invalid color string \"" + valueString + "\", "
-                    + e.getMessage(), this);
+            throw new AttributeParseException(AttributeParseException.AttributeParseError.UNPARSABLE_VALUE, this, e);
         }
 
         return result;

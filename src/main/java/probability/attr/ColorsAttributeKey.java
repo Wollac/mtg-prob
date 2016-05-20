@@ -1,9 +1,9 @@
 package probability.attr;
 
-import java.util.function.Predicate;
-
 import probability.core.Color;
 import probability.core.Colors;
+
+import java.util.function.Predicate;
 
 public class ColorsAttributeKey extends AttributeKey<Colors> {
 
@@ -24,7 +24,7 @@ public class ColorsAttributeKey extends AttributeKey<Colors> {
         try {
             result = Colors.valueOf(valueString);
         } catch (IllegalArgumentException e) {
-            throw new AttributeParseException("invalid color string, " + e.getMessage(), this);
+            throw new AttributeParseException(AttributeParseException.AttributeParseError.UNPARSABLE_VALUE, this, e);
         }
 
         return result;

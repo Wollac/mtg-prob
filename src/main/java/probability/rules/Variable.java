@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.Stack;
 
 import probability.attr.AttributeKey;
-import probability.attr.AttributeKey.AttributeParseException;
+import probability.attr.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
 
 import static com.google.common.base.Preconditions.checkNotNull;

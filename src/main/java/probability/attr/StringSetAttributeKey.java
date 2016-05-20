@@ -37,8 +37,7 @@ public class StringSetAttributeKey extends AttributeKey<Set<String>> {
         try {
             list = Arrays.asList(parser.parseLine(valueString));
         } catch (IOException e) {
-            throw new AttributeParseException(valueString
-                    + " is not a parsable collection of comma separated values", this);
+            throw new AttributeParseException(AttributeParseException.AttributeParseError.UNPARSABLE_VALUE, this, e);
         }
 
         return list.stream().map(String::trim).collect(Collectors.toSet());

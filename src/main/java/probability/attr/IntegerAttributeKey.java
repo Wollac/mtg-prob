@@ -26,8 +26,7 @@ public class IntegerAttributeKey extends AttributeKey<Integer> {
         try {
             result = Integer.valueOf(valueString);
         } catch (NumberFormatException e) {
-            throw new AttributeParseException(valueString
-                    + " is not a valid integer", this);
+            throw new AttributeParseException(AttributeParseException.AttributeParseError.UNPARSABLE_VALUE, this, e);
         }
 
         return result;

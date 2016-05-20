@@ -1,6 +1,8 @@
 package probability.utils;
 
 import com.google.common.io.Files;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,8 +10,9 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
-
 public abstract class ReadOrWriteDefaultIO {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ReadOrWriteDefaultIO.class);
 
     protected ReadOrWriteDefaultIO(File file, Charset charset) {
 
@@ -27,7 +30,7 @@ public abstract class ReadOrWriteDefaultIO {
 
             readSuccess = read(reader);
         } catch (IOException e) {
-            System.err.println("Could not read file: " + e.getMessage());
+            LOG.error("could not read file: {}", e.getMessage());
         }
 
         return readSuccess;
@@ -40,10 +43,9 @@ public abstract class ReadOrWriteDefaultIO {
             try (Writer writer = Files.newWriter(file, charset)) {
 
                 writeDefault(writer);
-                System.out.println("Created default file: " + file.getName());
-
+                LOG.info("file {} does not exist, creating default", file.getName());
             } catch (IOException e) {
-                System.err.println("Could not write file: " + e.getMessage());
+                LOG.error("could not write file", e);
             }
         }
     }

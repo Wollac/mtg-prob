@@ -1,6 +1,5 @@
 package probability.attr;
 
-import java.util.Arrays;
 import java.util.function.Predicate;
 
 public class EnumAttributeKey<E extends Enum<E>> extends AttributeKey<E> {
@@ -25,9 +24,7 @@ public class EnumAttributeKey<E extends Enum<E>> extends AttributeKey<E> {
         try {
             result = Enum.valueOf(enumType, valueString);
         } catch (IllegalArgumentException e) {
-            throw new AttributeParseException("illegal string \"" + valueString
-                    + "\" is not a valid element of "
-                    + Arrays.asList(getValueType().getEnumConstants()), this);
+            throw new AttributeParseException(AttributeParseException.AttributeParseError.UNPARSABLE_VALUE, this, e);
         }
 
         return result;

@@ -28,8 +28,7 @@ public class BooleanAttributeKey extends AttributeKey<Boolean> {
             return Boolean.FALSE;
         }
 
-        throw new AttributeParseException("illegal string \"" + valueString
-                + "\" is not a valid boolean value", this);
+        throw new AttributeParseException(AttributeParseException.AttributeParseError.UNPARSABLE_VALUE, this);
     }
 
 }

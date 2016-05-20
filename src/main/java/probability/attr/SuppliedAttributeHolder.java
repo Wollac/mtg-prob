@@ -1,10 +1,10 @@
 package probability.attr;
 
+import probability.utils.Suppliers;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
-
-import probability.utils.Suppliers;
 
 public final class SuppliedAttributeHolder implements ImmutableAttributeHolder {
 
@@ -12,7 +12,12 @@ public final class SuppliedAttributeHolder implements ImmutableAttributeHolder {
 
     public <T> void setAttributeValue(AttributeKey<T> key, T value) {
 
-        key.checkValid(value);
+        try {
+            key.checkValid(value);
+        } catch (AttributeParseException e) {
+            throw new IllegalArgumentException(e);
+        }
+
         setAttributeValueUnchecked(key, value);
     }
 
