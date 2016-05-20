@@ -7,6 +7,9 @@ import java.util.List;
 
 public final class AttributeUtils {
 
+    private AttributeUtils() {
+    }
+
     /**
      * Returns the values of all static final fields that extend AttributeKey.
      *
@@ -44,8 +47,5 @@ public final class AttributeUtils {
         final int mod = field.getModifiers();
 
         return Modifier.isStatic(mod) && Modifier.isFinal(mod) && AttributeKey.class.isAssignableFrom(field.getType());
-    }
-
-    private AttributeUtils() {
     }
 }

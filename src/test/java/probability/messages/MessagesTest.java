@@ -46,9 +46,7 @@ public class MessagesTest {
     @BeforeClass
     public static void prepare() throws Exception {
 
-        Reflections reflections = new Reflections("probability", new ResourcesScanner(), new SubTypesScanner());
-
-        Collection<String> propertyFiles = reflections.getResources(Pattern.compile(Messages.BUNDLE_NAME + "_.*\\.properties"));
+        Collection<String> propertyFiles = new Reflections("probability", new ResourcesScanner()).getResources(Pattern.compile(Messages.BUNDLE_NAME + "_.*\\.properties"));
 
         bundles = new HashMap<>();
         for (String propertyFile : propertyFiles) {
@@ -60,7 +58,7 @@ public class MessagesTest {
 
         messageMethods = ReflectionUtils.getMethods(ProjectMessages.class);
 
-        Collection<Class<? extends Displayable>> displayableEnums = reflections.getSubTypesOf(Displayable.class);
+        Collection<Class<? extends Displayable>> displayableEnums = new Reflections("probability").getSubTypesOf(Displayable.class);
 
         enumValueKeys = new HashSet<>();
         for (Class displayableEnum : displayableEnums) {
@@ -149,6 +147,9 @@ public class MessagesTest {
         }
         if (type.equals(char.class)) {
             return 'a';
+        }
+        if (type.equals(double.class)) {
+            return 0.0;
         }
 
         fail("Unexpected argument type " + type);

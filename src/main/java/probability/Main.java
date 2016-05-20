@@ -15,6 +15,7 @@ import probability.core.MulliganRule;
 import probability.csv.AbstractCSVParser.CvsParseException;
 import probability.csv.LandCSVParser;
 import probability.csv.SpellCSVParser;
+import probability.messages.Messages;
 
 public class Main {
 
@@ -27,12 +28,11 @@ public class Main {
             return;
         }
 
-        System.out.println("The following deck has been loaded:");
         System.out.println(deck.toFormattedString());
 
         MulliganRule mulliganRule = new MulliganRule(new File(Settings.MULLIGAN_RULES_FILE_NAME));
 
-        System.out.println("Taking a mulligan, if one of the following rules applies:");
+        System.out.println(Messages.get().takeMulligan());
         System.out.println(mulliganRule.toFormattedString());
 
         Set<Integer> convertedManaCosts = CardUtils.getConvertedManaCosts(deck.cards());
@@ -40,7 +40,7 @@ public class Main {
         int minCmc = Collections.min(convertedManaCosts);
         int maxCmc = Collections.min(convertedManaCosts);
 
-        System.out.println("Calculating the combined failure probability for the given spells:");
+        System.out.println(Messages.get().combinedFailureProbability());
 
         PlayableChecker checker = new PlayableChecker(deck, mulliganRule);
 
@@ -49,9 +49,8 @@ public class Main {
             int playable = checker.countPlayable(turn);
             double factor = 1.0 - (double) playable / Settings.config.sampleSize();
 
-            System.out.printf("Turn %02d: %4.1f%%%n", turn, factor * 100.0);
+            System.out.println(Messages.get().probability(turn, factor));
         }
-
     }
 
     private static Deck buildDeck() {

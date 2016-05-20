@@ -3,8 +3,6 @@ package probability.attr;
 import java.util.HashMap;
 import java.util.Map;
 
-import probability.attr.AttributeKey.AttributeParseException;
-
 public final class AttributeHolder implements ImmutableAttributeHolder {
 
     private final Map<AttributeKey<?>, Object> _map;
@@ -15,7 +13,12 @@ public final class AttributeHolder implements ImmutableAttributeHolder {
 
     public <T> void setAttributeValue(AttributeKey<T> key, T value) {
 
-        key.checkValid(value);
+        try {
+            key.checkValid(value);
+        } catch (AttributeParseException e) {
+            throw new IllegalArgumentException(e);
+        }
+
         setAttributeValueUnchecked(key, value);
     }
 
@@ -30,8 +33,7 @@ public final class AttributeHolder implements ImmutableAttributeHolder {
         T value = key.parseValue(valueString);
 
         if (!key.isValid(value)) {
-            throw new AttributeParseException(value + " is not a valid value for attribute "
-                    + key.getName(), key);
+            throw new AttributeParseException(AttributeParseException.AttributeParseError.INVALID_VALUE, key);
         }
 
         setAttributeValueUnchecked(key, value);

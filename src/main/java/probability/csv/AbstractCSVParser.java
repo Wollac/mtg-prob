@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 
 import probability.attr.AttributeHolder;
 import probability.attr.AttributeKey;
-import probability.attr.AttributeKey.AttributeParseException;
+import probability.attr.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
 import probability.utils.LineCommentReader;
 

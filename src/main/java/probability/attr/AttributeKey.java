@@ -41,11 +41,11 @@ public abstract class AttributeKey<T> {
         return _validator.test(value);
     }
 
-    public final void checkValid(T value) throws IllegalArgumentException {
+    public final void checkValid(T value) throws AttributeParseException {
 
         if (!isValid(value)) {
-            throw new IllegalArgumentException(value + " is an invalid value for attribute "
-                    + getName());
+
+            throw new AttributeParseException(AttributeParseException.AttributeParseError.INVALID_VALUE, this);
         }
     }
 
@@ -54,16 +54,6 @@ public abstract class AttributeKey<T> {
     @Override
     public String toString() {
         return getName();
-    }
-
-    public static class AttributeParseException extends Exception {
-
-        private static final long serialVersionUID = 1L;
-
-        public AttributeParseException(String s, AttributeKey<?> attribute) {
-            super("attribute " + attribute.getName() + ": " + s);
-        }
-
     }
 
 }
