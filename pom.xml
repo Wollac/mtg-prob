@@ -13,6 +13,7 @@
 
     <properties>
         <jdk.version>1.8</jdk.version>
+        <slf4j.version>1.7.20</slf4j.version>
         <guava.version>18.0</guava.version>
         <opencsv.version>3.3</opencsv.version>
         <json.version>20141113</json.version>
@@ -35,6 +36,11 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>${json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

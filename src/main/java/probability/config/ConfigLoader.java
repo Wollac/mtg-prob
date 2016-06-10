@@ -1,35 +1,83 @@
 package probability.config;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.URL;
+import java.util.List;
 
 import probability.attr.AttributeKey;
+import probability.attr.AttributeUtils;
 import probability.attr.BooleanAttributeKey;
 import probability.attr.IntegerAttributeKey;
+import probability.utils.ReadOrWriteDefaultIO;
 
-class ConfigLoader {
+class ConfigLoader extends ReadOrWriteDefaultIO {
 
-    private final GenericJsonIO configIO;
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigLoader.class);
+
+    private final GenericJsonIO _configIO;
 
     ConfigLoader() {
 
-        configIO = new GenericJsonIO(ATTR.NUMBER_OF_CARDS, ATTR.INITIAL_HAND_SIZE, ATTR.DRAW_ON_TURN, ATTR.SAMPLE_SIZE);
+        super(LOG);
+
+        List<AttributeKey<?>> variableKeys = AttributeUtils.getAttributeKeys(ATTR.class);
+
+        _configIO = new GenericJsonIO(variableKeys);
     }
 
-    Config loadFromFileOrWriteDefault(File configFile) {
+    Config loadFromResource(URL url) {
+        try {
 
-        if (!configFile.exists()) {
-            writeDefaultConfigFile(configFile);
-        } else {
-            loadConfigFile(configFile);
+            _configIO.read(Resources.toString(url, Settings.CHARSET));
+        } catch (IOException | GenericJsonIO.JsonIOException e) {
+
+            LOG.error("Could not parse resource +" + url + ": " + e.getMessage());
         }
 
         return getConfig();
     }
+
+    Config loadFromFileOrWriteDefault(File configFile) {
+
+        readOrWriteDefault(configFile, Settings.CHARSET);
+
+        return getConfig();
+    }
+
+    @Override
+    protected boolean read(Reader reader) throws IOException {
+
+        try {
+
+            _configIO.read(reader);
+            return true;
+        } catch (GenericJsonIO.JsonIOException e) {
+
+            LOG.error("Could not parse configuration:" + e.getLocalizedMessage());
+        }
+
+        return false;
+    }
+
+    private <T> T getConfigValue(AttributeKey<T> attribute) {
+
+        return _configIO.getProperty(attribute);
+    }
+
+    @Override
+    protected void writeDefault(Writer writer) throws IOException {
+
+        _configIO.writeDefaultValues(writer);
+    }
+
 
     private Config getConfig() {
 
@@ -59,43 +107,6 @@ class ConfigLoader {
                 return getConfigValue(ATTR.TURNS_AFTER_MAX_CMC);
             }
         };
-    }
-
-    private void writeDefaultConfigFile(File configFile) {
-
-        System.err.println("Config file " + configFile + " does not exist," +
-                " creating new file with default values");
-        try {
-            configIO.writeDefaultValues(configFile);
-        } catch (IOException e) {
-            System.err.println("Could not create, using defaults: " + e.getMessage());
-        }
-    }
-
-    private void loadConfigFile(File configFile) {
-
-        try {
-            configIO.load(configFile);
-        } catch (IOException | GenericJsonIO.JsonIOException e) {
-            System.err.println("Could not parse config file, using defaults: " + e.getMessage());
-        }
-    }
-
-    public Config loadFromResource(URL url) {
-        try {
-            configIO.parse(Resources.toString(url, Charsets.UTF_8));
-        } catch (IOException | GenericJsonIO.JsonIOException e) {
-            System.err.println("Could not parse resource +" + url
-                    + ": " + e.getMessage());
-        }
-
-        return getConfig();
-    }
-
-
-    private <T> T getConfigValue(AttributeKey<T> attribute) {
-
-        return configIO.getProperty(attribute);
     }
 
     private interface ATTR {

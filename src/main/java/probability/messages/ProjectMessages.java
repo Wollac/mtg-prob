@@ -23,4 +23,10 @@ public interface ProjectMessages {
     String combinedFailureProbability();
 
     String takeMulligan();
+
+    String readException(String fileName, String exceptionMessages);
+
+    String writeException(String fileName, String exceptionMessages);
+
+    String writeDefault(String fileName);
 }

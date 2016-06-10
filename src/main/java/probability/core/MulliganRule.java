@@ -3,6 +3,9 @@ package probability.core;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -31,6 +34,8 @@ import probability.utils.Suppliers;
 
 public class MulliganRule extends ReadOrWriteDefaultIO {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MulliganRule.class);
+
     private static final String DEFAULT_RULES_RESOURCE_NAME = "default_mulligan_rule.txt";
 
     private static final ResourceBundle bundle = ResourceBundle.getBundle("variables");
@@ -41,7 +46,9 @@ public class MulliganRule extends ReadOrWriteDefaultIO {
 
     public MulliganRule(File file) {
 
-        super(file, Settings.CHARSET);
+        super(LOG);
+
+        readOrWriteDefault(file, Settings.CHARSET);
 
         assert _rule != null;
     }
@@ -68,7 +75,8 @@ public class MulliganRule extends ReadOrWriteDefaultIO {
                 success = true;
             }
         } catch (RulesParseException e) {
-            System.err.println("Error parsing rules in line "
+
+            LOG.error("Error parsing rules in line "
                     + e.getErrorLine() + ": " + e.getMessage());
         }
 
