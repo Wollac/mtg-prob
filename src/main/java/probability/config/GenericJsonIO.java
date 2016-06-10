@@ -1,14 +1,14 @@
 package probability.config;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,11 +22,15 @@ class GenericJsonIO {
 
     private final AttributeHolder _attributeHolder;
 
+    GenericJsonIO(Collection<? extends AttributeKey<?>> attributes) {
+
+        _attributes = new HashSet<>(attributes);
+        _attributeHolder = new AttributeHolder();
+    }
+
     GenericJsonIO(AttributeKey<?>... attributes) {
 
-        _attributes = new HashSet<>(Arrays.asList(attributes));
-        _attributeHolder = new AttributeHolder();
-
+        this(Arrays.asList(attributes));
     }
 
     protected void addAttribute(AttributeKey<?> attribute) {
@@ -37,13 +41,7 @@ class GenericJsonIO {
         return _attributeHolder.getAttributeValue(attribute);
     }
 
-    public final void load(File file) throws IOException,
-            JsonIOException {
-
-        parse(Files.toString(file, Charsets.UTF_8));
-    }
-
-    public final void writeDefaultValues(File file) throws IOException {
+    public final void writeDefaultValues(Writer writer) throws IOException {
 
         JSONObject obj = new JSONObject();
 
@@ -51,13 +49,22 @@ class GenericJsonIO {
             obj.put(attribute.getName(), attribute.getDefaultValue());
         }
 
-        Files.write(obj.toString(2), file, Charsets.UTF_8);
+        obj.write(writer);
     }
 
-    public void parse(String string) throws JsonIOException {
-        try {
-            JSONObject obj = new JSONObject(string);
+    public final void read(String string) throws JsonIOException {
 
+        parse(new JSONObject(string));
+    }
+
+    public final void read(Reader reader) throws JsonIOException {
+
+        parse(new JSONObject(new JSONTokener(reader)));
+    }
+
+    private void parse(JSONObject obj) throws JsonIOException {
+
+        try {
             Set<String> propertyNames = obj.keySet();
 
             for (AttributeKey<?> attribute : _attributes) {
@@ -78,8 +85,6 @@ class GenericJsonIO {
 
     public static class JsonIOException extends Exception {
 
-        private static final long serialVersionUID = 1L;
-
         public JsonIOException(Throwable cause) {
             super(cause);
         }
@@ -87,7 +92,6 @@ class GenericJsonIO {
         public JsonIOException(String str, Throwable cause) {
             super(str, cause);
         }
-
     }
 
 }
