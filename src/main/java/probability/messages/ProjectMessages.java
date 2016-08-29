@@ -28,5 +28,7 @@ public interface ProjectMessages {
 
     String parseFileException(String fileName, String fileType, String exceptionMessages);
 
+    String parseFileExceptionWithLineNumber(String fileName, String fileType, String exceptionMessages, int errorLine);
+
     String writeDefaultFile(String fileName, String fileType);
 }
