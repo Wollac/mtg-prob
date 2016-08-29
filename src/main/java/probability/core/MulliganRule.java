@@ -1,19 +1,19 @@
 package probability.core;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.pmw.tinylog.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.List;
 import java.util.MissingResourceException;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.Supplier;
 
@@ -32,9 +32,7 @@ import probability.utils.FormattedPrintWriter;
 import probability.utils.ReadOrWriteDefaultIO;
 import probability.utils.Suppliers;
 
-public class MulliganRule extends ReadOrWriteDefaultIO {
-
-    private static final Logger LOG = LoggerFactory.getLogger(MulliganRule.class);
+public class MulliganRule {
 
     private static final String DEFAULT_RULES_RESOURCE_NAME = "default_mulligan_rule.txt";
 
@@ -42,20 +40,25 @@ public class MulliganRule extends ReadOrWriteDefaultIO {
 
     private static final VariableHolder _variables = createVariableHolder();
 
-    private Rule _rule;
+    private static final String FILE_TYPE = "mulligan";
+
+    private Rule _rule = null;
 
     public MulliganRule(File file) {
 
-        super(LOG);
+        readRule(Objects.requireNonNull(file));
 
-        readOrWriteDefault(file, Settings.CHARSET);
-
-        assert _rule != null;
+        if (_rule == null) {
+            // TODO: this should be a project exception
+            throw new IllegalStateException("No mulligan rule could be loaded");
+        }
     }
 
     private static VariableHolder createVariableHolder() {
 
         List<AttributeKey<?>> variableKeys = AttributeUtils.getAttributeKeys(VARIABLES.class);
+
+        Logger.debug("registerVariables={}", variableKeys);
 
         VariableHolder holder = new VariableHolder();
         holder.registerVariables(variableKeys);
@@ -63,40 +66,34 @@ public class MulliganRule extends ReadOrWriteDefaultIO {
         return holder;
     }
 
-    @Override
-    protected boolean read(Reader reader) throws IOException {
+    private static String getVariableDescription(AttributeKey<?> var) {
 
-        boolean success = false;
         try {
-            RuleLoader loader = new RuleLoader(_variables);
-            _rule = loader.read(reader);
-
-            if (_rule != null) {
-                success = true;
-            }
-        } catch (RulesParseException e) {
-
-            LOG.error("Error parsing rules in line "
-                    + e.getErrorLine() + ": " + e.getMessage());
+            return var.getName() + ": " + bundle.getString(var.getName());
+        } catch (MissingResourceException e) {
+            return var.getName();
         }
-
-        return success;
     }
 
-    @Override
-    protected void writeDefault(Writer writer) throws IOException {
+    private static Reader getDefaultRulesReaderFromResources() throws IOException {
 
-        _rule = getDefaultRule();
+        URL url = Resources.getResource(DEFAULT_RULES_RESOURCE_NAME);
+        return getResourceReader(url, Settings.CHARSET);
+    }
 
-        try (FormattedPrintWriter out = new FormattedPrintWriter(writer, 100)) {
+    private static Reader getResourceReader(URL url, Charset charset) throws IOException {
 
-            out.setPrefixString("// ");
-            printDescription(out);
-            out.setPrefixString("");
-            out.println();
+        Logger.debug("reader url={}, charset={}", url, charset);
 
-            _rule.toStrings().forEach(out::println);
-        }
+        return Resources.asCharSource(url, charset).openStream();
+    }
+
+    private void readRule(File file) {
+
+        Logger.debug("readingFile={}", file);
+
+        MulliganIO io = new MulliganIO(file);
+        _rule = io.getRule();
     }
 
     private void printDescription(FormattedPrintWriter writer) {
@@ -113,15 +110,6 @@ public class MulliganRule extends ReadOrWriteDefaultIO {
         writer.setIndentionLevel(0);
     }
 
-    private static String getVariableDescription(AttributeKey<?> var) {
-
-        try {
-            return var.getName() + ": " + bundle.getString(var.getName());
-        } catch (MissingResourceException e) {
-            return var.getName();
-        }
-    }
-
     private Rule getDefaultRule() {
 
         Rule rule;
@@ -133,12 +121,6 @@ public class MulliganRule extends ReadOrWriteDefaultIO {
         }
 
         return rule;
-    }
-
-    private static Reader getDefaultRulesReaderFromResources() throws IOException {
-
-        URL url = Resources.getResource(DEFAULT_RULES_RESOURCE_NAME);
-        return Resources.asCharSource(url, Charsets.UTF_8).openStream();
     }
 
     public boolean takeMulligan(final Collection<CardObject> startingHand) {
@@ -170,6 +152,59 @@ public class MulliganRule extends ReadOrWriteDefaultIO {
         }
 
         return sb.toString();
+    }
+
+    private class MulliganIO extends ReadOrWriteDefaultIO {
+
+        private Rule _rule = null;
+
+        private MulliganIO(File file) {
+            super(file, Settings.CHARSET);
+        }
+
+        @Override
+        protected void read(Reader reader) throws IOException {
+
+            try {
+                RuleLoader loader = new RuleLoader(_variables);
+                _rule = loader.read(reader);
+            } catch (RulesParseException e) {
+                Logger.error(Messages.get().parseFileException(getFileName(), FILE_TYPE,
+                        e.getLocalizedMessage()));
+                Logger.debug(e);
+            }
+        }
+
+        @Override
+        protected void writeDefault(Writer writer) throws IOException {
+
+            _rule = getDefaultRule();
+
+            Logger.warn(Messages.get().writeDefaultFile(getFileName(), FILE_TYPE));
+
+            try (FormattedPrintWriter out = new FormattedPrintWriter(writer, Settings.LINE_WIDTH)) {
+
+                out.setPrefixString("// ");
+                printDescription(out);
+                out.setPrefixString("");
+                out.println();
+
+                _rule.toStrings().forEach(out::println);
+            }
+        }
+
+        private Rule getRule() {
+
+            try {
+                readOrWriteDefault();
+            } catch (IOException e) {
+                Logger.error(Messages.get().readFileException(getFileName(), FILE_TYPE,
+                        e.getLocalizedMessage()));
+                Logger.debug(e);
+            }
+
+            return _rule;
+        }
     }
 
     private interface VARIABLES {

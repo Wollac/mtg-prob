@@ -2,84 +2,71 @@ package probability.utils;
 
 import com.google.common.io.Files;
 
-import org.slf4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Objects;
 
-import probability.messages.Messages;
-
 public abstract class ReadOrWriteDefaultIO {
 
-    private final Logger _log;
+    private final File _file;
 
-    protected ReadOrWriteDefaultIO(Logger log) {
+    private final Charset _charset;
 
-        _log = Objects.requireNonNull(log);
+    protected ReadOrWriteDefaultIO(File file, Charset charset) {
+
+        _file = Objects.requireNonNull(file);
+        _charset = Objects.requireNonNull(charset);
     }
 
-    protected boolean readOrWriteDefault(File file, Charset charset) {
+    protected ReadOrWriteDefaultIO(String fileName, Charset charset) {
 
-        boolean readSuccess = read(file, charset);
-
-        if (readSuccess) {
-            return true;
-        }
-
-        return write(file, charset);
+        this(new File(fileName), charset);
     }
 
-    private boolean read(File file, Charset charset) {
+    public void readOrWriteDefault() throws IOException {
 
-        if (!file.exists()) {
+        if (_file.exists()) {
 
-            return false;
+            read(_file, _charset);
+        } else {
+
+            Logger.debug("File {} does not exist", _file.getPath());
+            write(_file, _charset);
         }
 
-        boolean readSuccess;
+    }
+
+    private void read(File file, Charset charset) throws IOException {
+
         try (Reader reader = Files.newReader(file, charset)) {
 
-            readSuccess = read(reader);
-        } catch (IOException e) {
+            read(reader);
+        } catch (FileNotFoundException e) {
 
-            readSuccess = false;
-            _log.error(Messages.get().readException(file.getName(), e.getLocalizedMessage()));
+            throw new IOException(e);
         }
-
-        return readSuccess;
     }
 
-    private boolean write(File file, Charset charset) {
+    private void write(File file, Charset charset) throws IOException {
 
-
-        if (file.exists()) {
-
-            return false;
-        }
-
-        boolean writeSuccess;
         try (Writer writer = Files.newWriter(file, charset)) {
 
-            _log.warn(Messages.get().writeDefault(file.getName()));
-
             writeDefault(writer);
-            writeSuccess = true;
-
-        } catch (IOException e) {
-
-            writeSuccess = false;
-            _log.error(Messages.get().writeException(file.getName(), e.getLocalizedMessage()));
         }
-
-
-        return writeSuccess;
     }
 
-    abstract protected boolean read(Reader reader) throws IOException;
+    public String getFileName() {
+
+        return _file.getName();
+    }
+
+    abstract protected void read(Reader reader) throws IOException;
 
     abstract protected void writeDefault(Writer writer) throws IOException;
 }

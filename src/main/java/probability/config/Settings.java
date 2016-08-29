@@ -2,6 +2,8 @@ package probability.config;
 
 import com.google.common.base.Charsets;
 
+import org.pmw.tinylog.Logger;
+
 import java.io.File;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -9,6 +11,8 @@ import java.nio.charset.Charset;
 public final class Settings {
 
     public static final Charset CHARSET = Charsets.UTF_8;
+
+    public static final int LINE_WIDTH = 100;
 
     public static final String MULLIGAN_RULES_FILE_NAME = "mulligan.txt";
 
@@ -25,8 +29,10 @@ public final class Settings {
 
         URL url = Settings.class.getResource(CONFIG_FILE_NAME);
         if (url != null) {
+            Logger.debug("Load config from resources");
             config = loader.loadFromResource(url);
         } else {
+            Logger.debug("Load config from file system");
             config = loader.loadFromFileOrWriteDefault(new File(CONFIG_FILE_NAME));
         }
     }

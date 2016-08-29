@@ -24,9 +24,9 @@ public interface ProjectMessages {
 
     String takeMulligan();
 
-    String readException(String fileName, String exceptionMessages);
+    String readFileException(String fileName, String fileType, String exceptionMessages);
 
-    String writeException(String fileName, String exceptionMessages);
+    String parseFileException(String fileName, String fileType, String exceptionMessages);
 
-    String writeDefault(String fileName);
+    String writeDefaultFile(String fileName, String fileType);
 }

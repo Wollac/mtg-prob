@@ -60,7 +60,7 @@ final class Hand {
 
     void markAllInHand() {
 
-        _cards.stream().forEach(CardObject::markNotPlayed);
+        _cards.forEach(CardObject::markNotPlayed);
     }
 
     /**

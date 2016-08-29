@@ -16,10 +16,6 @@ class Value<T> implements Token {
         _value = value;
     }
 
-    public Value(T value, Variable<T> variable) {
-        _value = value;
-    }
-
     public T getValue() {
         return _value;
     }
@@ -54,9 +50,9 @@ class Value<T> implements Token {
         return _value.toString();
     }
 
-    public static class StringValue extends Value<String> {
+    static class StringValue extends Value<String> {
 
-        public StringValue(String value) {
+        StringValue(String value) {
             super(value);
         }
 

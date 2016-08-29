@@ -4,7 +4,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Arrays;
@@ -41,7 +40,7 @@ class GenericJsonIO {
         return _attributeHolder.getAttributeValue(attribute);
     }
 
-    public final void writeDefaultValues(Writer writer) throws IOException {
+    public final void writeDefaultValues(Writer writer) {
 
         JSONObject obj = new JSONObject();
 
