@@ -1,5 +1,6 @@
 package probability.csv;
 
+import com.opencsv.CSVParser;
 import com.opencsv.CSVReader;
 
 import java.io.IOException;
@@ -8,9 +9,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import probability.attr.AttributeHolder;
 import probability.attr.AttributeKey;
@@ -25,16 +28,25 @@ public abstract class AbstractCSVParser<T> {
 
     private final CSVReader _reader;
 
+    private final char _separator;
+
     private final Map<AttributeKey<?>, Boolean> _attributes;
 
     private Map<AttributeKey<?>, Integer> _attribute2column;
 
-    AbstractCSVParser(Reader reader) throws IOException {
+    AbstractCSVParser(Reader reader, char separator) throws IOException {
 
         checkNotNull(reader);
 
-        _reader = new CSVReader(new LineCommentReader(reader));
-        _attributes = new HashMap<>();
+        _reader = new CSVReader(new LineCommentReader(reader), separator);
+        _separator = separator;
+
+        // the attributes should be ordered as added
+        _attributes = new LinkedHashMap<>();
+    }
+
+    AbstractCSVParser(Reader reader) throws IOException {
+        this(reader, CSVParser.DEFAULT_SEPARATOR);
     }
 
     protected void addAttribute(AttributeKey<?> attribute, boolean mandatory) {
@@ -45,6 +57,8 @@ public abstract class AbstractCSVParser<T> {
                 " attribute name must not start with a space");
         checkArgument(!attribute.getName().endsWith(" "),
                 " attribute name must not end with a space");
+        checkArgument(!headersContain(attribute.getName()),
+                "attribute with same name already added");
 
         _attributes.put(attribute, mandatory);
     }
@@ -55,6 +69,10 @@ public abstract class AbstractCSVParser<T> {
 
     protected void addMandatoryAttribute(AttributeKey<?> attribute) {
         addAttribute(attribute, true);
+    }
+
+    private boolean headersContain(String name) {
+        return _attributes.keySet().stream().anyMatch(k -> k.getName().equalsIgnoreCase(name));
     }
 
     public List<T> readAll() throws IOException, CvsParseException {
@@ -75,6 +93,14 @@ public abstract class AbstractCSVParser<T> {
         }
 
         return instances;
+    }
+
+    public List<String> getHeaders() {
+        return _attributes.keySet().stream().map(AttributeKey::getName).collect(Collectors.toList());
+    }
+
+    public char getSeparator() {
+        return _separator;
     }
 
     protected abstract Collection<T> createInstance(ImmutableAttributeHolder row);

@@ -42,11 +42,6 @@ public final class ManaCost {
         }
     }
 
-    public boolean contains(Color color) {
-
-        return _genericMana > 0 && _colorCounts.contains(color);
-    }
-
     public int count(Color color) {
         return _colorCounts.count(color);
     }

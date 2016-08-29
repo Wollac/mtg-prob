@@ -53,7 +53,7 @@ public abstract class AttributeKey<T> {
 
     @Override
     public String toString() {
-        return getName();
+        return getName() + "[" + getValueType().getSimpleName() + "]";
     }
 
 }

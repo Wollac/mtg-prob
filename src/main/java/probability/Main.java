@@ -1,9 +1,6 @@
 package probability;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
 import java.util.Collections;
 import java.util.Set;
 
@@ -12,9 +9,8 @@ import probability.config.Settings;
 import probability.core.CardUtils;
 import probability.core.Deck;
 import probability.core.MulliganRule;
-import probability.csv.AbstractCSVParser.CvsParseException;
-import probability.csv.LandCSVParser;
-import probability.csv.SpellCSVParser;
+import probability.csv.LandsReader;
+import probability.csv.SpellsReader;
 import probability.messages.Messages;
 
 public class Main {
@@ -71,28 +67,14 @@ public class Main {
 
     private static void addLands(Deck deck) {
 
-        try (Reader reader = new FileReader(Settings.LANDS_FILE_NAME)) {
-            LandCSVParser parser = new LandCSVParser(reader);
-
-            deck.addAll(parser.readAll());
-        } catch (IOException e) {
-            System.err.println("Could not read csv file: " + e.getMessage());
-        } catch (CvsParseException e) {
-            System.err.println("Error parsing csv file: " + e.getCause());
-        }
+        LandsReader reader = new LandsReader(Settings.LANDS_FILE_NAME);
+        deck.addAll(reader.read());
     }
 
     private static void addSpells(Deck deck) {
 
-        try (Reader reader = new FileReader(Settings.SPELLS_FILE_NAME)) {
-            SpellCSVParser parse = new SpellCSVParser(reader);
-
-            deck.addAll(parse.readAll());
-        } catch (IOException e) {
-            System.err.println("Could not read csv file: " + e.getMessage());
-        } catch (CvsParseException e) {
-            System.err.println("Error parsing csv file: " + e.getCause());
-        }
+        SpellsReader reader = new SpellsReader(Settings.SPELLS_FILE_NAME);
+        deck.addAll(reader.read());
     }
 
 }

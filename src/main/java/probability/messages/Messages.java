@@ -1,7 +1,5 @@
 package probability.messages;
 
-import com.google.common.base.CaseFormat;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -27,7 +25,7 @@ public final class Messages {
 
     private static Locale _locale =  Locale.getDefault();
 
-    private static ProjectMessages messages = (ProjectMessages) Proxy.newProxyInstance(//
+    private static final ProjectMessages messages = (ProjectMessages) Proxy.newProxyInstance(//
             ProjectMessages.class.getClassLoader(),//
             new Class[]{ProjectMessages.class}, //
             new MessageResolver());
@@ -70,8 +68,6 @@ public final class Messages {
             return '!' + key + '!';
         }
     }
-
-
 
     private static class MessageResolver implements InvocationHandler {
         @Override

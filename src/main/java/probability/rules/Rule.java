@@ -72,7 +72,7 @@ public class Rule {
     public List<String> toStrings() {
 
         List<String> result = new ArrayList<>(_expressions.size());
-        _expressions.stream().forEach(e -> result.add(e.toString()));
+        _expressions.forEach(e -> result.add(e.toString()));
 
         return result;
     }

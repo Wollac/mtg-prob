@@ -2,8 +2,7 @@ package probability.config;
 
 import com.google.common.io.Resources;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.pmw.tinylog.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,20 +15,18 @@ import probability.attr.AttributeKey;
 import probability.attr.AttributeUtils;
 import probability.attr.BooleanAttributeKey;
 import probability.attr.IntegerAttributeKey;
+import probability.messages.Messages;
 import probability.utils.ReadOrWriteDefaultIO;
 
-class ConfigLoader extends ReadOrWriteDefaultIO {
+class ConfigLoader {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ConfigLoader.class);
+    private static final String FILE_TYPE = "config";
 
     private final GenericJsonIO _configIO;
 
     ConfigLoader() {
 
-        super(LOG);
-
         List<AttributeKey<?>> variableKeys = AttributeUtils.getAttributeKeys(ATTR.class);
-
         _configIO = new GenericJsonIO(variableKeys);
     }
 
@@ -38,8 +35,7 @@ class ConfigLoader extends ReadOrWriteDefaultIO {
 
             _configIO.read(Resources.toString(url, Settings.CHARSET));
         } catch (IOException | GenericJsonIO.JsonIOException e) {
-
-            LOG.error("Could not parse resource +" + url + ": " + e.getMessage());
+            throw new IllegalStateException("Could not parse resource " + url, e);
         }
 
         return getConfig();
@@ -47,37 +43,22 @@ class ConfigLoader extends ReadOrWriteDefaultIO {
 
     Config loadFromFileOrWriteDefault(File configFile) {
 
-        readOrWriteDefault(configFile, Settings.CHARSET);
-
-        return getConfig();
-    }
-
-    @Override
-    protected boolean read(Reader reader) throws IOException {
+        ConfigIO io = new ConfigIO(configFile);
 
         try {
-
-            _configIO.read(reader);
-            return true;
-        } catch (GenericJsonIO.JsonIOException e) {
-
-            LOG.error("Could not parse configuration:" + e.getLocalizedMessage());
+            io.readOrWriteDefault();
+        } catch (IOException e) {
+            Logger.error(Messages.get().readFileException(configFile.getName(), FILE_TYPE, e.getLocalizedMessage()));
+            Logger.debug(e);
         }
 
-        return false;
+        return getConfig();
     }
 
     private <T> T getConfigValue(AttributeKey<T> attribute) {
 
         return _configIO.getProperty(attribute);
     }
-
-    @Override
-    protected void writeDefault(Writer writer) throws IOException {
-
-        _configIO.writeDefaultValues(writer);
-    }
-
 
     private Config getConfig() {
 
@@ -109,6 +90,33 @@ class ConfigLoader extends ReadOrWriteDefaultIO {
         };
     }
 
+    private class ConfigIO extends ReadOrWriteDefaultIO {
+
+        private ConfigIO(File file) {
+            super(file, Settings.CHARSET);
+        }
+
+        @Override
+        protected void read(Reader reader) throws IOException {
+            try {
+
+                _configIO.read(reader);
+            } catch (GenericJsonIO.JsonIOException e) {
+                Logger.error(Messages.get().parseFileException(getFileName(), FILE_TYPE,
+                        e.getLocalizedMessage()));
+                Logger.debug(e);
+            }
+        }
+
+        @Override
+        protected void writeDefault(Writer writer) throws IOException {
+
+            Logger.warn(Messages.get().writeDefaultFile(getFileName(), FILE_TYPE));
+
+            _configIO.writeDefaultValues(writer);
+        }
+    }
+
     private interface ATTR {
 
         IntegerAttributeKey NUMBER_OF_CARDS = new IntegerAttributeKey(
@@ -125,7 +133,6 @@ class ConfigLoader extends ReadOrWriteDefaultIO {
 
         IntegerAttributeKey TURNS_AFTER_MAX_CMC = new IntegerAttributeKey(
                 "turns after max CMC", 3, i -> (i > 0));
-
     }
 
 }
