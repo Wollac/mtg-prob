@@ -1,6 +1,7 @@
 package probability.checker;
 
 import org.junit.Test;
+
 import probability.core.Color;
 import probability.core.Colors;
 import probability.core.Spell;

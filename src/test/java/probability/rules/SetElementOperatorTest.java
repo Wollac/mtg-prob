@@ -1,18 +1,20 @@
 package probability.rules;
 
 import com.google.common.collect.Sets;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import probability.attr.ImmutableAttributeHolder;
-import probability.attr.StringSetAttributeKey;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.BiPredicate;
+
+import probability.attr.ImmutableAttributeHolder;
+import probability.attr.StringSetAttributeKey;
 
 import static probability.rules.TestUtils.createSingleVariableBinding;
 import static probability.rules.TestUtils.createVariableValueOperatorExpression;
@@ -23,6 +25,18 @@ public class SetElementOperatorTest {
     private static final StringSetAttributeKey KEY = new StringSetAttributeKey("SET");
     private final Set<String> _varBinding;
     private final String _value;
+
+    @Parameterized.Parameters(name = "{index}: var({0}) operator {1}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {Sets.newHashSet("A", ""), ""},
+                {Sets.newHashSet("A", "B"), "A"},
+                {Sets.newHashSet("A", "B"), "[A, B]"},
+                {Collections.emptySet(), ""},
+                {Collections.emptySet(), "[]"},
+                {Sets.newHashSet("A"), "B"}
+        });
+    }
 
     public SetElementOperatorTest(Set<String> varBinding, String value) {
         _varBinding = varBinding;
@@ -53,18 +67,6 @@ public class SetElementOperatorTest {
         } catch (Exception e) {
             Assert.fail(caughtException.getMessage());
         }
-    }
-
-    @Parameterized.Parameters(name = "{index}: var({0}) operator {1}")
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {Sets.newHashSet("A", ""), ""},
-                {Sets.newHashSet("A", "B"), "A"},
-                {Sets.newHashSet("A", "B"), "[A, B]"},
-                {Collections.emptySet(), ""},
-                {Collections.emptySet(), "[]"},
-                {Sets.newHashSet("A"), "B"}
-        });
     }
 
     @Test

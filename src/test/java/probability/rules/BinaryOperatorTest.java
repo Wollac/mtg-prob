@@ -17,11 +17,6 @@ public class BinaryOperatorTest {
     private final boolean _lhsValue;
     private final boolean _rhsValue;
 
-    public BinaryOperatorTest(boolean lhsValue, boolean rhsValue) {
-        _lhsValue = lhsValue;
-        _rhsValue = rhsValue;
-    }
-
     @Parameterized.Parameters(name = "{index}: {0} operator {1}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
@@ -30,6 +25,11 @@ public class BinaryOperatorTest {
                 {true, false},
                 {true, true}
         });
+    }
+
+    public BinaryOperatorTest(boolean lhsValue, boolean rhsValue) {
+        _lhsValue = lhsValue;
+        _rhsValue = rhsValue;
     }
 
     private Expression createBinaryOperatorExpression(Operation operation) {
