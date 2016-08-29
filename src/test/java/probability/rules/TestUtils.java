@@ -1,10 +1,11 @@
 package probability.rules;
 
 import org.junit.Assert;
-import probability.attr.AttributeKey;
-import probability.attr.ImmutableAttributeHolder;
 
 import java.util.Stack;
+
+import probability.attr.AttributeKey;
+import probability.attr.ImmutableAttributeHolder;
 
 class TestUtils {
 

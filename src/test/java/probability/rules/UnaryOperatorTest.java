@@ -16,13 +16,13 @@ public class UnaryOperatorTest {
 
     private final boolean _value;
 
-    public UnaryOperatorTest(boolean value) {
-        _value = value;
-    }
-
     @Parameterized.Parameters(name = "{index}: operator {0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{{true}, {false}});
+    }
+
+    public UnaryOperatorTest(boolean value) {
+        _value = value;
     }
 
     private Expression createUnaryOperatorExpression(Operation operation) {

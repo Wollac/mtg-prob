@@ -125,7 +125,7 @@ abstract class AbstractSingleSpellPlayableTest {
         Set<Color> differentColors = EnumSet.complementOf(EnumSet.of(SPELL_COLOR));
 
         Collection<Land> lands = new ArrayList<>();
-        differentColors.stream().forEach(c -> lands.add(createLand(c)));
+        differentColors.forEach(c -> lands.add(createLand(c)));
 
         Hand hand = createStartingHand(lands);
 
@@ -147,7 +147,7 @@ abstract class AbstractSingleSpellPlayableTest {
         Set<Color> differentColors = CheckerTestUtils.getDifferentColors(SPELL_COLOR);
 
         Collection<Land> lands = new ArrayList<>();
-        differentColors.stream().forEach(c -> lands.add(createLand(c)));
+        differentColors.forEach(c -> lands.add(createLand(c)));
         lands.addAll(Collections.nCopies(COUNT - 1, createLand(SPELL_COLOR)));
 
         Hand hand = createStartingHand(lands);

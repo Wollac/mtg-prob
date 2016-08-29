@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
-import org.reflections.scanners.SubTypesScanner;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -34,7 +33,7 @@ import static org.junit.Assert.fail;
  */
 public class MessagesTest {
 
-    public static final Collection<Locale> LOCALES = Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
+    private static final Collection<Locale> LOCALES = Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
 
     private static Collection<Method> messageMethods;
 

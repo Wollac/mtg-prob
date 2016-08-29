@@ -5,13 +5,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import probability.attr.AttributeKey;
-import probability.attr.ImmutableAttributeHolder;
-import probability.attr.IntegerAttributeKey;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.BiPredicate;
+
+import probability.attr.AttributeKey;
+import probability.attr.ImmutableAttributeHolder;
+import probability.attr.IntegerAttributeKey;
 
 import static probability.rules.TestUtils.createSingleVariableBinding;
 import static probability.rules.TestUtils.createVariableValueOperatorExpression;
@@ -22,6 +23,13 @@ public class VariableValueOperatorTest {
     private static final IntegerAttributeKey KEY = new IntegerAttributeKey("INTEGER");
     private final int _varBinding;
     private final int _value;
+
+    @Parameters(name = "{index}: var({0}) operator {1}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {0, 0}, {0, 1}, {1, 0}, {1, 1}
+        });
+    }
 
     public VariableValueOperatorTest(int varBinding, int value) {
         _varBinding = varBinding;
@@ -43,13 +51,6 @@ public class VariableValueOperatorTest {
         ImmutableAttributeHolder binding = createSingleVariableBinding(key, varBinding);
 
         Assert.assertEquals(expected.test(varBinding, value), expr.interpret(binding));
-    }
-
-    @Parameters(name = "{index}: var({0}) operator {1}")
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {0, 0}, {0, 1}, {1, 0}, {1, 1}
-        });
     }
 
     @Test
