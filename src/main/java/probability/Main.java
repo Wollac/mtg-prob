@@ -1,40 +1,55 @@
 package probability;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.Set;
-
+import org.pmw.tinylog.Logger;
 import probability.checker.PlayableChecker;
 import probability.config.Settings;
 import probability.core.CardUtils;
 import probability.core.Deck;
 import probability.core.MulliganRule;
+import probability.core.Spell;
+import probability.core.land.Land;
 import probability.csv.LandsReader;
 import probability.csv.SpellsReader;
 import probability.messages.Messages;
+import probability.messages.ProjectException;
+
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 public class Main {
 
     public static void main(String[] args) {
 
+        try {
+            run();
+        } catch (ProjectException e) {
+
+            Logger.error(e.getLocalizedMessage());
+
+            Throwable cause = e.getCause();
+            if (cause != null) {
+                Logger.debug(cause, "cause");
+            }
+        }
+    }
+
+    private static void run() throws ProjectException {
+
         Deck deck = buildDeck();
 
-        if (deck == null) {
-            System.err.println("No deck has been loaded.");
-            return;
-        }
+        MulliganRule mulliganRule = new MulliganRule(new File(Settings.MULLIGAN_RULES_FILE_NAME));
 
         System.out.println(deck.toFormattedString());
-
-        MulliganRule mulliganRule = new MulliganRule(new File(Settings.MULLIGAN_RULES_FILE_NAME));
 
         System.out.println(Messages.get().takeMulligan());
         System.out.println(mulliganRule.toFormattedString());
 
         Set<Integer> convertedManaCosts = CardUtils.getConvertedManaCosts(deck.cards());
 
-        int minCmc = Collections.min(convertedManaCosts);
-        int maxCmc = Collections.min(convertedManaCosts);
+        final int minCmc = Collections.min(convertedManaCosts);
+        final int maxCmc = Collections.min(convertedManaCosts);
 
         System.out.println(Messages.get().combinedFailureProbability());
 
@@ -42,23 +57,23 @@ public class Main {
 
         for (int turn = minCmc; turn <= maxCmc + Settings.config.turnsAfterMaxCMC(); turn++) {
 
-            int playable = checker.countPlayable(turn);
-            double factor = 1.0 - (double) playable / Settings.config.sampleSize();
+            final int playable = checker.countPlayable(turn);
+            final double factor = 1.0 - (double) playable / Settings.config.sampleSize();
 
             System.out.println(Messages.get().probability(turn, factor));
         }
     }
 
-    private static Deck buildDeck() {
+    private static Deck buildDeck() throws ProjectException {
+
+        Logger.debug("Building deck");
 
         Deck deck = new Deck();
 
         addLands(deck);
         addSpells(deck);
 
-        if (deck.isEmpty()) {
-            return null;
-        }
+        deck.validate();
 
         deck.fillWithDummies();
 
@@ -68,13 +83,21 @@ public class Main {
     private static void addLands(Deck deck) {
 
         LandsReader reader = new LandsReader(Settings.LANDS_FILE_NAME);
-        deck.addAll(reader.read());
+
+        List<Land> lands = reader.read();
+        Logger.debug("{} lands read", lands.size());
+
+        deck.addAll(lands);
     }
 
     private static void addSpells(Deck deck) {
 
         SpellsReader reader = new SpellsReader(Settings.SPELLS_FILE_NAME);
-        deck.addAll(reader.read());
+
+        List<Spell> spells = reader.read();
+        Logger.debug("{} spells read", spells.size());
+
+        deck.addAll(spells);
     }
 
 }

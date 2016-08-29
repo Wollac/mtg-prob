@@ -12,6 +12,7 @@ import java.util.Map;
 
 import probability.config.Settings;
 import probability.core.Card.CardType;
+import probability.messages.ProjectException;
 
 public class Deck {
 
@@ -109,4 +110,18 @@ public class Deck {
         return sb.toString();
     }
 
+    private boolean containsNoSpell() {
+        return _cards.stream().noneMatch(card -> card.getCardType() == CardType.Spell);
+    }
+
+    public void validate() throws ProjectException {
+
+        if (_cards.size() > Settings.config.numberOfCards()) {
+            throw new ProjectException((ProjectException.ProjectError.TOO_MANY_CARDS_IN_DECK));
+        }
+
+        if (containsNoSpell()) {
+            throw new ProjectException(ProjectException.ProjectError.NO_SPELLS_IN_DECK);
+        }
+    }
 }

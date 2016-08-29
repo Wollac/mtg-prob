@@ -24,6 +24,7 @@ import probability.attr.IntegerAttributeKey;
 import probability.attr.StringSetAttributeKey;
 import probability.config.Settings;
 import probability.messages.Messages;
+import probability.messages.ProjectException;
 import probability.rules.Rule;
 import probability.rules.RuleLoader;
 import probability.rules.RuleLoader.RulesParseException;
@@ -44,13 +45,12 @@ public class MulliganRule {
 
     private Rule _rule = null;
 
-    public MulliganRule(File file) {
+    public MulliganRule(File file) throws ProjectException {
 
         readRule(Objects.requireNonNull(file));
 
         if (_rule == null) {
-            // TODO: this should be a project exception
-            throw new IllegalStateException("No mulligan rule could be loaded");
+            throw new ProjectException(ProjectException.ProjectError.INVALID_MULLIGAN_RULE);
         }
     }
 
@@ -169,8 +169,8 @@ public class MulliganRule {
                 RuleLoader loader = new RuleLoader(_variables);
                 _rule = loader.read(reader);
             } catch (RulesParseException e) {
-                Logger.error(Messages.get().parseFileException(getFileName(), FILE_TYPE,
-                        e.getLocalizedMessage()));
+                Logger.error(Messages.get().parseFileExceptionWithLineNumber(getFileName(), FILE_TYPE,
+                        e.getLocalizedMessage(), e.getErrorLine()));
                 Logger.debug(e);
             }
         }
