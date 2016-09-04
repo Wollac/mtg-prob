@@ -1,4 +1,4 @@
-package probability.rules;
+package probability.rules.engine;
 
 import com.google.common.collect.Sets;
 
@@ -16,8 +16,8 @@ import java.util.function.BiPredicate;
 import probability.attr.ImmutableAttributeHolder;
 import probability.attr.StringSetAttributeKey;
 
-import static probability.rules.TestUtils.createSingleVariableBinding;
-import static probability.rules.TestUtils.createVariableValueOperatorExpression;
+import static probability.rules.engine.TestUtils.createSingleVariableBinding;
+import static probability.rules.engine.TestUtils.createVariableValueOperatorExpression;
 
 @RunWith(Parameterized.class)
 public class SetElementOperatorTest {

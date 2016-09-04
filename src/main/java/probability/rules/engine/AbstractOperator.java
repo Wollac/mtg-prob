@@ -1,4 +1,6 @@
-package probability.rules;
+package probability.rules.engine;
+
+import org.apache.commons.lang3.StringUtils;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -22,7 +24,12 @@ abstract class AbstractOperator implements Operator {
 
         checkNotNull(symbol);
         checkArgument(symbol.length() > 0);
+        checkArgument(!StringUtils.containsWhitespace(symbol));
         checkArgument(precedence >= 0);
+
+        new StringBuffer();
+
+        StringUtils.stripStart(symbol, null);
 
         _symbol = symbol;
         _precedence = precedence;

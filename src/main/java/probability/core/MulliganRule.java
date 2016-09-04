@@ -85,7 +85,7 @@ public class MulliganRule {
 
         Logger.debug("reader url={}, charset={}", url, charset);
 
-        return Resources.asCharSource(url, charset).openStream();
+        return Resources.asCharSource(url, charset) .openStream();
     }
 
     private void readRule(File file) {

@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 import probability.attr.AttributeKey;
 import probability.attr.ImmutableAttributeHolder;
 import probability.attr.SuppliedAttributeHolder;
+import probability.rules.engine.Operation;
+import probability.rules.engine.Variable;
 
 public final class VariableHolder {
 
@@ -24,7 +26,7 @@ public final class VariableHolder {
         }
     }
 
-    <T> void registerVariable(AttributeKey<T> key) {
+    public <T> void registerVariable(AttributeKey<T> key) {
 
         String name = key.getName();
 
@@ -46,7 +48,7 @@ public final class VariableHolder {
         return false;
     }
 
-    boolean isRegistered(String name) {
+    public boolean isRegistered(String name) {
         return _name2var.containsKey(name);
     }
 
@@ -60,11 +62,11 @@ public final class VariableHolder {
         _bindings.putAttributeSupplier(key, supplier);
     }
 
-    ImmutableAttributeHolder getBindings() {
+    public ImmutableAttributeHolder getBindings() {
         return _bindings;
     }
 
-    Variable<?> getVariable(String name) {
+    public Variable<?> getVariable(String name) {
         return _name2var.get(name);
     }
 

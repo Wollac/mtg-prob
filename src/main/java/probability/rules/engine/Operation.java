@@ -1,14 +1,18 @@
-package probability.rules;
+package probability.rules.engine;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Static collection of all the {@linkplain Operator} that can be evaluated.
  */
-enum Operation {
+public enum Operation {
 
     NOT(Not.class), AND(And.class), OR(Or.class), EQUAL(Equal.class), NOT_EQUAL(NotEqual.class),
     LESS_THAN(LessThan.class), GREATER_THAN(GreaterThan.class), CONTAINS(Contains.class);
@@ -26,6 +30,9 @@ enum Operation {
             if (symbol == null || symbol.isEmpty()) {
                 throw new IllegalStateException(op.getType().getName() + " does not provide a nonempty symbol");
             }
+            if (StringUtils.containsWhitespace(symbol)) {
+                throw new IllegalStateException(symbol + " for " + op.getType().getName() + " contains invalid symbols");
+            }
             if (OPERATIONS_BY_SYMBOL.containsKey(symbol)) {
                 throw new IllegalStateException(symbol + " for " + op.getType().getName() + " is not unique");
             }
@@ -35,10 +42,6 @@ enum Operation {
     }
 
     private final Class<? extends Operator> _op;
-
-    Operation(Class<? extends Operator> op) {
-        _op = op;
-    }
 
     /**
      * Returns the operation corresponding to the given symbol.
@@ -50,10 +53,23 @@ enum Operation {
     }
 
     /**
-     * Returns all the symbols for all the operators.
+     * Returns the production rules of all the operations as strings.
      */
-    public static Collection<String> getAllOperatorSymbols() {
-        return Collections.unmodifiableSet(OPERATIONS_BY_SYMBOL.keySet());
+    public static List<String> getProductionRules() {
+
+        ArrayList<String> result = new ArrayList<>();
+
+        result.add(Parentheses.getProductionRules());
+
+        for (Operation o : Operation.values()) {
+            result.add(o.getProductionRule());
+        }
+
+        return result;
+    }
+
+    Operation(Class<? extends Operator> op) {
+        _op = op;
     }
 
     /**

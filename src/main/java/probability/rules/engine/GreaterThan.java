@@ -1,21 +1,21 @@
-package probability.rules;
+package probability.rules.engine;
 
 import probability.attr.ImmutableAttributeHolder;
 
 /**
  * Operator for the greater-than relation of a variable and a value of comparable type.
  */
-class LessThan extends RelationalOperator {
+class GreaterThan extends RelationalOperator {
 
-    public LessThan() {
+    public GreaterThan() {
 
-        super("<");
+        super(">");
     }
 
     @Override
     public boolean interpret(ImmutableAttributeHolder bindings) {
 
-        return _variable.compareTo(_value, bindings) < 0;
+        return _variable.compareTo(_value, bindings) > 0;
     }
 
 }

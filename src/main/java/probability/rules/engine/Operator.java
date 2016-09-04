@@ -1,4 +1,4 @@
-package probability.rules;
+package probability.rules.engine;
 
 /**
  * An Operator is a special {@linkplain Token} that has an identifier and a precedence which is

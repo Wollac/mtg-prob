@@ -1,4 +1,4 @@
-package probability.rules;
+package probability.rules.engine;
 
 import java.util.Objects;
 import java.util.Stack;
@@ -9,7 +9,7 @@ import probability.attr.ImmutableAttributeHolder;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-class Variable<T> implements Expression, Token {
+public class Variable<T> implements Expression, Token {
 
     private final AttributeKey<T> _key;
 
