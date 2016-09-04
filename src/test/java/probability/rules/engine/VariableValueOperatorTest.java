@@ -1,4 +1,4 @@
-package probability.rules;
+package probability.rules.engine;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,8 +14,8 @@ import probability.attr.AttributeKey;
 import probability.attr.ImmutableAttributeHolder;
 import probability.attr.IntegerAttributeKey;
 
-import static probability.rules.TestUtils.createSingleVariableBinding;
-import static probability.rules.TestUtils.createVariableValueOperatorExpression;
+import static probability.rules.engine.TestUtils.createSingleVariableBinding;
+import static probability.rules.engine.TestUtils.createVariableValueOperatorExpression;
 
 @RunWith(Parameterized.class)
 public class VariableValueOperatorTest {

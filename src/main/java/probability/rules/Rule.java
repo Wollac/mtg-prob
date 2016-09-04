@@ -6,6 +6,9 @@ import java.util.List;
 
 import probability.attr.ImmutableAttributeHolder;
 import probability.messages.Messages;
+import probability.rules.engine.Expression;
+import probability.rules.engine.Operation;
+import probability.rules.parser.StringTokenizer;
 import probability.utils.FormattedPrintWriter;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -21,14 +24,6 @@ public class Rule {
 
     private final List<Expression> _expressions;
 
-    /**
-     * Creates a rule from a list of expressions.
-     */
-    Rule(List<Expression> expressions) {
-
-        _expressions = checkNotNull(expressions);
-    }
-
     public static void printGrammar(FormattedPrintWriter writer) {
 
         writer.println(Messages.get().grammarDescriptionRule());
@@ -36,16 +31,20 @@ public class Rule {
 
         writer.setIndentionLevel(1);
 
-        writer.println(Parentheses.getProductionRules());
-
-        for (Operation o : Operation.values()) {
-            writer.println(o.getProductionRule());
-        }
+        Operation.getProductionRules().forEach(writer::println);
 
         writer.setIndentionLevel(0);
 
         writer.println(Messages.get().grammarDescriptionVariable(VARIABLE));
         writer.println(Messages.get().grammarDescriptionString(STRING, StringTokenizer.QUOTE_CHAR));
+    }
+
+    /**
+     * Creates a rule from a list of expressions.
+     */
+    Rule(List<Expression> expressions) {
+
+        _expressions = checkNotNull(expressions);
     }
 
     /**

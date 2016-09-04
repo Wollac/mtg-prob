@@ -1,14 +1,14 @@
 package probability.rules;
 
-class NamingConventions {
+public class NamingConventions {
 
-    static final String ARROW_OPERATOR = " -> ";
+    public static final String ARROW_OPERATOR = " -> ";
 
-    static final String EXPRESSION = "E";
+    public static final String EXPRESSION = "E";
 
-    static final String VARIABLE = "Variable";
+    public static final String VARIABLE = "Variable";
 
-    static final String STRING = "String";
+    public static final String STRING = "String";
 
     private NamingConventions() {
     }

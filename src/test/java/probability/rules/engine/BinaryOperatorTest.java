@@ -1,4 +1,4 @@
-package probability.rules;
+package probability.rules.engine;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Stack;
 
-import static probability.rules.TestUtils.createConstantToken;
+import static probability.rules.engine.TestUtils.createConstantToken;
 
 @RunWith(Parameterized.class)
 public class BinaryOperatorTest {

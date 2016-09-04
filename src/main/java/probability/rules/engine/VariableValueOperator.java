@@ -1,8 +1,11 @@
-package probability.rules;
+package probability.rules.engine;
 
 import java.util.Stack;
 
-import static probability.rules.NamingConventions.*;
+import static probability.rules.NamingConventions.ARROW_OPERATOR;
+import static probability.rules.NamingConventions.EXPRESSION;
+import static probability.rules.NamingConventions.STRING;
+import static probability.rules.NamingConventions.VARIABLE;
 
 /**
  * Common functionality for all operators that have exactly one variable and one value as operands.

@@ -1,9 +1,8 @@
-package probability.rules;
+package probability.rules.engine;
 
 import java.util.Stack;
 
-import static probability.rules.NamingConventions.ARROW_OPERATOR;
-import static probability.rules.NamingConventions.EXPRESSION;
+import probability.rules.NamingConventions;
 
 /**
  * Parentheses are a special {@linkplain Operator} and has the highest possible priority. As
@@ -20,7 +19,7 @@ interface Parentheses extends Operator {
     int PARENTHESIS_PRECEDENCE = -1;
 
     static String getProductionRules() {
-        return EXPRESSION + ARROW_OPERATOR + OPEN_PARENTHESIS_CHAR + EXPRESSION + CLOSE_PARENTHESIS_CHAR;
+        return NamingConventions.EXPRESSION + NamingConventions.ARROW_OPERATOR + OPEN_PARENTHESIS_CHAR + NamingConventions.EXPRESSION + CLOSE_PARENTHESIS_CHAR;
     }
 
     /**

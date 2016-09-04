@@ -1,4 +1,4 @@
-package probability.rules;
+package probability.rules.engine;
 
 import org.junit.Assert;
 
@@ -6,6 +6,7 @@ import java.util.Stack;
 
 import probability.attr.AttributeKey;
 import probability.attr.ImmutableAttributeHolder;
+import probability.rules.VariableHolder;
 
 class TestUtils {
 

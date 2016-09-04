@@ -1,11 +1,13 @@
-package probability.rules;
+package probability.rules.engine;
 
 import java.util.List;
 import java.util.Stack;
 
-import probability.rules.Parentheses.OpenParenthesis;
-import probability.rules.Token.RulesTokenException;
-import probability.rules.Token.TokenType;
+import probability.rules.engine.Operator;
+import probability.rules.engine.Parentheses.OpenParenthesis;
+import probability.rules.engine.Token;
+import probability.rules.engine.Token.RulesTokenException;
+import probability.rules.engine.Token.TokenType;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

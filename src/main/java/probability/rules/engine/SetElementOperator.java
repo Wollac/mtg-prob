@@ -1,4 +1,4 @@
-package probability.rules;
+package probability.rules.engine;
 
 import java.util.Set;
 import java.util.Stack;
