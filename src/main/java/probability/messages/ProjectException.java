@@ -11,7 +11,7 @@ public class ProjectException extends Exception {
         INVALID_MULLIGAN_RULE
     }
 
-    private ProjectError _error;
+    private final ProjectError _error;
 
     public ProjectException(ProjectError error) {
 
