@@ -15,10 +15,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import probability.attr.AttributeHolder;
 import probability.attr.AttributeKey;
 import probability.attr.AttributeParseException;
 import probability.attr.ImmutableAttributeHolder;
+import probability.attr.ParsingAttributeHolder;
 import probability.utils.LineCommentReader;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -108,7 +108,7 @@ public abstract class AbstractCSVParser<T> {
     private ImmutableAttributeHolder parseLine(String[] nextLine)
             throws CvsParseException {
 
-        AttributeHolder attributeHolder = new AttributeHolder();
+        ParsingAttributeHolder attributeHolder = new ParsingAttributeHolder();
 
         try {
             for (Entry<AttributeKey<?>, Integer> element : _attribute2column
