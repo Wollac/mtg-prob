@@ -1,5 +1,6 @@
 package probability.config;
 
+import com.google.common.io.CharSource;
 import com.google.common.io.Resources;
 
 import org.pmw.tinylog.Logger;
@@ -12,9 +13,11 @@ import java.net.URL;
 import java.util.List;
 
 import probability.attr.AttributeKey;
+import probability.attr.AttributeParseException;
 import probability.attr.AttributeUtils;
 import probability.attr.BooleanAttributeKey;
 import probability.attr.IntegerAttributeKey;
+import probability.attr.PropertiesAttributeHolder;
 import probability.messages.Messages;
 import probability.utils.ReadOrWriteDefaultIO;
 
@@ -22,19 +25,21 @@ class ConfigLoader {
 
     private static final String FILE_TYPE = "config";
 
-    private final GenericJsonIO _configIO;
+    private final PropertiesAttributeHolder _configIO;
 
     ConfigLoader() {
 
         List<AttributeKey<?>> variableKeys = AttributeUtils.getAttributeKeys(ATTR.class);
-        _configIO = new GenericJsonIO(variableKeys);
+        _configIO = new PropertiesAttributeHolder(variableKeys);
     }
 
     Config loadFromResource(URL url) {
-        try {
 
-            _configIO.read(Resources.toString(url, Settings.CHARSET));
-        } catch (IOException | GenericJsonIO.JsonIOException e) {
+        CharSource source = Resources.asCharSource(url, Settings.CHARSET);
+        try {
+            _configIO.load(source.openStream());
+        } catch (IOException | AttributeParseException e) {
+            // the resource file should always be valid
             throw new IllegalStateException("Could not parse resource " + url, e);
         }
 
@@ -57,7 +62,7 @@ class ConfigLoader {
 
     private <T> T getConfigValue(AttributeKey<T> attribute) {
 
-        return _configIO.getProperty(attribute);
+        return _configIO.getAttributeValue(attribute);
     }
 
     private Config getConfig() {
@@ -99,9 +104,8 @@ class ConfigLoader {
         @Override
         protected void read(Reader reader) throws IOException {
             try {
-
-                _configIO.read(reader);
-            } catch (GenericJsonIO.JsonIOException e) {
+                _configIO.load(reader);
+            } catch (AttributeParseException e) {
                 Logger.error(Messages.get().parseFileException(getFileName(), FILE_TYPE,
                         e.getLocalizedMessage()));
                 Logger.debug(e);
@@ -113,7 +117,7 @@ class ConfigLoader {
 
             Logger.warn(Messages.get().writeDefaultFile(getFileName(), FILE_TYPE));
 
-            _configIO.writeDefaultValues(writer);
+            _configIO.store(writer, FILE_TYPE);
         }
     }
 
@@ -123,16 +127,16 @@ class ConfigLoader {
                 "cards", 60, i -> (i > 0));
 
         IntegerAttributeKey INITIAL_HAND_SIZE = new IntegerAttributeKey(
-                "initial hand size", 7, i -> (i > 0));
+                "initial_hand_size", 7, i -> (i > 0));
 
         BooleanAttributeKey DRAW_ON_TURN = new BooleanAttributeKey(
-                "draw on turn", false);
+                "draw_on_turn", false);
 
         IntegerAttributeKey SAMPLE_SIZE = new IntegerAttributeKey(
-                "sample size", 10000, i -> (i >= 1000));
+                "sample_size", 10000, i -> (i >= 1000));
 
         IntegerAttributeKey TURNS_AFTER_MAX_CMC = new IntegerAttributeKey(
-                "turns after max CMC", 3, i -> (i > 0));
+                "turns_after_max_CMC", 3, i -> (i > 0));
     }
 
 }
