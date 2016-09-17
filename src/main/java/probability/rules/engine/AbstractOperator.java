@@ -27,10 +27,6 @@ abstract class AbstractOperator implements Operator {
         checkArgument(!StringUtils.containsWhitespace(symbol));
         checkArgument(precedence >= 0);
 
-        new StringBuffer();
-
-        StringUtils.stripStart(symbol, null);
-
         _symbol = symbol;
         _precedence = precedence;
     }
