@@ -20,9 +20,9 @@ public final class Settings {
 
     public static final String SPELLS_FILE_NAME = "spells.csv";
 
-    private static final String CONFIG_FILE_NAME = "mtg.config";
-
     public static final Config config;
+
+    private static final String CONFIG_FILE_NAME = "mtg-probability.properties";
 
     static {
         ConfigLoader loader = new ConfigLoader();
