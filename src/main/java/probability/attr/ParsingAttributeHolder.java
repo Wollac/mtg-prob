@@ -9,65 +9,61 @@ import java.util.Map;
  */
 public final class ParsingAttributeHolder implements AttributeHolder {
 
-    private final Map<AttributeKey<?>, Object> _map;
+  private final Map<AttributeKey<?>, Object> _map;
 
-    public ParsingAttributeHolder() {
-        _map = new HashMap<>();
+  public ParsingAttributeHolder() {
+    _map = new HashMap<>();
+  }
+
+  @Override public <T> void setAttributeValue(AttributeKey<T> key, T value) {
+
+    try {
+      key.checkValid(value);
+    } catch (AttributeParseException e) {
+      throw new IllegalArgumentException(e);
     }
 
-    @Override
-    public <T> void setAttributeValue(AttributeKey<T> key, T value) {
+    setAttributeValueUnchecked(key, value);
+  }
 
-        try {
-            key.checkValid(value);
-        } catch (AttributeParseException e) {
-            throw new IllegalArgumentException(e);
-        }
+  @Override public <T> void setAttributeValueUnchecked(AttributeKey<T> key, T value) {
 
-        setAttributeValueUnchecked(key, value);
+    _map.put(key, value);
+  }
+
+  @Override public <T> T getAttributeValue(AttributeKey<T> key, T def) {
+
+    Object valueObject = _map.get(key);
+    if (valueObject == null) {
+      return def;
     }
 
-    @Override
-    public <T> void setAttributeValueUnchecked(AttributeKey<T> key, T value) {
+    @SuppressWarnings("unchecked") T value = (T) valueObject;
 
-        _map.put(key, value);
+    return value;
+  }
+
+  @Override public <T> T getAttributeValue(AttributeKey<T> key) {
+    return getAttributeValue(key, key.getDefaultValue());
+  }
+
+  /**
+   * Sets the value of the corresponding {@link AttributeKey} by parsing the provided string.
+   *
+   * @param key         the key whose value should be changed
+   * @param valueString string representation of the new value
+   * @throws AttributeParseException if the string could not be parsed
+   */
+  public <T> void setParsedAttributeValue(AttributeKey<T> key, String valueString)
+      throws AttributeParseException {
+
+    T value = key.parseValue(valueString);
+
+    if (!key.isValid(value)) {
+      throw new AttributeParseException(AttributeParseException.AttributeParseError.INVALID_VALUE,
+          key);
     }
 
-    @Override
-    public <T> T getAttributeValue(AttributeKey<T> key, T def) {
-
-        Object valueObject = _map.get(key);
-        if (valueObject == null) {
-            return def;
-        }
-
-        @SuppressWarnings("unchecked")
-        T value = (T) valueObject;
-
-        return value;
-    }
-
-    @Override
-    public <T> T getAttributeValue(AttributeKey<T> key) {
-        return getAttributeValue(key, key.getDefaultValue());
-    }
-
-    /**
-     * Sets the value of the corresponding {@link AttributeKey} by parsing the provided string.
-     *
-     * @param key         the key whose value should be changed
-     * @param valueString string representation of the new value
-     * @throws AttributeParseException if the string could not be parsed
-     */
-    public <T> void setParsedAttributeValue(AttributeKey<T> key, String valueString)
-            throws AttributeParseException {
-
-        T value = key.parseValue(valueString);
-
-        if (!key.isValid(value)) {
-            throw new AttributeParseException(AttributeParseException.AttributeParseError.INVALID_VALUE, key);
-        }
-
-        setAttributeValueUnchecked(key, value);
-    }
+    setAttributeValueUnchecked(key, value);
+  }
 }

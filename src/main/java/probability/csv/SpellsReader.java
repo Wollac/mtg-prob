@@ -7,12 +7,11 @@ import java.io.Reader;
 
 public class SpellsReader extends CardsReader<Spell> {
 
-    public SpellsReader(String filename) {
-        super(filename);
-    }
+  public SpellsReader(String filename) {
+    super(filename);
+  }
 
-    @Override
-    protected AbstractCSVParser<Spell> createCSVParser(Reader reader) throws IOException {
-        return new SpellCSVParser(reader);
-    }
+  @Override protected AbstractCSVParser<Spell> createCSVParser(Reader reader) throws IOException {
+    return new SpellCSVParser(reader);
+  }
 }

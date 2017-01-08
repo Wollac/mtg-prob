@@ -7,15 +7,14 @@ import probability.attr.ImmutableAttributeHolder;
  */
 class NotEqual extends VariableValueOperator {
 
-    NotEqual() {
+  NotEqual() {
 
-        super("<>", 7);
-    }
+    super("<>", 7);
+  }
 
-    @Override
-    public boolean interpret(ImmutableAttributeHolder bindings) {
+  @Override public boolean interpret(ImmutableAttributeHolder bindings) {
 
-        return !_variable.equals(_value, bindings);
-    }
+    return !_variable.equals(_value, bindings);
+  }
 
 }

@@ -2,12 +2,12 @@ package probability.core;
 
 public interface Card {
 
-    String getName();
+  String getName();
 
-    CardType getCardType();
+  CardType getCardType();
 
-    enum CardType {
-        Land, Spell, Other
-    }
+  enum CardType {
+    Land, Spell, Other
+  }
 
 }

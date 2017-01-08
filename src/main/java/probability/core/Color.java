@@ -5,45 +5,52 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Color {
-    White('W'), Blue('U'), Black('B'), Red('R'), Green('G'), Colorless('C');
 
-    private static final Map<Character, Color> _codeToColor;
+  White('W'), Blue('U'), Black('B'), Red('R'), Green('G'), Colorless('C');
 
-    static {
-        _codeToColor = new HashMap<>();
+  private static final Map<Character, Color> _codeToColor;
 
-        for (Color c : Color.values()) {
-            _codeToColor.put(c.getLetterCode(), c);
-        }
+  static {
+    _codeToColor = new HashMap<>();
+
+    for (Color c : Color.values()) {
+      _codeToColor.put(c.getLetterCode(), c);
+    }
+  }
+
+  private final char _letterCode;
+
+  Color(char letterCode) {
+    _letterCode = letterCode;
+  }
+
+  /**
+   * Returns the Color object of the given character representing the color.
+   *
+   * @param letterCode the single character representing a color
+   * @throws IllegalArgumentException if the character represents no color
+   */
+  public static Color getColor(char letterCode) {
+
+    Color color = _codeToColor.get(letterCode);
+    if (color == null) {
+      throw new IllegalArgumentException(
+          "illegal character '" + letterCode + "' is not a valid mana letter " + _codeToColor
+              .keySet());
     }
 
-    private final char _c;
+    return color;
+  }
 
-    Color(char c) {
-        _c = c;
-    }
+  public static EnumSet<Color> emptyEnumSet() {
+    return EnumSet.noneOf(Color.class);
+  }
 
-    public static Color getColor(char c) {
+  public char getLetterCode() {
+    return _letterCode;
+  }
 
-        Color color = _codeToColor.get(c);
-        if (color == null) {
-            throw new IllegalArgumentException("illegal character '" + c
-                    + "' is not a valid mana letter " + _codeToColor.keySet());
-        }
-
-        return color;
-    }
-
-    public static EnumSet<Color> emptyEnumSet() {
-        return EnumSet.noneOf(Color.class);
-    }
-
-    public char getLetterCode() {
-        return _c;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(getLetterCode());
-    }
+  @Override public String toString() {
+    return String.valueOf(getLetterCode());
+  }
 }

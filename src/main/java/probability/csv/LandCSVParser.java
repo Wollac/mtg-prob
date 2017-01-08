@@ -1,10 +1,5 @@
 package probability.csv;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import probability.attr.ColorsAttributeKey;
 import probability.attr.EnumAttributeKey;
 import probability.attr.ImmutableAttributeHolder;
@@ -20,74 +15,78 @@ import probability.core.land.NonbasicLand;
 import probability.core.land.SlowFetchLand;
 import probability.core.land.TapLand;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class LandCSVParser extends AbstractCSVParser<Land> {
 
-    public LandCSVParser(Reader reader) throws IOException {
+  public LandCSVParser(Reader reader) throws IOException {
 
-        super(reader);
+    super(reader);
 
-        addOptionalAttribute(ATTR.NUM);
-        addMandatoryAttribute(ATTR.NAME);
-        addMandatoryAttribute(ATTR.TYPE);
-        addMandatoryAttribute(ATTR.COLORS);
+    addOptionalAttribute(AttributeKeys.NUM);
+    addMandatoryAttribute(AttributeKeys.NAME);
+    addMandatoryAttribute(AttributeKeys.TYPE);
+    addMandatoryAttribute(AttributeKeys.COLORS);
+  }
+
+  private static Land createLand(LandTypes type, String name, Colors colors) {
+
+    switch (type) {
+      case Basic:
+        return new BasicLand(name, colors);
+      case NonBasic:
+        return new NonbasicLand(name, colors);
+      case Tap:
+        return new TapLand(name, colors);
+      case Check:
+        return new CheckLand(name, colors);
+      case Fast:
+        return new FastLand(name, colors);
+      case Fetch:
+        return new FetchLand(name, colors);
+      case SlowFetch:
+        return new SlowFetchLand(name, colors);
+      default:
+        throw new AssertionError("unexpected land type " + type);
+    }
+  }
+
+  @Override protected Collection<Land> createInstance(ImmutableAttributeHolder row) {
+
+    int num = row.getAttributeValue(AttributeKeys.NUM);
+
+    Collection<Land> lands = new ArrayList<>(num);
+
+    Land land = createLand(row.getAttributeValue(AttributeKeys.TYPE), row.getAttributeValue(
+        AttributeKeys.NAME),
+        row.getAttributeValue(AttributeKeys.COLORS));
+
+    for (int i = 0; i < num; i++) {
+      lands.add(land);
     }
 
-    private static Land createLand(LandTypes type, String name, Colors colors) {
+    return lands;
+  }
 
-        switch (type) {
-            case Basic:
-                return new BasicLand(name, colors);
-            case NonBasic:
-                return new NonbasicLand(name, colors);
-            case Tap:
-                return new TapLand(name, colors);
-            case Check:
-                return new CheckLand(name, colors);
-            case Fast:
-                return new FastLand(name, colors);
-            case Fetch:
-                return new FetchLand(name, colors);
-            case SlowFetch:
-                return new SlowFetchLand(name, colors);
-            default:
-                throw new AssertionError("unexpected land type " + type);
-        }
-    }
+  private enum LandTypes {
+    Basic, NonBasic, Tap, Check, Fast, Fetch, SlowFetch
+  }
 
-    @Override
-    protected Collection<Land> createInstance(ImmutableAttributeHolder row) {
 
-        int num = row.getAttributeValue(ATTR.NUM);
+  private interface AttributeKeys {
 
-        Collection<Land> lands = new ArrayList<>(num);
+    IntegerAttributeKey NUM = new IntegerAttributeKey("num", 1, i -> (i > 0));
 
-        Land land = createLand(row.getAttributeValue(ATTR.TYPE),
-                row.getAttributeValue(ATTR.NAME),
-                row.getAttributeValue(ATTR.COLORS));
+    StringAttributeKey NAME = new StringAttributeKey("name");
 
-        for (int i = 0; i < num; i++) {
-            lands.add(land);
-        }
+    EnumAttributeKey<LandTypes> TYPE =
+        new EnumAttributeKey<>("type", LandTypes.class, LandTypes.Basic);
 
-        return lands;
-    }
+    ColorsAttributeKey COLORS = new ColorsAttributeKey("colors");
 
-    private enum LandTypes {
-        Basic, NonBasic, Tap, Check, Fast, Fetch, SlowFetch
-    }
-
-    private interface ATTR {
-
-        IntegerAttributeKey NUM = new IntegerAttributeKey("num", 1,
-                i -> (i > 0));
-
-        StringAttributeKey NAME = new StringAttributeKey("name");
-
-        EnumAttributeKey<LandTypes> TYPE = new EnumAttributeKey<>(
-                "type", LandTypes.class, LandTypes.Basic);
-
-        ColorsAttributeKey COLORS = new ColorsAttributeKey("colors");
-
-    }
+  }
 
 }

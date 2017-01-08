@@ -5,81 +5,76 @@ import java.util.Stack;
 
 abstract class SetElementOperator extends VariableValueOperator {
 
-    Variable<? extends Set<?>> _variable;
+  Variable<? extends Set<?>> _variable;
 
-    Object _value;
+  Object _value;
 
-    /**
-     * Creates an operator.
-     *
-     * @param symbol     nonempty string used to identify the operator
-     * @param precedence precedence value of the operator
-     */
-    SetElementOperator(String symbol, int precedence) {
-        super(symbol, precedence);
+  /**
+   * Creates an operator.
+   *
+   * @param symbol     nonempty string used to identify the operator
+   * @param precedence precedence value of the operator
+   */
+  SetElementOperator(String symbol, int precedence) {
+    super(symbol, precedence);
+  }
+
+  @Override public Expression parse(Stack<Token> stack) throws RulesTokenException {
+
+    if (stack.size() < 2) {
+      throw new RulesTokenException("Operand missing for " + getSymbol());
     }
 
-    @Override
-    public Expression parse(Stack<Token> stack) throws RulesTokenException {
+    Token right = stack.pop();
+    Token left = stack.pop();
 
-        if (stack.size() < 2) {
-            throw new RulesTokenException("Operand missing for " + getSymbol());
-        }
-
-        Token right = stack.pop();
-        Token left = stack.pop();
-
-        if (left instanceof Variable<?>) {
-            parse((Variable<?>) left, right);
-        } else {
-            throw new RulesTokenException("The LHS of " + getSymbol() +
-                    " must be a set variable");
-        }
-
-        return this;
+    if (left instanceof Variable<?>) {
+      parse((Variable<?>) left, right);
+    } else {
+      throw new RulesTokenException("The LHS of " + getSymbol() + " must be a set variable");
     }
 
-    @Override
-    protected void parse(Variable<?> variable, Token other) throws RulesTokenException {
+    return this;
+  }
 
-        _variable = getSetVariable(variable);
+  @Override protected void parse(Variable<?> variable, Token other) throws RulesTokenException {
 
-        if (!(other instanceof Value.StringValue)) {
-            throw new RulesTokenException("The RHS of " + getSymbol() +
-                    " must be a value");
-        }
+    _variable = getSetVariable(variable);
 
-        Set<?> values = _variable.parseValue((Value.StringValue) other);
-        if (values == null || values.size() != 1) {
-            throw new RulesTokenException("The RHS of " + getSymbol() +
-                    " must be exactly one element");
-        }
-        _value = values.iterator().next();
+    if (!(other instanceof Value.StringValue)) {
+      throw new RulesTokenException("The RHS of " + getSymbol() + " must be a value");
     }
 
-    private Variable<? extends Set<?>> getSetVariable(Variable<?> variable) throws RulesTokenException {
+    Set<?> values = _variable.parseValue((Value.StringValue) other);
+    if (values == null || values.size() != 1) {
+      throw new RulesTokenException("The RHS of " + getSymbol() + " must be exactly one element");
+    }
+    _value = values.iterator().next();
+  }
 
-        if (!Set.class.isAssignableFrom(variable.getType())) {
+  private Variable<? extends Set<?>> getSetVariable(Variable<?> variable)
+      throws RulesTokenException {
 
-            throw new RulesTokenException(getSymbol() + " can only be applied to variables of the" +
-                    " type Set");
-        }
+    if (!Set.class.isAssignableFrom(variable.getType())) {
 
-        @SuppressWarnings("unchecked")
-        Variable<? extends Set<?>> result = (Variable<? extends Set<?>>) variable;
-
-        return result;
+      throw new RulesTokenException(
+          getSymbol() + " can only be applied to variables of the" + " type Set");
     }
 
-    @Override
-    public String toString() {
+    @SuppressWarnings("unchecked") Variable<? extends Set<?>> result =
+        (Variable<? extends Set<?>>) variable;
 
-        String valueString = _value.toString();
+    return result;
+  }
 
-        if (valueString.indexOf(' ') >= 0) {
-            valueString = '"' + valueString + '"';
-        }
+  @Override public String toString() {
 
-        return "(" + _variable + " " + getSymbol() + " " + valueString + ")";
+    String valueString = _value.toString();
+
+    if (valueString.indexOf(' ') >= 0) {
+      valueString = '"' + valueString + '"';
     }
+
+    return "(" + _variable + " " + getSymbol() + " " + valueString + ")";
+  }
 }

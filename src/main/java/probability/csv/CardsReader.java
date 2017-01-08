@@ -1,6 +1,10 @@
 package probability.csv;
 
 import org.pmw.tinylog.Logger;
+import probability.config.Settings;
+import probability.core.Card;
+import probability.messages.Messages;
+import probability.utils.ReadOrWriteDefaultIO;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -10,75 +14,68 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import probability.config.Settings;
-import probability.core.Card;
-import probability.messages.Messages;
-import probability.utils.ReadOrWriteDefaultIO;
-
 abstract class CardsReader<C extends Card> extends ReadOrWriteDefaultIO {
 
-    private static final String FILE_TYPE = "CSV";
+  private static final String FILE_TYPE = "CSV";
 
-    private List<C> _cards = null;
+  private List<C> _cards = null;
 
-    CardsReader(String filename) {
+  CardsReader(String filename) {
 
-        super(filename, Settings.CHARSET);
+    super(filename, Settings.CHARSET);
+  }
+
+  public List<C> read() {
+
+    try {
+      readOrWriteDefault();
+    } catch (IOException e) {
+
+      Logger.error(
+          Messages.get().readFileException(getFileName(), FILE_TYPE, e.getLocalizedMessage()));
+      Logger.debug(e);
     }
 
-    public List<C> read() {
+    List<C> result = _cards;
+    _cards = null;
 
-        try {
-            readOrWriteDefault();
-        } catch (IOException e) {
+    return result;
+  }
 
-            Logger.error(Messages.get().readFileException(getFileName(), FILE_TYPE,
-                    e.getLocalizedMessage()));
-            Logger.debug(e);
-        }
+  @Override protected void read(Reader reader) throws IOException {
 
-        List<C> result = _cards;
-        _cards = null;
+    AbstractCSVParser<C> parser = createCSVParser(reader);
 
-        return result;
+    try {
+      _cards = parser.readAll();
+    } catch (AbstractCSVParser.CvsParseException e) {
+
+      Logger.error(
+          Messages.get().parseFileException(getFileName(), FILE_TYPE, e.getLocalizedMessage()));
+      Logger.debug(e);
     }
+  }
 
-    @Override
-    protected void read(Reader reader) throws IOException {
+  @Override protected void writeDefault(Writer writer) throws IOException {
 
-        AbstractCSVParser<C> parser = createCSVParser(reader);
+    Logger.warn(Messages.get().writeDefaultFile(getFileName(), FILE_TYPE));
 
-        try {
-            _cards = parser.readAll();
-        } catch (AbstractCSVParser.CvsParseException e) {
+    AbstractCSVParser<C> parser = createCSVParser();
 
-            Logger.error(Messages.get().parseFileException(getFileName(), FILE_TYPE,
-                    e.getLocalizedMessage()));
-            Logger.debug(e);
-        }
-    }
+    String headerLine = parser.getHeaders().stream()
+        .collect(Collectors.joining(String.valueOf(parser.getSeparator())));
 
-    @Override
-    protected void writeDefault(Writer writer) throws IOException {
+    writer.write(headerLine);
+    writer.write(System.lineSeparator());
 
-        Logger.warn(Messages.get().writeDefaultFile(getFileName(), FILE_TYPE));
+    _cards = Collections.emptyList();
+  }
 
-        AbstractCSVParser<C> parser = createCSVParser();
+  private AbstractCSVParser<C> createCSVParser() throws IOException {
 
-        String headerLine = parser.getHeaders().stream().collect(Collectors.joining(
-                String.valueOf(parser.getSeparator())));
+    Reader dummyReader = new StringReader("");
+    return createCSVParser(dummyReader);
+  }
 
-        writer.write(headerLine);
-        writer.write(System.lineSeparator());
-
-        _cards = Collections.emptyList();
-    }
-
-    private AbstractCSVParser<C> createCSVParser() throws IOException {
-
-        Reader dummyReader = new StringReader("");
-        return createCSVParser(dummyReader);
-    }
-
-    abstract protected AbstractCSVParser<C> createCSVParser(Reader reader) throws IOException;
+  protected abstract AbstractCSVParser<C> createCSVParser(Reader reader) throws IOException;
 }

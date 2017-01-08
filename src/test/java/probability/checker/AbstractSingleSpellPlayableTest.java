@@ -1,9 +1,13 @@
 package probability.checker;
 
 import com.google.common.base.Strings;
-
 import org.junit.Assert;
 import org.junit.Test;
+import probability.core.Color;
+import probability.core.Colors;
+import probability.core.ManaCost;
+import probability.core.Spell;
+import probability.core.land.Land;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,146 +16,137 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-import probability.core.Color;
-import probability.core.Colors;
-import probability.core.ManaCost;
-import probability.core.Spell;
-import probability.core.land.Land;
-
 abstract class AbstractSingleSpellPlayableTest {
 
-    static final int MAX_TURN = 12;
+  static final int MAX_TURN = 12;
 
-    /**
-     * Checks whether the given spell can be played with the given hand.
-     */
-    private static boolean isPlayable(Spell spell, int turn, Hand hand) {
+  /**
+   * Checks whether the given spell can be played with the given hand.
+   */
+  private static boolean isPlayable(Spell spell, int turn, Hand hand) {
 
-        PlayableRecursion checker = new PlayableRecursion(hand, turn, spell.getCost());
-        boolean playable = checker.check();
+    PlayableRecursion checker = new PlayableRecursion(hand, turn, spell.getCost());
+    boolean playable = checker.check();
 
-        hand.markAllInHand();
+    hand.markAllInHand();
 
-        return playable;
+    return playable;
+  }
+
+  /**
+   * Checks whether the given spell can be played not earlier than the specified turn.
+   */
+  static void assertIsPlayableFirstInTurn(Spell spell, Hand hand, int turn) {
+
+    for (int i = 1; i < turn; i++) {
+      assertNotPlayableInTurn(spell, hand, i);
+    }
+    for (int i = turn; i <= MAX_TURN; i++) {
+      assertPlayableInTurn(spell, hand, i);
+    }
+  }
+
+  static void assertPlayableInTurn(Spell spell, Hand hand, int i) {
+    Assert.assertTrue("unexpectedly not playable in turn " + i, isPlayable(spell, i, hand));
+  }
+
+  static void assertNotPlayableInTurn(Spell spell, Hand hand, int i) {
+    Assert.assertFalse("unexpectedly playable in turn " + i, isPlayable(spell, i, hand));
+  }
+
+  Spell createSpell(String costString) {
+    return new Spell("", new ManaCost(costString));
+  }
+
+  Spell createSpell(Color... colors) {
+    StringBuilder sb = new StringBuilder();
+    for (Color color : colors) {
+      sb.append(color.getLetterCode());
     }
 
-    /**
-     * Checks whether the given spell can be played not earlier than the specified turn.
-     */
-    static void assertIsPlayableFirstInTurn(Spell spell, Hand hand, int turn) {
+    return createSpell(sb.toString());
+  }
 
-        for (int i = 1; i < turn; i++) {
-            assertNotPlayableInTurn(spell, hand, i);
-        }
-        for (int i = turn; i <= MAX_TURN; i++) {
-            assertPlayableInTurn(spell, hand, i);
-        }
-    }
+  Hand createEmptyHand() {
+    return new Hand(Collections.emptySet(), Collections.emptySet());
+  }
 
-    static void assertPlayableInTurn(Spell spell, Hand hand, int i) {
-        Assert.assertTrue("unexpectedly not playable in turn " + i, isPlayable(spell, i, hand));
-    }
+  Hand createDrawingHand(Land... lands) {
+    return createDrawingHand(Arrays.asList(lands));
+  }
 
-    static void assertNotPlayableInTurn(Spell spell, Hand hand, int i) {
-        Assert.assertFalse("unexpectedly playable in turn " + i, isPlayable(spell, i, hand));
-    }
+  private Hand createDrawingHand(Collection<Land> lands) {
+    return new Hand(0, lands);
+  }
 
-    Spell createSpell(String costString) {
-        return new Spell("", new ManaCost(costString));
-    }
+  Hand createStartingHand(Land... lands) {
+    return createStartingHand(Arrays.asList(lands));
+  }
 
-    Spell createSpell(Color... colors) {
-        StringBuilder sb = new StringBuilder();
-        for (Color color : colors) {
-            sb.append(color.getLetterCode());
-        }
+  private Hand createStartingHand(Collection<Land> lands) {
+    return new Hand(lands.size(), lands);
+  }
 
-        return createSpell(sb.toString());
-    }
+  Land createLand(String colorString) {
+    return createLand(Colors.valueOf(colorString));
+  }
 
-    Hand createEmptyHand() {
-        return new Hand(Collections.emptySet(), Collections.emptySet());
-    }
+  Land createLand(Color... colors) {
 
-    Hand createDrawingHand(Land... lands) {
-        return createDrawingHand(Arrays.asList(lands));
-    }
+    return createLand(new Colors(colors));
+  }
 
-    private Hand createDrawingHand(Collection<Land> lands) {
-        return new Hand(0, lands);
-    }
+  abstract Land createLand(Colors colors);
 
-    Hand createStartingHand(Land... lands) {
-        return createStartingHand(Arrays.asList(lands));
-    }
+  // Spell: 1
+  // Starting Hand: []
+  // Expected: never playable
+  @Test public void testEmpty() {
 
-    private Hand createStartingHand(Collection<Land> lands) {
-        return new Hand(lands.size(), lands);
-    }
+    Spell spell = createSpell("1");
+    Hand hand = createEmptyHand();
 
-    Land createLand(String colorString) {
-        return createLand(Colors.valueOf(colorString));
-    }
+    Assert.assertFalse(isPlayable(spell, MAX_TURN, hand));
+  }
 
-    Land createLand(Color... colors) {
+  // Spell: G
+  // Starting Hand: W U B R
+  // Expected: never playable
+  @Test public void testWrongColor() {
 
-        return createLand(new Colors(colors));
-    }
+    final Color SPELL_COLOR = Color.Green;
 
-    abstract Land createLand(Colors colors);
+    Spell spell = createSpell(SPELL_COLOR);
 
-    // Spell: 1
-    // Starting Hand: []
-    // Expected: never playable
-    @Test
-    public void testEmpty() {
+    Set<Color> differentColors = EnumSet.complementOf(EnumSet.of(SPELL_COLOR));
 
-        Spell spell = createSpell("1");
-        Hand hand = createEmptyHand();
+    Collection<Land> lands = new ArrayList<>();
+    differentColors.forEach(c -> lands.add(createLand(c)));
 
-        Assert.assertFalse(isPlayable(spell, MAX_TURN, hand));
-    }
+    Hand hand = createStartingHand(lands);
 
-    // Spell: G
-    // Starting Hand: W U B R
-    // Expected: never playable
-    @Test
-    public void testWrongColor() {
+    Assert.assertFalse(isPlayable(spell, MAX_TURN, hand));
+  }
 
-        final Color SPELL_COLOR = Color.Green;
+  // Spell: GGGG
+  // Starting Hand: W U B R G G G
+  // Expected: never playable
+  @Test public void testNotEnoughColor() {
 
-        Spell spell = createSpell(SPELL_COLOR);
+    final Color SPELL_COLOR = Color.Green;
+    final int COUNT = 4;
 
-        Set<Color> differentColors = EnumSet.complementOf(EnumSet.of(SPELL_COLOR));
+    String costString = Strings.repeat(Character.toString(SPELL_COLOR.getLetterCode()), COUNT);
+    Spell spell = createSpell(costString);
 
-        Collection<Land> lands = new ArrayList<>();
-        differentColors.forEach(c -> lands.add(createLand(c)));
+    Set<Color> differentColors = CheckerTestUtils.getDifferentColors(SPELL_COLOR);
 
-        Hand hand = createStartingHand(lands);
+    Collection<Land> lands = new ArrayList<>();
+    differentColors.forEach(c -> lands.add(createLand(c)));
+    lands.addAll(Collections.nCopies(COUNT - 1, createLand(SPELL_COLOR)));
 
-        Assert.assertFalse(isPlayable(spell, MAX_TURN, hand));
-    }
+    Hand hand = createStartingHand(lands);
 
-    // Spell: GGGG
-    // Starting Hand: W U B R G G G
-    // Expected: never playable
-    @Test
-    public void testNotEnoughColor() {
-
-        final Color SPELL_COLOR = Color.Green;
-        final int COUNT = 4;
-
-        String costString = Strings.repeat(Character.toString(SPELL_COLOR.getLetterCode()), COUNT);
-        Spell spell = createSpell(costString);
-
-        Set<Color> differentColors = CheckerTestUtils.getDifferentColors(SPELL_COLOR);
-
-        Collection<Land> lands = new ArrayList<>();
-        differentColors.forEach(c -> lands.add(createLand(c)));
-        lands.addAll(Collections.nCopies(COUNT - 1, createLand(SPELL_COLOR)));
-
-        Hand hand = createStartingHand(lands);
-
-        Assert.assertFalse(isPlayable(spell, MAX_TURN, hand));
-    }
+    Assert.assertFalse(isPlayable(spell, MAX_TURN, hand));
+  }
 }

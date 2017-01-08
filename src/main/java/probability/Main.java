@@ -20,84 +20,84 @@ import java.util.Set;
 
 public class Main {
 
-    public static void main(String[] args) {
+  public static void main(String[] args) {
 
-        try {
-            run();
-        } catch (ProjectException e) {
+    try {
+      run();
+    } catch (ProjectException exception) {
 
-            Logger.error(e.getLocalizedMessage());
+      Logger.error(exception.getLocalizedMessage());
 
-            Throwable cause = e.getCause();
-            if (cause != null) {
-                Logger.debug(cause, "cause");
-            }
-        }
+      Throwable cause = exception.getCause();
+      if (cause != null) {
+        Logger.debug(cause, "cause");
+      }
     }
+  }
 
-    private static void run() throws ProjectException {
+  private static void run() throws ProjectException {
 
-        Deck deck = buildDeck();
+    Deck deck = buildDeck();
 
-        MulliganRule mulliganRule = new MulliganRule(new File(Settings.MULLIGAN_RULES_FILE_NAME));
+    MulliganRule mulliganRule = new MulliganRule(new File(Settings.MULLIGAN_RULES_FILE_NAME));
 
-        System.out.println(deck.toFormattedString());
+    System.out.println(deck.toFormattedString());
 
-        System.out.println(Messages.get().takeMulligan());
-        System.out.println(mulliganRule.toFormattedString());
+    System.out.println(Messages.get().takeMulligan());
+    System.out.println(mulliganRule.toFormattedString());
 
-        Set<Integer> convertedManaCosts = CardUtils.getConvertedManaCosts(deck.cards());
+    Set<Integer> convertedManaCosts = CardUtils.getConvertedManaCosts(deck.cards());
 
-        final int minCmc = Collections.min(convertedManaCosts);
-        final int maxCmc = Collections.min(convertedManaCosts);
+    final int minCmc = Collections.min(convertedManaCosts);
+    final int maxCmc = Collections.min(convertedManaCosts);
 
-        System.out.println(Messages.get().combinedFailureProbability());
+    System.out.println(Messages.get().combinedFailureProbability());
 
-        PlayableChecker checker = new PlayableChecker(deck, mulliganRule);
+    PlayableChecker checker = new PlayableChecker(deck, mulliganRule);
 
-        for (int turn = minCmc; turn <= maxCmc + Settings.config.turnsAfterMaxCMC(); turn++) {
+    for (int turn = minCmc; turn <= maxCmc + Settings.config.turnsAfterMaxCmc(); turn++) {
 
-            final int playable = checker.countPlayable(turn);
-            final double factor = 1.0 - (double) playable / Settings.config.sampleSize();
+      final int playable = checker.countPlayable(turn);
+      final double factor = 1.0 - (double) playable / Settings.config.sampleSize();
 
-            System.out.println(Messages.get().probability(turn, factor));
-        }
+      System.out.println(Messages.get().probability(turn, factor));
     }
+  }
 
-    private static Deck buildDeck() throws ProjectException {
+  private static Deck buildDeck() throws ProjectException {
 
-        Logger.debug("Building deck");
+    Logger.debug("Building deck");
 
-        Deck deck = new Deck();
+    Deck deck = new Deck();
 
-        addLands(deck);
-        addSpells(deck);
+    addLands(deck);
+    addSpells(deck);
 
-        deck.validate();
+    deck.validate();
 
-        deck.fillWithDummies();
+    deck.fillWithDummies();
 
-        return deck;
-    }
+    return deck;
+  }
 
-    private static void addLands(Deck deck) {
+  private static void addLands(Deck deck) {
 
-        LandsReader reader = new LandsReader(Settings.LANDS_FILE_NAME);
+    LandsReader reader = new LandsReader(Settings.LANDS_FILE_NAME);
 
-        List<Land> lands = reader.read();
-        Logger.debug("{} lands read", lands.size());
+    List<Land> lands = reader.read();
+    Logger.debug("{} lands read", lands.size());
 
-        deck.addAll(lands);
-    }
+    deck.addAll(lands);
+  }
 
-    private static void addSpells(Deck deck) {
+  private static void addSpells(Deck deck) {
 
-        SpellsReader reader = new SpellsReader(Settings.SPELLS_FILE_NAME);
+    SpellsReader reader = new SpellsReader(Settings.SPELLS_FILE_NAME);
 
-        List<Spell> spells = reader.read();
-        Logger.debug("{} spells read", spells.size());
+    List<Spell> spells = reader.read();
+    Logger.debug("{} spells read", spells.size());
 
-        deck.addAll(spells);
-    }
+    deck.addAll(spells);
+  }
 
 }

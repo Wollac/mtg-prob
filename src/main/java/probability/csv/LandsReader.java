@@ -7,12 +7,11 @@ import java.io.Reader;
 
 public class LandsReader extends CardsReader<Land> {
 
-    public LandsReader(String filename) {
-        super(filename);
-    }
+  public LandsReader(String filename) {
+    super(filename);
+  }
 
-    @Override
-    protected AbstractCSVParser<Land> createCSVParser(Reader reader) throws IOException {
-        return new LandCSVParser(reader);
-    }
+  @Override protected AbstractCSVParser<Land> createCSVParser(Reader reader) throws IOException {
+    return new LandCSVParser(reader);
+  }
 }

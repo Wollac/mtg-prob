@@ -2,14 +2,14 @@ package probability.config;
 
 public interface Config {
 
-    int numberOfCards();
+  int numberOfCards();
 
-    int initialHandSize();
+  int initialHandSize();
 
-    boolean drawOnTurn();
+  boolean drawOnTurn();
 
-    int sampleSize();
+  int sampleSize();
 
-    int turnsAfterMaxCMC();
+  int turnsAfterMaxCmc();
 
 }

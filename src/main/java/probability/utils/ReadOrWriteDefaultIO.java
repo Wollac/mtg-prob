@@ -1,7 +1,6 @@
 package probability.utils;
 
 import com.google.common.io.Files;
-
 import org.pmw.tinylog.Logger;
 
 import java.io.File;
@@ -14,59 +13,60 @@ import java.util.Objects;
 
 public abstract class ReadOrWriteDefaultIO {
 
-    private final File _file;
+  private final File _file;
 
-    private final Charset _charset;
+  private final Charset _charset;
 
-    protected ReadOrWriteDefaultIO(File file, Charset charset) {
+  protected ReadOrWriteDefaultIO(File file, Charset charset) {
 
-        _file = Objects.requireNonNull(file);
-        _charset = Objects.requireNonNull(charset);
+    _file = Objects.requireNonNull(file);
+    _charset = Objects.requireNonNull(charset);
+  }
+
+  protected ReadOrWriteDefaultIO(String fileName, Charset charset) {
+
+    this(new File(fileName), charset);
+  }
+
+  public void readOrWriteDefault() throws IOException {
+
+    if (_file.exists()) {
+
+      read(_file, _charset);
+    } else {
+
+      Logger.debug("File {} does not exist", _file.getPath());
+      write(_file, _charset);
     }
 
-    protected ReadOrWriteDefaultIO(String fileName, Charset charset) {
+  }
 
-        this(new File(fileName), charset);
+  private void read(File file, Charset charset) throws IOException {
+
+    try (Reader reader = Files.newReader(file, charset)) {
+
+      read(reader);
+    } catch (FileNotFoundException e) {
+
+      throw new IOException(e);
     }
+  }
 
-    public void readOrWriteDefault() throws IOException {
+  protected abstract void read(Reader reader) throws IOException;
 
-        if (_file.exists()) {
+  private void write(File file, Charset charset) throws IOException {
 
-            read(_file, _charset);
-        } else {
+    try (Writer writer = Files.newWriter(file, charset)) {
 
-            Logger.debug("File {} does not exist", _file.getPath());
-            write(_file, _charset);
-        }
-
+      writeDefault(writer);
     }
+  }
 
-    private void read(File file, Charset charset) throws IOException {
+  public String getFileName() {
 
-        try (Reader reader = Files.newReader(file, charset)) {
+    return _file.getName();
+  }
 
-            read(reader);
-        } catch (FileNotFoundException e) {
 
-            throw new IOException(e);
-        }
-    }
-
-    private void write(File file, Charset charset) throws IOException {
-
-        try (Writer writer = Files.newWriter(file, charset)) {
-
-            writeDefault(writer);
-        }
-    }
-
-    public String getFileName() {
-
-        return _file.getName();
-    }
-
-    abstract protected void read(Reader reader) throws IOException;
-
-    abstract protected void writeDefault(Writer writer) throws IOException;
+  protected abstract void writeDefault(Writer writer) throws IOException;
 }

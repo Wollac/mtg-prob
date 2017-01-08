@@ -10,62 +10,57 @@ import java.util.Stack;
  */
 class Value<T> implements Token {
 
-    private final T _value;
+  private final T _value;
 
-    public Value(T value) {
-        _value = value;
+  public Value(T value) {
+    _value = value;
+  }
+
+  public T getValue() {
+    return _value;
+  }
+
+  @Override public TokenType getTokenType() {
+    return TokenType.VALUE;
+  }
+
+  @Override public boolean equals(Object obj) {
+
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof Value)) {
+      return false;
     }
 
-    public T getValue() {
-        return _value;
+    Value<?> other = (Value<?>) obj;
+    return Objects.equals(_value, other._value);
+  }
+
+  @Override public Expression parse(Stack<Token> stack) throws RulesTokenException {
+
+    throw new RulesTokenException("Values cannot be used as an expression");
+  }
+
+  @Override public String toString() {
+    return _value.toString();
+  }
+
+  static class StringValue extends Value<String> {
+
+    StringValue(String value) {
+      super(value);
     }
 
-    @Override
-    public TokenType getTokenType() {
-        return TokenType.VALUE;
+    @Override public String toString() {
+
+      String value = getValue();
+
+      if (value.indexOf(' ') >= 0) {
+        return '"' + value + '"';
+      }
+      return value;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof Value)) {
-            return false;
-        }
-
-        Value<?> other = (Value<?>) obj;
-        return Objects.equals(_value, other._value);
-    }
-
-    @Override
-    public Expression parse(Stack<Token> stack) throws RulesTokenException {
-
-        throw new RulesTokenException("Values cannot be used as an expression");
-    }
-
-    @Override
-    public String toString() {
-        return _value.toString();
-    }
-
-    static class StringValue extends Value<String> {
-
-        StringValue(String value) {
-            super(value);
-        }
-
-        @Override
-        public String toString() {
-
-            String value = getValue();
-
-            if (value.indexOf(' ') >= 0) {
-                return '"' + value + '"';
-            }
-            return value;
-        }
-    }
+  }
 
 }
