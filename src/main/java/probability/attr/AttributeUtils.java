@@ -7,45 +7,47 @@ import java.util.List;
 
 public final class AttributeUtils {
 
-    private AttributeUtils() {
+  private AttributeUtils() {
+  }
+
+  /**
+   * Returns the values of all static final fields that extend AttributeKey.
+   *
+   * @throws IllegalArgumentException if the class does not contain any fields or contains a field
+   *                                  of different type
+   */
+  public static List<AttributeKey<?>> getAttributeKeys(Class clazz) {
+
+    if (clazz.getFields().length == 0) {
+      throw new IllegalArgumentException("error in " + clazz + ": no fields contained");
     }
 
-    /**
-     * Returns the values of all static final fields that extend AttributeKey.
-     *
-     * @throws IllegalArgumentException if the class does not contain any fields or contains a field of different type
-     */
-    public static List<AttributeKey<?>> getAttributeKeys(Class clazz) {
+    List<AttributeKey<?>> result = new ArrayList<>();
 
-        if (clazz.getFields().length == 0) {
-            throw new IllegalArgumentException("error in " + clazz + ": no fields contained");
-        }
+    for (Field field : clazz.getFields()) {
 
-        List<AttributeKey<?>> result = new ArrayList<>();
+      if (!isValidAttributeKey(field)) {
+        throw new IllegalArgumentException("error in " + clazz + ": field " + field.getName()
+            + " is not a static final AttributeKey");
+      }
 
-        for (Field field : clazz.getFields()) {
+      field.setAccessible(true);
+      try {
+        result.add((AttributeKey<?>) field.get(null));
+      } catch (IllegalAccessException e) {
+        throw new IllegalArgumentException("error in " + clazz, e);
+      }
 
-            if (!isValidAttributeKey(field)) {
-                throw new IllegalArgumentException("error in " + clazz + ": field " + field.getName() +
-                        " is not a static final AttributeKey");
-            }
-
-            field.setAccessible(true);
-            try {
-                result.add((AttributeKey<?>) field.get(null));
-            } catch (IllegalAccessException e) {
-                throw new IllegalArgumentException("error in " + clazz, e);
-            }
-
-        }
-
-        return result;
     }
 
-    private static boolean isValidAttributeKey(Field field) {
+    return result;
+  }
 
-        final int mod = field.getModifiers();
+  private static boolean isValidAttributeKey(Field field) {
 
-        return Modifier.isStatic(mod) && Modifier.isFinal(mod) && AttributeKey.class.isAssignableFrom(field.getType());
-    }
+    final int mod = field.getModifiers();
+
+    return Modifier.isStatic(mod) && Modifier.isFinal(mod) && AttributeKey.class
+        .isAssignableFrom(field.getType());
+  }
 }

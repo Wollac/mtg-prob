@@ -1,91 +1,92 @@
 package probability.rules;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
-import java.util.regex.Pattern;
-
 import probability.attr.AttributeKey;
 import probability.attr.ImmutableAttributeHolder;
 import probability.attr.SuppliedAttributeHolder;
 import probability.rules.engine.Operation;
 import probability.rules.engine.Variable;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+import java.util.regex.Pattern;
+
 public final class VariableHolder {
 
-    private static final Pattern NAME_PATTERN = Pattern.compile("[a-zA-Z]\\w*");
+  private static final Pattern NAME_PATTERN = Pattern.compile("[a-zA-Z]\\w*");
 
-    private final Map<String, Variable<?>> _name2var = new HashMap<>();
+  private final Map<String, Variable<?>> _name2var = new HashMap<>();
 
-    private final SuppliedAttributeHolder _bindings = new SuppliedAttributeHolder();
+  private final SuppliedAttributeHolder _bindings = new SuppliedAttributeHolder();
 
-    public void registerVariables(Iterable<? extends AttributeKey<?>> keys) {
+  public void registerVariables(Iterable<? extends AttributeKey<?>> keys) {
 
-        for (AttributeKey<?> key : keys) {
-            registerVariable(key);
-        }
+    for (AttributeKey<?> key : keys) {
+      registerVariable(key);
+    }
+  }
+
+  public <T> void registerVariable(AttributeKey<T> key) {
+
+    String name = key.getName();
+
+    checkName(name);
+    if (isRegistered(key)) {
+      throw new IllegalArgumentException("A variable for that key has already been registered");
     }
 
-    public <T> void registerVariable(AttributeKey<T> key) {
+    _name2var.put(name, Variable.createVariable(key));
+    _bindings.setAttributeValueUnchecked(key, key.getDefaultValue());
+  }
 
-        String name = key.getName();
+  private boolean isRegistered(AttributeKey<?> key) {
 
-        checkName(name);
-        if (isRegistered(key)) {
-            throw new IllegalArgumentException("A variable for that key has already been registered");
-        }
+    for (Variable<?> var : _name2var.values()) {
+      if (var.getAttributeKey().equals(key)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-        _name2var.put(name, Variable.createVariable(key));
-        _bindings.setAttributeValueUnchecked(key, key.getDefaultValue());
+  public boolean isRegistered(String name) {
+    return _name2var.containsKey(name);
+  }
+
+  public <T> void assignValue(AttributeKey<T> key, T value) {
+
+    _bindings.setAttributeValueUnchecked(key, value);
+  }
+
+  public <T> void assignSupplier(AttributeKey<T> key, Supplier<T> supplier) {
+
+    _bindings.putAttributeSupplier(key, supplier);
+  }
+
+  public ImmutableAttributeHolder getBindings() {
+    return _bindings;
+  }
+
+  public Variable<?> getVariable(String name) {
+    return _name2var.get(name);
+  }
+
+  private void checkName(String name) {
+
+    if (!NAME_PATTERN.matcher(name).matches()) {
+      throw new IllegalArgumentException(
+          "Invalid variable name \"" + name + "\": All names must match " + NAME_PATTERN.pattern());
     }
 
-    private boolean isRegistered(AttributeKey<?> key) {
-
-        for (Variable<?> var : _name2var.values()) {
-            if (var.getAttributeKey().equals(key))
-                return true;
-        }
-        return false;
+    if (_name2var.containsKey(name)) {
+      throw new IllegalArgumentException(
+          "Invalid variable name \"" + name + "\": already registered");
     }
 
-    public boolean isRegistered(String name) {
-        return _name2var.containsKey(name);
+    if (Operation.getOperationFromSymbol(name) != null) {
+      throw new IllegalArgumentException(
+          "Invalid variable name \"" + name + "\": name of an operation");
     }
-
-    public <T> void assignValue(AttributeKey<T> key, T value) {
-
-        _bindings.setAttributeValueUnchecked(key, value);
-    }
-
-    public <T> void assignSupplier(AttributeKey<T> key, Supplier<T> supplier) {
-
-        _bindings.putAttributeSupplier(key, supplier);
-    }
-
-    public ImmutableAttributeHolder getBindings() {
-        return _bindings;
-    }
-
-    public Variable<?> getVariable(String name) {
-        return _name2var.get(name);
-    }
-
-    private void checkName(String name) {
-
-        if (!NAME_PATTERN.matcher(name).matches()) {
-            throw new IllegalArgumentException(
-                    "Invalid variable name \"" + name + "\": All names must match " + NAME_PATTERN.pattern());
-        }
-
-        if (_name2var.containsKey(name)) {
-            throw new IllegalArgumentException(
-                    "Invalid variable name \"" + name + "\": already registered");
-        }
-
-        if (Operation.getOperationFromSymbol(name) != null) {
-            throw new IllegalArgumentException(
-                    "Invalid variable name \"" + name + "\": name of an operation");
-        }
-    }
+  }
 
 }

@@ -4,14 +4,13 @@ import probability.attr.ImmutableAttributeHolder;
 
 class Contains extends SetElementOperator {
 
-    Contains() {
+  Contains() {
 
-        super("CONTAINS", 6);
-    }
+    super("CONTAINS", 6);
+  }
 
-    @Override
-    public boolean interpret(ImmutableAttributeHolder bindings) {
+  @Override public boolean interpret(ImmutableAttributeHolder bindings) {
 
-        return _variable.getValue(bindings).contains(_value);
-    }
+    return _variable.getValue(bindings).contains(_value);
+  }
 }

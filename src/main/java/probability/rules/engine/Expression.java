@@ -8,11 +8,11 @@ import probability.attr.ImmutableAttributeHolder;
  */
 public interface Expression {
 
-    /**
-     * Evaluates the expression into true or false.
-     *
-     * @param bindings bindings for all the variables contained in the expression
-     */
-    boolean interpret(ImmutableAttributeHolder bindings);
+  /**
+   * Evaluates the expression into true or false.
+   *
+   * @param bindings bindings for all the variables contained in the expression
+   */
+  boolean interpret(ImmutableAttributeHolder bindings);
 
 }

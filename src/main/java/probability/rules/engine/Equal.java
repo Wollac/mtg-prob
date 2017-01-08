@@ -7,15 +7,14 @@ import probability.attr.ImmutableAttributeHolder;
  */
 class Equal extends VariableValueOperator {
 
-    Equal() {
+  Equal() {
 
-        super("=", 7);
-    }
+    super("=", 7);
+  }
 
-    @Override
-    public boolean interpret(ImmutableAttributeHolder bindings) {
+  @Override public boolean interpret(ImmutableAttributeHolder bindings) {
 
-        return _variable.equals(_value, bindings);
-    }
+    return _variable.equals(_value, bindings);
+  }
 
 }

@@ -1,5 +1,10 @@
 package probability.messages;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.reflections.ReflectionUtils;
@@ -22,220 +27,212 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 /**
  * This class tests all common problems regarding Messages. Missing translations, not used
  * translations, ENUM-translations. Everything is checked.
  */
 public class MessagesTest {
 
-    private static final Collection<Locale> LOCALES = Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
+  private static final Collection<Locale> LOCALES = Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
 
-    private static Collection<Method> messageMethods;
+  private static Collection<Method> messageMethods;
 
-    private static Map<String, Properties> bundles;
+  private static Map<String, Properties> bundles;
 
-    private static Collection<String> enumValueKeys;
+  private static Collection<String> enumValueKeys;
 
-    @SuppressWarnings("unchecked")
-    @BeforeClass
-    public static void prepare() throws Exception {
+  @SuppressWarnings("unchecked") @BeforeClass public static void prepare() throws Exception {
 
-        Collection<String> propertyFiles = new Reflections("probability", new ResourcesScanner()).getResources(Pattern.compile(Messages.BUNDLE_NAME + "_.*\\.properties"));
+    Collection<String> propertyFiles = new Reflections("probability", new ResourcesScanner())
+        .getResources(Pattern.compile(Messages.BUNDLE_NAME + "_.*\\.properties"));
 
-        bundles = new HashMap<>();
-        for (String propertyFile : propertyFiles) {
-            Properties properties = new Properties();
-            URL url = ClassLoader.getSystemResource(propertyFile);
-            properties.load(url.openStream());
-            bundles.put(propertyFile, properties);
-        }
-
-        messageMethods = ReflectionUtils.getMethods(ProjectMessages.class);
-
-        Collection<Class<? extends Displayable>> displayableEnums = new Reflections("probability").getSubTypesOf(Displayable.class);
-
-        enumValueKeys = new HashSet<>();
-        for (Class displayableEnum : displayableEnums) {
-
-            assertTrue(displayableEnum.isEnum());
-
-            for (Object enumValue : displayableEnum.getEnumConstants()) {
-
-                String messageKey = Messages.PREFIX_ENUM + displayableEnum.getSimpleName() + "_" + enumValue;
-                enumValueKeys.add(messageKey);
-            }
-        }
-
+    bundles = new HashMap<>();
+    for (String propertyFile : propertyFiles) {
+      Properties properties = new Properties();
+      URL url = ClassLoader.getSystemResource(propertyFile);
+      properties.load(url.openStream());
+      bundles.put(propertyFile, properties);
     }
 
-    /**
-     * Is there an interface-method for every entry in our properties?
-     *
-     * @throws IOException ignore
-     */
-    @Test
-    public void shouldHaveMessagesForAllInterfaceMethods() throws IOException {
+    messageMethods = ReflectionUtils.getMethods(ProjectMessages.class);
 
-        assertFalse("no message property files", bundles.isEmpty());
+    Collection<Class<? extends Displayable>> displayableEnums =
+        new Reflections("probability").getSubTypesOf(Displayable.class);
 
-        Set<String> error = new HashSet<>();
+    enumValueKeys = new HashSet<>();
+    for (Class displayableEnum : displayableEnums) {
 
-        for (Method method : messageMethods) {
+      assertTrue(displayableEnum.isEnum());
 
-            for (Map.Entry<String, Properties> entry : bundles.entrySet()) {
+      for (Object enumValue : displayableEnum.getEnumConstants()) {
 
-                if (!entry.getValue().containsKey(method.getName())) {
-                    error.add(entry.getKey() + "#" + method.getName());
-                }
-            }
-        }
-
-        if (!error.isEmpty()) {
-            fail("No translations for " + error);
-        }
+        String messageKey =
+            Messages.PREFIX_ENUM + displayableEnum.getSimpleName() + "_" + enumValue;
+        enumValueKeys.add(messageKey);
+      }
     }
 
-    @Test
-    public void verifySignaturesOfAllInterfaceMethods() {
+  }
 
-        messageMethods.forEach(this::verifySignatureForAllLocales);
+  /**
+   * Is there an interface-method for every entry in our properties?
+   *
+   * @throws IOException ignore
+   */
+  @Test public void shouldHaveMessagesForAllInterfaceMethods() throws IOException {
+
+    assertFalse("no message property files", bundles.isEmpty());
+
+    Set<String> error = new HashSet<>();
+
+    for (Method method : messageMethods) {
+
+      for (Map.Entry<String, Properties> entry : bundles.entrySet()) {
+
+        if (!entry.getValue().containsKey(method.getName())) {
+          error.add(entry.getKey() + "#" + method.getName());
+        }
+      }
     }
 
-    private void verifySignatureForAllLocales(Method method) {
+    if (!error.isEmpty()) {
+      fail("No translations for " + error);
+    }
+  }
 
-        assertEquals(String.class, method.getReturnType());
+  @Test public void verifySignaturesOfAllInterfaceMethods() {
 
-        Object[] arguments = getTestArguments(method);
+    messageMethods.forEach(this::verifySignatureForAllLocales);
+  }
 
-        for (Locale locale : LOCALES) {
+  private void verifySignatureForAllLocales(Method method) {
 
-            Messages.setLocale(locale);
+    assertEquals(String.class, method.getReturnType());
 
-            try {
-                method.invoke(Messages.get(), arguments);
-            } catch (Exception ex) {
-                throw new Error("Invoking message method threw exception", ex);
-            }
-        }
+    Object[] arguments = getTestArguments(method);
+
+    for (Locale locale : LOCALES) {
+
+      Messages.setLocale(locale);
+
+      try {
+        method.invoke(Messages.get(), arguments);
+      } catch (Exception ex) {
+        throw new Error("Invoking message method threw exception", ex);
+      }
+    }
+  }
+
+  private Object[] getTestArguments(Method method) {
+
+    List<Object> arguments = new ArrayList<>();
+
+    for (Class<?> type : method.getParameterTypes()) {
+
+      arguments.add(getTestValue(type));
     }
 
-    private Object[] getTestArguments(Method method) {
+    return arguments.toArray();
+  }
 
-        List<Object> arguments = new ArrayList<>();
+  private Object getTestValue(Class<?> type) {
 
-        for (Class<?> type : method.getParameterTypes()) {
-
-            arguments.add(getTestValue(type));
-        }
-
-        return arguments.toArray();
+    if (type.equals(int.class)) {
+      return 0;
+    }
+    if (type.equals(String.class)) {
+      return "";
+    }
+    if (type.equals(char.class)) {
+      return 'a';
+    }
+    if (type.equals(double.class)) {
+      return 0.0;
     }
 
-    private Object getTestValue(Class<?> type) {
+    fail("Unexpected argument type " + type);
 
-        if (type.equals(int.class)) {
-            return 0;
-        }
-        if (type.equals(String.class)) {
-            return "";
-        }
-        if (type.equals(char.class)) {
-            return 'a';
-        }
-        if (type.equals(double.class)) {
-            return 0.0;
+    return null;
+  }
+
+  /**
+   * Is there an entry in each message.properties for every method in the interface?
+   *
+   * @throws IOException ignore
+   */
+  @Test public void shouldHaveInterfaceMethodForAllMessages() throws IOException {
+
+    Set<String> methodNames =
+        messageMethods.stream().map(Method::getName).collect(Collectors.toSet());
+
+    Set<String> error = new HashSet<>();
+
+    for (Map.Entry<String, Properties> entry : bundles.entrySet()) {
+
+      for (Object messageObj : entry.getValue().keySet()) {
+        String message = messageObj.toString();
+
+        // Ignore ENUMs
+        if (message.startsWith(Messages.PREFIX_ENUM)) {
+          continue;
         }
 
-        fail("Unexpected argument type " + type);
-
-        return null;
+        if (!methodNames.contains(message)) {
+          error.add(entry.getKey() + "#" + message);
+        }
+      }
     }
 
-    /**
-     * Is there an entry in each message.properties for every method in the interface?
-     *
-     * @throws IOException ignore
-     */
-    @Test
-    public void shouldHaveInterfaceMethodForAllMessages() throws IOException {
+    if (!error.isEmpty()) {
+      fail("No interface method for : " + error);
+    }
+  }
 
-        Set<String> methodNames = messageMethods.stream().map(Method::getName).collect(Collectors.toSet());
+  /**
+   * Is there an entry in each message.properties for every Enum-Value?
+   *
+   * @throws Exception ignore
+   */
+  @Test public void shouldHaveEnumMessageForEveryEnumValue() throws Exception {
 
-        Set<String> error = new HashSet<>();
+    List<String> missingKeys = new ArrayList<>();
 
-        for (Map.Entry<String, Properties> entry : bundles.entrySet()) {
+    for (String enumValueKey : enumValueKeys) {
 
-            for (Object messageObj : entry.getValue().keySet()) {
-                String message = messageObj.toString();
-
-                // Ignore ENUMs
-                if (message.startsWith(Messages.PREFIX_ENUM)) {
-                    continue;
-                }
-
-                if (!methodNames.contains(message)) {
-                    error.add(entry.getKey() + "#" + message);
-                }
-            }
+      for (Map.Entry<String, Properties> entry : bundles.entrySet()) {
+        if (!entry.getValue().containsKey(enumValueKey)) {
+          missingKeys.add(entry.getKey() + "#" + enumValueKey);
         }
-
-        if (!error.isEmpty()) {
-            fail("No interface method for : " + error);
-        }
+      }
     }
 
-    /**
-     * Is there an entry in each message.properties for every Enum-Value?
-     *
-     * @throws Exception ignore
-     */
-    @Test
-    public void shouldHaveEnumMessageForEveryEnumValue() throws Exception {
+    if (!missingKeys.isEmpty()) {
+      fail("No translation for " + missingKeys);
+    }
+  }
 
-        List<String> missingKeys = new ArrayList<>();
+  /**
+   * Is there an Enum-Value for every Enum-Translation in our message.properties?
+   *
+   * @throws IOException ignore
+   */
+  @Test public void shouldHaveEnumValueForEveryEnumMessage() throws IOException {
 
-        for (String enumValueKey : enumValueKeys) {
+    Set<String> error = new HashSet<>();
 
-            for (Map.Entry<String, Properties> entry : bundles.entrySet()) {
-                if (!entry.getValue().containsKey(enumValueKey)) {
-                    missingKeys.add(entry.getKey() + "#" + enumValueKey);
-                }
-            }
+    for (Map.Entry<String, Properties> entry : bundles.entrySet()) {
+
+      for (Object messageObj : entry.getValue().keySet()) {
+        String messageKey = messageObj.toString();
+        if (messageKey.startsWith(Messages.PREFIX_ENUM) && !enumValueKeys.contains(messageKey)) {
+          error.add(entry.getKey() + "#" + messageKey);
         }
-
-        if (!missingKeys.isEmpty()) {
-            fail("No translation for " + missingKeys);
-        }
+      }
     }
 
-    /**
-     * Is there an Enum-Value for every Enum-Translation in our message.properties?
-     *
-     * @throws IOException ignore
-     */
-    @Test
-    public void shouldHaveEnumValueForEveryEnumMessage() throws IOException {
-
-        Set<String> error = new HashSet<>();
-
-        for (Map.Entry<String, Properties> entry : bundles.entrySet()) {
-
-            for (Object messageObj : entry.getValue().keySet()) {
-                String messageKey = messageObj.toString();
-                if (messageKey.startsWith(Messages.PREFIX_ENUM) && !enumValueKeys.contains(messageKey)) {
-                    error.add(entry.getKey() + "#" + messageKey);
-                }
-            }
-        }
-
-        if (!error.isEmpty()) {
-            fail("No Enum value for " + error);
-        }
+    if (!error.isEmpty()) {
+      fail("No Enum value for " + error);
     }
+  }
 
 }

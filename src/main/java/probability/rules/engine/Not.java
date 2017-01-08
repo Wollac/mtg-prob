@@ -4,15 +4,14 @@ import probability.attr.ImmutableAttributeHolder;
 
 class Not extends UnaryOperator {
 
-    Not() {
+  Not() {
 
-        super("NOT");
-    }
+    super("NOT");
+  }
 
-    @Override
-    public boolean interpret(ImmutableAttributeHolder bindings) {
+  @Override public boolean interpret(ImmutableAttributeHolder bindings) {
 
-        return !_operand.interpret(bindings);
-    }
+    return !_operand.interpret(bindings);
+  }
 
 }

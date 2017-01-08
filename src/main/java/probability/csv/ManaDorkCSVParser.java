@@ -1,10 +1,5 @@
 package probability.csv;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import probability.attr.ColorsAttributeKey;
 import probability.attr.ImmutableAttributeHolder;
 import probability.attr.IntegerAttributeKey;
@@ -12,44 +7,49 @@ import probability.attr.ManaCostAttributeKey;
 import probability.attr.StringAttributeKey;
 import probability.core.ManaDork;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class ManaDorkCSVParser extends AbstractCSVParser<ManaDork> {
 
-    public ManaDorkCSVParser(Reader reader) throws IOException {
+  public ManaDorkCSVParser(Reader reader) throws IOException {
 
-        super(reader);
+    super(reader);
 
-        addOptionalAttribute(ATTR.NUM);
-        addMandatoryAttribute(ATTR.NAME);
-        addMandatoryAttribute(ATTR.MANA_COST);
-        addMandatoryAttribute(ATTR.COLORS);
+    addOptionalAttribute(AttributeKeys.NUM);
+    addMandatoryAttribute(AttributeKeys.NAME);
+    addMandatoryAttribute(AttributeKeys.MANA_COST);
+    addMandatoryAttribute(AttributeKeys.COLORS);
+  }
+
+  @Override protected Collection<ManaDork> createInstance(ImmutableAttributeHolder row) {
+
+    int num = row.getAttributeValue(AttributeKeys.NUM);
+
+    Collection<ManaDork> manaDorks = new ArrayList<>(num);
+
+    ManaDork manaDork = new ManaDork(row.getAttributeValue(AttributeKeys.NAME),
+        row.getAttributeValue(AttributeKeys.MANA_COST),
+        row.getAttributeValue(AttributeKeys.COLORS));
+
+    for (int i = 0; i < num; i++) {
+      manaDorks.add(manaDork);
     }
 
-    @Override
-    protected Collection<ManaDork> createInstance(ImmutableAttributeHolder row) {
+    return manaDorks;
+  }
 
-        int num = row.getAttributeValue(ATTR.NUM);
+  private interface AttributeKeys {
 
-        Collection<ManaDork> manaDorks = new ArrayList<>(num);
+    IntegerAttributeKey NUM = new IntegerAttributeKey("num", 1, i -> (i > 0));
 
-        ManaDork manaDork = new ManaDork(row.getAttributeValue(ATTR.NAME),
-                row.getAttributeValue(ATTR.MANA_COST), row.getAttributeValue(ATTR.COLORS));
+    StringAttributeKey NAME = new StringAttributeKey("name");
 
-        for (int i = 0; i < num; i++) {
-            manaDorks.add(manaDork);
-        }
+    ManaCostAttributeKey MANA_COST = new ManaCostAttributeKey("cost");
 
-        return manaDorks;
-    }
-
-    private interface ATTR {
-
-        IntegerAttributeKey NUM = new IntegerAttributeKey("num", 1, i -> (i > 0));
-
-        StringAttributeKey NAME = new StringAttributeKey("name");
-
-        ManaCostAttributeKey MANA_COST = new ManaCostAttributeKey("cost");
-
-        ColorsAttributeKey COLORS = new ColorsAttributeKey("colors");
-    }
+    ColorsAttributeKey COLORS = new ColorsAttributeKey("colors");
+  }
 
 }

@@ -1,8 +1,8 @@
 package probability.messages;
 
 /**
- * Marker-Interface for enums, which can be translated by {@link Messages} into displayable text
+ * Marker-Interface for enums, which can be translated by {@link Messages} into displayable text.
  */
 public interface Displayable {
-    // Marker-Interface
+  // Marker-Interface
 }

@@ -23,58 +23,60 @@ import java.util.function.Supplier;
 
 public final class Suppliers {
 
-    /**
-     * Returns a supplier which caches the instance retrieved during the first
-     * call to {@code get()} and returns that value on subsequent calls to
-     * {@code get()}. A return value of {@code null} is supported and cached.
-     * <p>
-     * The returned supplier is thread-safe. If {@code delegate} is an instance
-     * created by an earlier call to {@code memoize}, it is returned directly.
-     * <p>
-     * This is a copy of {@link com.google.common.base.Suppliers#memoize}
-     * modified to use the Java own {@link Supplier}, the serialization
-     * support has been dropped.
-     */
-    public static <T> Supplier<T> memoize(Supplier<T> delegate) {
+  private Suppliers() {
+    // do not initialize
+  }
 
-        if (delegate instanceof MemoizingSupplier) {
-            return delegate;
-        }
-        return new MemoizingSupplier<>(Objects.requireNonNull(delegate));
+  /**
+   * Returns a supplier which caches the instance retrieved during the first
+   * call to {@code get()} and returns that value on subsequent calls to
+   * {@code get()}. A return value of {@code null} is supported and cached.
+   *
+   * <p>The returned supplier is thread-safe. If {@code delegate} is an instance
+   * created by an earlier call to {@code memoize}, it is returned directly.
+   *
+   * <p>This is a copy of {@link com.google.common.base.Suppliers#memoize}
+   * modified to use the Java own {@link Supplier}, the serialization
+   * support has been dropped.
+   */
+  public static <T> Supplier<T> memoize(Supplier<T> delegate) {
+
+    if (delegate instanceof MemoizingSupplier) {
+      return delegate;
+    }
+    return new MemoizingSupplier<>(Objects.requireNonNull(delegate));
+  }
+
+  private static class MemoizingSupplier<T> implements Supplier<T> {
+
+    final Supplier<T> _delegate;
+
+    volatile boolean _initialized;
+
+    // "value" does not need to be volatile; visibility piggy-backs
+    // on volatile read of "initialized".
+    T _value;
+
+    MemoizingSupplier(Supplier<T> delegate) {
+      _delegate = delegate;
     }
 
-    private static class MemoizingSupplier<T> implements Supplier<T> {
+    @Override public T get() {
 
-        final Supplier<T> _delegate;
-        volatile boolean _initialized;
-        // "value" does not need to be volatile; visibility piggy-backs
-        // on volatile read of "initialized".
-        T _value;
-
-        MemoizingSupplier(Supplier<T> delegate) {
-            _delegate = delegate;
+      if (!_initialized) {
+        // lock after check so that calls after init don't need to lock
+        synchronized (this) {
+          // check again, to always avoid multiple initializations
+          if (!_initialized) {
+            T t = _delegate.get();
+            _value = t;
+            _initialized = true;
+            return t;
+          }
         }
-
-        @Override
-        public T get() {
-
-            if (!_initialized) {
-                // lock after check so that calls after init don't need to lock
-                synchronized (this) {
-                    // check again, to always avoid multiple initializations
-                    if (!_initialized) {
-                        T t = _delegate.get();
-                        _value = t;
-                        _initialized = true;
-                        return t;
-                    }
-                }
-            }
-            return _value;
-        }
+      }
+      return _value;
     }
+  }
 
-    private Suppliers() {
-        // do not initialize
-    }
 }

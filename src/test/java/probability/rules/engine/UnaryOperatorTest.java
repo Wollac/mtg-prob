@@ -1,5 +1,7 @@
 package probability.rules.engine;
 
+import static probability.rules.engine.TestUtils.createConstantToken;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,45 +11,41 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Stack;
 
-import static probability.rules.engine.TestUtils.createConstantToken;
+@RunWith(Parameterized.class) public class UnaryOperatorTest {
 
-@RunWith(Parameterized.class)
-public class UnaryOperatorTest {
+  private final boolean _value;
 
-    private final boolean _value;
+  @Parameterized.Parameters(name = "{index}: operator {0}")
+  public static Collection<Object[]> data() {
+    return Arrays.asList(new Object[][] {{true}, {false}});
+  }
 
-    @Parameterized.Parameters(name = "{index}: operator {0}")
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{{true}, {false}});
+  public UnaryOperatorTest(boolean value) {
+    _value = value;
+  }
+
+  private Expression createUnaryOperatorExpression(Operation operation) {
+
+    Operator op = operation.newInstance();
+    Assert.assertTrue(op instanceof UnaryOperator);
+
+    Stack<Token> stack = new Stack<>();
+    stack.push(createConstantToken(_value));
+
+    Expression expression = null;
+    try {
+      expression = op.parse(stack);
+    } catch (Token.RulesTokenException e) {
+      Assert.fail(e.getMessage());
     }
 
-    public UnaryOperatorTest(boolean value) {
-        _value = value;
-    }
+    return expression;
+  }
 
-    private Expression createUnaryOperatorExpression(Operation operation) {
+  @Test public void testNot() {
 
-        Operator op = operation.newInstance();
-        Assert.assertTrue(op instanceof UnaryOperator);
+    Expression expr = createUnaryOperatorExpression(Operation.NOT);
 
-        Stack<Token> stack = new Stack<>();
-        stack.push(createConstantToken(_value));
-
-        Expression expression = null;
-        try {
-            expression = op.parse(stack);
-        } catch (Token.RulesTokenException e) {
-            Assert.fail(e.getMessage());
-        }
-
-        return expression;
-    }
-
-    @Test
-    public void testNot() {
-
-        Expression expr = createUnaryOperatorExpression(Operation.NOT);
-
-        Assert.assertEquals(!_value, expr.interpret(null));
-    }
+    Assert.assertEquals(!_value, expr.interpret(null));
+  }
 }

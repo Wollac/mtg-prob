@@ -1,74 +1,70 @@
 package probability.rules.engine;
 
-import java.util.Stack;
-
 import static probability.rules.NamingConventions.ARROW_OPERATOR;
 import static probability.rules.NamingConventions.EXPRESSION;
 import static probability.rules.NamingConventions.STRING;
 import static probability.rules.NamingConventions.VARIABLE;
 
+import java.util.Stack;
+
 /**
  * Common functionality for all operators that have exactly one variable and one value as operands.
  */
-abstract class VariableValueOperator extends AbstractOperator implements Operator, Expression, Token {
+abstract class VariableValueOperator extends AbstractOperator
+    implements Operator, Expression, Token {
 
-    Variable<?> _variable;
+  Variable<?> _variable;
 
-    Object _value;
+  Object _value;
 
-    /**
-     * Creates an operator.
-     *
-     * @param symbol     nonempty string used to identify the operator
-     * @param precedence precedence value of the operator
-     */
-    VariableValueOperator(String symbol, int precedence) {
+  /**
+   * Creates an operator.
+   *
+   * @param symbol     nonempty string used to identify the operator
+   * @param precedence precedence value of the operator
+   */
+  VariableValueOperator(String symbol, int precedence) {
 
-        super(symbol, precedence);
+    super(symbol, precedence);
+  }
+
+  @Override public Expression parse(Stack<Token> stack) throws RulesTokenException {
+
+    if (stack.size() < 2) {
+      throw new RulesTokenException("Operand missing for " + getSymbol());
     }
 
-    @Override
-    public Expression parse(Stack<Token> stack) throws RulesTokenException {
+    Token right = stack.pop();
+    Token left = stack.pop();
 
-        if (stack.size() < 2) {
-            throw new RulesTokenException("Operand missing for " + getSymbol());
-        }
-
-        Token right = stack.pop();
-        Token left = stack.pop();
-
-        if (left instanceof Variable<?>) {
-            parse((Variable<?>) left, right);
-        } else {
-            throw new RulesTokenException("The LHS of " + getSymbol() +
-                    " must be a variable");
-        }
-
-        return this;
+    if (left instanceof Variable<?>) {
+      parse((Variable<?>) left, right);
+    } else {
+      throw new RulesTokenException("The LHS of " + getSymbol() + " must be a variable");
     }
 
-    protected void parse(Variable<?> variable, Token other) throws RulesTokenException {
+    return this;
+  }
 
-        _variable = variable;
+  protected void parse(Variable<?> variable, Token other) throws RulesTokenException {
 
-        if (other instanceof Value.StringValue) {
-            _value = _variable.parseValue((Value.StringValue) other);
-        } else {
-            throw new RulesTokenException("The RHS of " + getSymbol() +
-                    " must be a value");
-        }
+    _variable = variable;
+
+    if (other instanceof Value.StringValue) {
+      _value = _variable.parseValue((Value.StringValue) other);
+    } else {
+      throw new RulesTokenException("The RHS of " + getSymbol() + " must be a value");
     }
+  }
 
-    @Override
-    public String getProductionRule() {
+  @Override public String getProductionRule() {
 
-        return EXPRESSION + ARROW_OPERATOR + VARIABLE + " " + getSymbol() + " " + STRING;
-    }
+    return EXPRESSION + ARROW_OPERATOR + VARIABLE + " " + getSymbol() + " " + STRING;
+  }
 
-    @Override
-    public String toString() {
+  @Override public String toString() {
 
-        return "(" + _variable + " " + getSymbol() + " " + _value + ")";
-    }
+    return "(" + _variable + " " + getSymbol() + " " + _value + ")";
+  }
 
 }

@@ -7,15 +7,14 @@ import probability.attr.ImmutableAttributeHolder;
  */
 class GreaterThan extends RelationalOperator {
 
-    public GreaterThan() {
+  public GreaterThan() {
 
-        super(">");
-    }
+    super(">");
+  }
 
-    @Override
-    public boolean interpret(ImmutableAttributeHolder bindings) {
+  @Override public boolean interpret(ImmutableAttributeHolder bindings) {
 
-        return _variable.compareTo(_value, bindings) > 0;
-    }
+    return _variable.compareTo(_value, bindings) > 0;
+  }
 
 }
