@@ -4,20 +4,16 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wollac.mtg</groupId>
     <artifactId>probability</artifactId>
-    <version>0.9.1-SNAPSHOT</version>
+    <version>0.9.2-SNAPSHOT</version>
     <name>MTG Cast Probablity</name>
-
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
 
     <properties>
         <jdk.version>1.8</jdk.version>
         <tinylog.version>1.1</tinylog.version>
-        <guava.version>18.0</guava.version>
-        <opencsv.version>3.3</opencsv.version>
+        <guava.version>29.0-jre</guava.version>
+        <opencsv.version>3.10</opencsv.version>
         <junit.version>4.13.1</junit.version>
-        <reflections.version>0.9.10</reflections.version>
+        <reflections.version>0.9.11</reflections.version>
     </properties>
 
     <dependencies>
@@ -67,6 +63,27 @@
 
 
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M3</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.0</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- Set a compile level -->
             <plugin>
@@ -145,11 +162,11 @@
                                 <option>-dontoptimize</option>
                                 <option>-dontobfuscate</option>
                                 <option>-dontnote</option>
-                                <option>-dontwarn javax.annotation.**</option>
-                                <option>-dontwarn javax.inject.**</option>
-                                <option>-dontwarn sun.misc.Unsafe</option>
-                                <option>-dontwarn com.google.common.collect.MinMaxPriorityQueue
-                                </option>
+                                <option>-dontwarn javax.crypto.**</option>
+                                <option>-dontwarn javax.servlet.**</option>
+                                <option>-dontwarn org.apache.log.**</option>
+                                <option>-dontwarn org.apache.log4j.**</option>
+                                <option>-dontwarn org.apache.avalon.framework.logger.Logger</option>
                             </options>
 
                             <libs>
